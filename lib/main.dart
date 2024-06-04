@@ -1,54 +1,32 @@
 import 'package:flutter/material.dart';
-import 'pages/swipe.dart'; // Ensure you have the correct path to your swipe.dart file
+import 'pages/login_page.dart';
+import 'pages/signup_page.dart';
+import 'pages/swipe_page.dart';
+import 'pages/calendar_page.dart';
+import 'pages/make_event_page.dart';
+import 'pages/preview_event_page.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  runApp(EventTideApp());
+}
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+class EventTideApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tinder Cards Demo1',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const SwipeFeedPage(),
-    );
-  }
-}
-
-class SwipeFeedPage extends StatefulWidget {
-  const SwipeFeedPage({super.key});
-
-  @override
-  _SwipeFeedPageState createState() => _SwipeFeedPageState();
-}
-
-class _SwipeFeedPageState extends State<SwipeFeedPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tinder Cards Demo11'),
+      title: 'EventTide',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
-      body: Center(
-        child: TinderSwapCard(
-          cardBuilder: (BuildContext context, int index) {
-            return Card(
-              child: Center(
-                child: Text(
-                  'Card $index',
-                  style: const TextStyle(fontSize: 24),
-                ),
-              ),
-            );
-          },
-          totalNum: 6,
-          maxWidth: MediaQuery.of(context).size.width * 0.9,
-          maxHeight: MediaQuery.of(context).size.height * 0.7,
-          minWidth: MediaQuery.of(context).size.width * 0.8,
-          minHeight: MediaQuery.of(context).size.height * 0.6,
-        ),
-      ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => LoginPage(),
+        '/signup': (context) => SignUpPage(),
+        '/swipe': (context) => SwipePage(),
+        '/calendar': (context) => CalendarPage(),
+        '/make_event': (context) => MakeEventPage(),
+        '/preview_event': (context) => PreviewEventPage(),
+      },
     );
   }
 }
