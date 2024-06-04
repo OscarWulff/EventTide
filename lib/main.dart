@@ -28,7 +28,7 @@ class _SwipeFeedPageState extends State<SwipeFeedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tinder Cards Demo'),
+        title: const Text('Tinder Cards Demo11'),
       ),
       body: Center(
         child: TinderSwapCard(
