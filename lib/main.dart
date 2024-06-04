@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tinder Cards Demo',
+      title: 'Tinder Cards Demo1',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const SwipeFeedPage(),
     );
