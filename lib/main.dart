@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'pages/swipe.dart'; // Ensure you have the correct path to your swipe.dart file
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Tinder Cards Demo',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: SwipeFeedPage(),
+      home: const SwipeFeedPage(),
     );
   }
 }
