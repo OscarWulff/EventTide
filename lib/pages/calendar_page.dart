@@ -1,82 +1,118 @@
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-class CalendarPage extends StatelessWidget {
-  const CalendarPage({super.key});
+class CalendarPage extends StatefulWidget {
+  const CalendarPage({Key? key}) : super(key: key);
+
+  @override
+  _CalendarPageState createState() => _CalendarPageState();
+}
+
+class _CalendarPageState extends State<CalendarPage> {
+  String? selectedDay;
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, String>> days = [
+      {'date': '29', 'day': 'Lø'},
+      {'date': '30', 'day': 'Sø'},
+      {'date': '1', 'day': 'Ma'},
+      {'date': '2', 'day': 'Ti'},
+      {'date': '3', 'day': 'On'},
+      {'date': '4', 'day': 'To'},
+      {'date': '5', 'day': 'Fr'},
+    ];
+
+    final List<String> times = [
+      '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00', '24:00'
+    ];
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Calendar'),
-      ),
+      backgroundColor: Colors.white,
       body: Column(
         children: [
-          Expanded(
-            child: SfCalendar(
-              view: CalendarView.week,
-              dataSource: MeetingDataSource(_getDataSource()),
+          const SizedBox(height: 200), // Adjust the height to position the calendar
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: days.map((day) {
+              return InkWell(
+                onTap: () {
+                  setState(() {
+                    selectedDay = day['date'];
+                  });
+                },
+                child: Column(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: selectedDay == day['date'] ? Colors.orange.withOpacity(0.3) : Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        day['date']!,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: selectedDay == day['date'] ? Colors.orange : Colors.black,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      day['day']!,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Color.fromARGB(255, 137, 135, 135),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 30), // Add some space between the calendar and the text
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: const Text(
+              'Events i dag',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold, // Make the text bold
+                color: Colors.black,
+              ),
             ),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/make_event');
-            },
-            child: const Text('Go to Make Event'),
+          const SizedBox(height: 20), // Add some space between "Events i dag" and the times
+          Container(
+            alignment: Alignment.centerLeft,  
+            padding: const EdgeInsets.fromLTRB(38, 0, 16.0, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: times.map((time) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Text(
+                    time,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color.fromARGB(255, 137, 135, 135),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
           ),
         ],
       ),
     );
   }
-
-  List<Meeting> _getDataSource() {
-    final List<Meeting> meetings = <Meeting>[];
-    final DateTime today = DateTime.now();
-    final DateTime startTime =
-        DateTime(today.year, today.month, today.day, 9, 0, 0);
-    final DateTime endTime = startTime.add(const Duration(hours: 2));
-    meetings.add(Meeting('Conference', startTime, endTime, Colors.blue, false));
-    return meetings;
-  }
 }
 
-class Meeting {
-  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
-
-  String eventName;
-  DateTime from;
-  DateTime to;
-  Color background;
-  bool isAllDay;
+void main() {
+  runApp(MaterialApp(
+    home: CalendarPage(),
+  ));
 }
 
-class MeetingDataSource extends CalendarDataSource {
-  MeetingDataSource(List<Meeting> source) {
-    appointments = source;
-  }
-
-  @override
-  DateTime getStartTime(int index) {
-    return appointments![index].from;
-  }
-
-  @override
-  DateTime getEndTime(int index) {
-    return appointments![index].to;
-  }
-
-  @override
-  String getSubject(int index) {
-    return appointments![index].eventName;
-  }
-
-  @override
-  Color getColor(int index) {
-    return appointments![index].background;
-  }
-
-  @override
-  bool isAllDay(int index) {
-    return appointments![index].isAllDay;
-  }
-}

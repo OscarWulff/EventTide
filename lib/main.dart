@@ -25,7 +25,7 @@ class EventTideApp extends StatelessWidget {
         '/': (context) => const LoginPage(),
         '/signup': (context) => const SignUpPage(),
         '/swipe': (context) => const SwipePage(),
-        '/calendar': (context) => const CalendarPage(),
+        '/calendar': (context) => CalendarPage(),
         '/make_event': (context) => const MakeEventPage(),
         '/preview_event': (context) => const PreviewEventPage(),
       },
