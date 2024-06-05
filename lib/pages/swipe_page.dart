@@ -12,9 +12,9 @@ class SwipePage extends StatelessWidget {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            Navigator.pushNamed(context, '/calendar');
+            Navigator.pushNamed(context, '/login');
           },
-          child: const Text('Go to Calendar'),
+          child: const Text('Go to Login'),
         ),
       ),
     );
