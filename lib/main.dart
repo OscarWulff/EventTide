@@ -7,10 +7,12 @@ import 'pages/make_event_page.dart';
 import 'pages/preview_event_page.dart';
 
 void main() {
-  runApp(EventTideApp());
+  runApp(const EventTideApp());
 }
 
 class EventTideApp extends StatelessWidget {
+  const EventTideApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,12 +22,12 @@ class EventTideApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => LoginPage(),
-        '/signup': (context) => SignUpPage(),
-        '/swipe': (context) => SwipePage(),
-        '/calendar': (context) => CalendarPage(),
-        '/make_event': (context) => MakeEventPage(),
-        '/preview_event': (context) => PreviewEventPage(),
+        '/': (context) => const LoginPage(),
+        '/signup': (context) => const SignUpPage(),
+        '/swipe': (context) => const SwipePage(),
+        '/calendar': (context) => const CalendarPage(),
+        '/make_event': (context) => const MakeEventPage(),
+        '/preview_event': (context) => const PreviewEventPage(),
       },
     );
   }

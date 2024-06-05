@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 
 class CalendarPage extends StatelessWidget {
+  const CalendarPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Calendar'),
+        title: const Text('Calendar'),
       ),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
             Navigator.pushNamed(context, '/make_event');
           },
-          child: Text('Go to Make Event'),
+          child: const Text('Go to Make Event'),
         ),
       ),
     );

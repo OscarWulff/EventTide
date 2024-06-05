@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 
 class MakeEventPage extends StatelessWidget {
+  const MakeEventPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Make Event'),
+        title: const Text('Make Event'),
       ),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
             Navigator.pushNamed(context, '/preview_event');
           },
-          child: Text('Go to Preview Event'),
+          child: const Text('Go to Preview Event'),
         ),
       ),
     );
