@@ -10,23 +10,23 @@
 		</data>
 		<key>flutter_assets/AssetManifest.bin</key>
 		<data>
-		IivojiOhydmIhcT/kkmYczwGOyM=
+		VKf8QhYQdTqfLKO7ivGWWyK0VvU=
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		DNrxEJFCLvQQIZkPB85NExtc1sI=
+		CYQePrJ9hwdVJdezEVYXwFJU6Eo=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
-		+D1xbIOooc3ypce1+jh+mmLy1J0=
+		l9Fw4VUO7kr8CvBlt4zaMCqXZ0w=
 		</data>
 		<key>flutter_assets/NOTICES.Z</key>
 		<data>
-		DdYjHvIRf3jERNBaGJ6COQlOcgg=
+		E7wModS/0j0LXZAplGD/r0p94cM=
 		</data>
-		<key>flutter_assets/fonts/MaterialIcons-Regular.otf</key>
+		<key>flutter_assets/assets/Roskilde_logo.png</key>
 		<data>
-		/CUoTuPQqqdexfyOT9lpJhV+2MQ=
+		wKZS11/GlawfXNGyGTVebD13JEM=
 		</data>
 		<key>flutter_assets/isolate_snapshot_data</key>
 		<data>
@@ -34,7 +34,7 @@
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		/DXEr/cwL2ZdFfPcx/16c5yCmc4=
+		KUsx6NXrPGHvzItbcqMhYomHTZ8=
 		</data>
 		<key>flutter_assets/packages/timezone/data/latest_all.tzf</key>
 		<data>
@@ -55,35 +55,35 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			EPv+ecv3xMl0flQez1BQG9WyLGHn/hLJfI9ToqNnwDM=
+			jdUcXgVplct55+kWJFkFXxzSGgzbnxAHLatfsh3vwUk=
 			</data>
 		</dict>
 		<key>flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			6aIisMSmMQ2V2CWRwpmrnqe55brY8FsdZMwkg8Muwo8=
+			Mqsag/TgoZ3mt9wSfXtGVe9pTt1ahoTzIQWFzzMDmCM=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			KLHrKz0uGtYLjIsPkQCxzL9JL3+pf1vrtR6pfnOSbn0=
+			T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=
 			</data>
 		</dict>
 		<key>flutter_assets/NOTICES.Z</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			8tvYE4M8ZKjEKiM3xbq/ofQgXadusKaQRA6qaszSl0E=
+			YwTb5vckU7Qok2Bi9en+nxOpYQKpAaR+VddXVQI26b4=
 			</data>
 		</dict>
-		<key>flutter_assets/fonts/MaterialIcons-Regular.otf</key>
+		<key>flutter_assets/assets/Roskilde_logo.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			2YZbZxoJ1oPROoYwidiCXg9ho3aWzl19RIvIAjqmJFM=
+			gjM0Dp3FPjsOp00E43E3brPQns0uPTARe58tbuvHS4k=
 			</data>
 		</dict>
 		<key>flutter_assets/isolate_snapshot_data</key>
@@ -97,7 +97,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			dGjflbmwn5U/lZJOrF4ML0fZsf9o2j8MXdt4CbhxXl8=
+			EwKz6vIW8Q2tG6fqE06VKyArIeJ6IIwrpc4kJKPtwfs=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/timezone/data/latest_all.tzf</key>
