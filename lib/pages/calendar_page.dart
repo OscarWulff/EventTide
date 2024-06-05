@@ -34,7 +34,7 @@ class CalendarPage extends StatelessWidget {
     final DateTime today = DateTime.now();
     final DateTime startTime =
         DateTime(today.year, today.month, today.day, 9, 0, 0);
-    final DateTime endTime = startTime.add(Duration(hours: 2));
+    final DateTime endTime = startTime.add(const Duration(hours: 2));
     meetings.add(Meeting('Conference', startTime, endTime, Colors.blue, false));
     return meetings;
   }
