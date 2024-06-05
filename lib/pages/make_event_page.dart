@@ -23,7 +23,7 @@ class MakeEventPage extends StatelessWidget {
                     style: TextStyle(color: Colors.white),
                     'Upload images to describe your event',
                       ),
-                widget(child: Image.asset('assets/gravko.jpg')),     
+                     
                TextField( //Title of event
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
