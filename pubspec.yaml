@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_facebook_auth: ^7.0.0
+  syncfusion_flutter_calendar: ^25.2.7
 
 dev_dependencies:
   flutter_test:
