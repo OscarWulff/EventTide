@@ -56,8 +56,8 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
   }
 
   static const List<Widget> _pages = <Widget>[
-    SwipePage(),
     MakeEventPage(),
+    SwipePage(),
     CalendarPage(),
   ];
 
@@ -69,21 +69,21 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
         backgroundColor: Color.fromRGBO(222, 121, 46, 1),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.swap_horiz),
-            label: 'Swipe',
+            icon: Icon(Icons.add),
+            label: 'Create Event',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle_outline),
-            label: 'Make',
+            icon: Icon(Icons.swipe),
+            label: 'Swipe Events',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
+            icon: Icon(Icons.calendar_today_sharp),
             label: 'Calendar',
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.black,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.white,
         onTap: _onItemTapped,
       ),
     );
