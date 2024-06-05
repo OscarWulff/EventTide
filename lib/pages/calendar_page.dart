@@ -4,8 +4,9 @@ class Event {
   final String day;
   final String time;
   final String description;
+  final int duration; // Duration in hours
 
-  Event(this.day, this.time, this.description);
+  Event(this.day, this.time, this.description, this.duration);
 }
 
 class CalendarPage extends StatefulWidget {
@@ -35,19 +36,23 @@ class _CalendarPageState extends State<CalendarPage> {
     ];
 
     final List<Event> events = [
-      Event('29', '10:00', 'Event 1 on 29 Lø'),
-      Event('29', '14:00', 'Event 2 on 29 Lø'),
-      Event('29', '16:00', 'Event 3 on 29 Lø'),
-      Event('30', '10:00', 'Event 1 on 30 Sø'),
-      Event('30', '14:00', 'Event 2 on 30 Sø'),
-      Event('1', '10:00', 'Event 1 on 1 Ma'),
-      Event('1', '14:00', 'Event 2 on 1 Ma'),
-      Event('2', '10:00', 'Event 1 on 2 Ti'),
-      Event('2', '14:00', 'Event 2 on 2 Ti'),
+      Event('29', '10:00', 'Event 1 on 29 Lø', 2),
+      Event('29', '14:00', 'Event 2 on 29 Lø', 2),
+      Event('29', '16:00', 'Event 3 on 29 Lø', 4),
+      Event('30', '10:00', 'Event 1 on 30 Sø', 2),
+      Event('30', '14:00', 'Event 2 on 30 Sø', 4),
+      Event('1', '10:00', 'Event 1 on 1 Ma', 2),
+      Event('1', '14:00', 'Event 2 on 1 Ma', 4),
+      Event('2', '10:00', 'Event 1 on 2 Ti', 2),
+      Event('2', '14:00', 'Event 2 on 2 Ti', 4),
     ];
 
     List<Event> getEventsForSelectedDay(String? day) {
       return events.where((event) => event.day == day).toList();
+    }
+
+    double getEventHeight(int duration) {
+      return 40.0 * (duration / 2); // 40.0 for each 2-hour slot, adjust as needed
     }
 
     return Scaffold(
@@ -130,7 +135,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: times.map((time) {
                     final eventsForSelectedDay = getEventsForSelectedDay(selectedDay);
-                    final eventAtTime = eventsForSelectedDay.firstWhere((event) => event.time == time, orElse: () => Event('', '', ''));
+                    final eventAtTime = eventsForSelectedDay.firstWhere((event) => event.time == time, orElse: () => Event('', '', '', 0));
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -144,23 +149,25 @@ class _CalendarPageState extends State<CalendarPage> {
                             ),
                           ),
                           const SizedBox(width: 10), // Adjust the spacing between the time and event box
-                          Container(
-                            width: 80,
-                            height: 20,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: eventAtTime.description.isNotEmpty ? Colors.orange.withOpacity(0.3) : Colors.transparent,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              eventAtTime.description,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.orange,
+                          if (eventAtTime.description.isNotEmpty)
+                            Container(
+                              width: MediaQuery.of(context).size.width - 125, // Keep width constant
+                              height: getEventHeight(eventAtTime.duration), // Adjust height based on duration
+                              alignment: Alignment.centerLeft,
+                              decoration: BoxDecoration(
+                                color: Colors.orange.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              child: Text(
+                                eventAtTime.description,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.orange,
+                                ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                     );
@@ -180,3 +187,4 @@ void main() {
     home: CalendarPage(),
   ));
 }
+
