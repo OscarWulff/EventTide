@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'pages/login_page.dart';
-import 'pages/signup_page.dart';
 import 'pages/swipe_page.dart';
 import 'pages/calendar_page.dart';
 import 'pages/make_event_page.dart';
 import 'pages/preview_event_page.dart';
 import 'package:eventtide/firebase_options.dart';
+
 void main() async {
-    WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -27,12 +27,11 @@ class EventTideApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const MainNavigationWrapper(),
-        '/signup': (context) => const SignUpPage(),
+        '/': (context) => LoginPage(),
+        '/login': (context) => const MainNavigationWrapper(),
         '/swipe': (context) => const SwipePage(),
         '/calendar': (context) => CalendarPage(),
         '/make_event': (context) => const MakeEventPage(),
-        '/login': (context) => const LoginPage(),
         '/preview_event': (context) => const PreviewEventPage(),
       },
     );

@@ -6,7 +6,7 @@
 	<dict>
 		<key>FirebaseCoreInternal_Privacy.bundle/Info.plist</key>
 		<data>
-		EKRViWXfjO54Ij9aECX5Jekx+do=
+		th01aAlp3j8ZvbY9IPSk1VX8Js0=
 		</data>
 		<key>FirebaseCoreInternal_Privacy.bundle/PrivacyInfo.xcprivacy</key>
 		<data>
@@ -14,20 +14,28 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		Qoe3KoL8hwaSkYgicWaMifsRd2s=
+		FsA7+qsalLAA0nPQlteeIogcts0=
 		</data>
 	</dict>
 	<key>files2</key>
 	<dict>
 		<key>FirebaseCoreInternal_Privacy.bundle/Info.plist</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			th01aAlp3j8ZvbY9IPSk1VX8Js0=
+			</data>
 			<key>hash2</key>
 			<data>
-			x8yAC785O9RVbDv/R05xYUmQR489/Ltu/8Ap7a2sqsc=
+			IC0yBZ5P4YuATql2wFRH1y2/IlLZmG4dFLK55dxAws8=
 			</data>
 		</dict>
 		<key>FirebaseCoreInternal_Privacy.bundle/PrivacyInfo.xcprivacy</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			ifoThrqbbqoLG4yjAruMQRaf0Dw=
+			</data>
 			<key>hash2</key>
 			<data>
 			W3/peUI97ePgivwppC8A9ghiddxUioTCl3QjWGPu0+8=

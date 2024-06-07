@@ -18,23 +18,27 @@
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
-		l9Fw4VUO7kr8CvBlt4zaMCqXZ0w=
+		+D1xbIOooc3ypce1+jh+mmLy1J0=
 		</data>
 		<key>flutter_assets/NOTICES.Z</key>
 		<data>
-		E7wModS/0j0LXZAplGD/r0p94cM=
+		Bspuy/hbqoqScmd3aXOvQOfgLkQ=
 		</data>
 		<key>flutter_assets/assets/Roskilde_logo.png</key>
 		<data>
 		wKZS11/GlawfXNGyGTVebD13JEM=
 		</data>
+		<key>flutter_assets/fonts/MaterialIcons-Regular.otf</key>
+		<data>
+		/CUoTuPQqqdexfyOT9lpJhV+2MQ=
+		</data>
 		<key>flutter_assets/isolate_snapshot_data</key>
 		<data>
-		0vZjrdKcOvxri/vs/MemzsImtzk=
+		9TpVYFzTEZBNHo+WRwMKfr47ev0=
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		KUsx6NXrPGHvzItbcqMhYomHTZ8=
+		qD5c56nHiE93F6qWo1Y9ge6ZlN4=
 		</data>
 		<key>flutter_assets/packages/timezone/data/latest_all.tzf</key>
 		<data>
@@ -42,11 +46,11 @@
 		</data>
 		<key>flutter_assets/shaders/ink_sparkle.frag</key>
 		<data>
-		p79zzJ85/yOQo5OGiBW5XF0+CxY=
+		VoVnsu58hN7wrwazX0nyAopiB0Q=
 		</data>
 		<key>flutter_assets/vm_snapshot_data</key>
 		<data>
-		5pZuXudFN+/X6GBnZRBE8DbuhuQ=
+		rh7Lp0rslWMtPD3Ls9mrklfCeV0=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -69,14 +73,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			T1PNoYwrqgwDVLtfmj7L5e0Sq02OEbqHPC8RFhICuUU=
+			KLHrKz0uGtYLjIsPkQCxzL9JL3+pf1vrtR6pfnOSbn0=
 			</data>
 		</dict>
 		<key>flutter_assets/NOTICES.Z</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			YwTb5vckU7Qok2Bi9en+nxOpYQKpAaR+VddXVQI26b4=
+			0j/tG2obwCfDf0Cd7Oq7FNgucz9wFp0cUs9RsQIttZg=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/Roskilde_logo.png</key>
@@ -86,18 +90,25 @@
 			gjM0Dp3FPjsOp00E43E3brPQns0uPTARe58tbuvHS4k=
 			</data>
 		</dict>
+		<key>flutter_assets/fonts/MaterialIcons-Regular.otf</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			2YZbZxoJ1oPROoYwidiCXg9ho3aWzl19RIvIAjqmJFM=
+			</data>
+		</dict>
 		<key>flutter_assets/isolate_snapshot_data</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			dvOr7T7vqwhowwaaQWiinIt2Gg2PxLixtzln6A3dVa4=
+			y609hThr1lQi7015H9mB1mtvxZmJQAEUKcjcA/+Fri4=
 			</data>
 		</dict>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			EwKz6vIW8Q2tG6fqE06VKyArIeJ6IIwrpc4kJKPtwfs=
+			CmqKYolO90KzX70STZDBQZ8Mg7qu2K0u3NKKPGB7dy0=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/timezone/data/latest_all.tzf</key>
@@ -111,14 +122,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ggsttSoN6c2kH04/7vNnFwBQTTy8j9ILVF4lU1822Bk=
+			4PC1vOWKHlNOnW4dGwFfD4TPwBCllniPCsOy7+1X5co=
 			</data>
 		</dict>
 		<key>flutter_assets/vm_snapshot_data</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			OKT7zSYjvmy6bkUt/xrnwXxv1rygk4kGDCZd1F+nKug=
+			3Jq+mvHsRF8K4unSSeILHnFliqSk7w9xJCV+XvBaciU=
 			</data>
 		</dict>
 	</dict>

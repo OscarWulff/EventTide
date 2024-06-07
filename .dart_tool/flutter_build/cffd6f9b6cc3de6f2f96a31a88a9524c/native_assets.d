@@ -1,0 +1,1 @@
+ /Users/oscarmandrupsen/eventtide/EventTide/.dart_tool/flutter_build/cffd6f9b6cc3de6f2f96a31a88a9524c/native_assets.yaml: 
