@@ -1,71 +1,73 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool _isLoggedIn = false;
-  Map<String, dynamic> _userObj = {};
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  Future<User?> _signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        return null; // The user canceled the sign-in
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+      return userCredential.user;
+    } catch (e) {
+      print('Error signing in with Google: $e');
+      return null;
+    }
+  }
+
+  Future<void> _signOut() async {
+    await _auth.signOut();
+    await _googleSignIn.signOut();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("DBestech"),
+        title: const Text('Google Sign-In Example'),
       ),
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        child: _isLoggedIn
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.network(
-                    _userObj["picture"]["data"]["url"],
-                    height: 200,
-                    width: 200,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        Icon(Icons.error_outline),
-                  ),
-                  Text(_userObj["name"]),
-                  Text(_userObj["email"]),
-                  TextButton(
-                      onPressed: () {
-                        FacebookAuth.instance.logOut().then((value) {
-                          setState(() {
-                            _isLoggedIn = false;
-                            _userObj = {};
-                          });
-                        });
-                      },
-                      child: Text("Logout"))
-                ],
-              )
-            : Center(
-                child: ElevatedButton(
-                  child: Text("Login with Facebook"),
-                  onPressed: () async {
-                    final LoginResult result = await FacebookAuth.instance
-                        .login(permissions: ["public_profile", "email"]);
-
-                    if (result.status == LoginStatus.success) {
-                      final userData =
-                          await FacebookAuth.instance.getUserData();
-                      setState(() {
-                        _isLoggedIn = true;
-                        _userObj = userData;
-                      });
-                    } else {
-                      print('Login failed: ${result.status}');
-                      print('Message: ${result.message}');
-                    }
-                  },
-                ),
-              ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: () async {
+                User? user = await _signInWithGoogle();
+                if (user != null) {
+                  print('Logged in successfully: ${user.displayName}');
+                } else {
+                  print('Failed to log in with Google');
+                }
+              },
+              child: const Text('Login with Google'),
+            ),
+            ElevatedButton(
+              onPressed: _signOut,
+              child: const Text('Logout'),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "71442054153",
+    "project_id": "eventtide-b5d78",
+    "storage_bucket": "eventtide-b5d78.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:71442054153:android:68a363374b015b5d8c8cd8",
+        "android_client_info": {
+          "package_name": "com.eventtide.eventtide"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBt9dwzjrDLisg_ijkNVva4VOt2ZA1umDY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
