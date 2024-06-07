@@ -2,22 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- Put me in the [my_project]/ios/Runner/Info.plist file -->
-	<!-- Google Sign-in Section -->
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<!-- TODO Replace this value: -->
-				<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
-				<string>com.googleusercontent.apps.71442054153-m2rq8kl9r16r4j6j7nuoandl4uuukpci</string>
-			</array>
-		</dict>
-	</array>
-	<!-- End of the Google Sign-in Section -->
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -41,9 +25,11 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb976498673935659</string>
+				<string>com.googleusercontent.apps.71442054153-m2rq8kl9r16r4j6j7nuoandl4uuukpci</string>
 			</array>
 		</dict>
 	</array>
@@ -55,6 +41,8 @@
 	<string>568022f00a3d6b4cd5a584ebe12dc157</string>
 	<key>FacebookDisplayName</key>
 	<string>eventtide</string>
+	<key>GIDClientID</key>
+	<string>71442054153-m2rq8kl9r16r4j6j7nuoandl4uuukpci.apps.googleusercontent.com</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

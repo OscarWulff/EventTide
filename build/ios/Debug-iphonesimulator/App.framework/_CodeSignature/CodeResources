@@ -10,19 +10,19 @@
 		</data>
 		<key>flutter_assets/AssetManifest.bin</key>
 		<data>
-		XGk/4PGiqGbgjosFLXml8t0Qu3s=
+		HjZsQv+k/LqUeprKizM5eC5EeCA=
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		VHwR6anaGKv/Wo1UmvsZ0eU1o4w=
+		pNgvjIlg8gXEbT/HguOP0FDkrYE=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
-		vKJkVIcw+LGHFnKJGwrQwCREv68=
+		+D1xbIOooc3ypce1+jh+mmLy1J0=
 		</data>
 		<key>flutter_assets/NOTICES.Z</key>
 		<data>
-		Mo0ohof2/SRXE/A9IuJkeAL2RVI=
+		pWnMsF1Lq4YnhsDBgoMhhqb5sbk=
 		</data>
 		<key>flutter_assets/assets/Roskilde_logo.png</key>
 		<data>
@@ -38,15 +38,7 @@
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		0pzMAvDCa63jOABB4Jsz8uBa5JM=
-		</data>
-		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
-		<data>
-		Bvk+P1ykE1PGRdktwgwDyz6AOqM=
-		</data>
-		<key>flutter_assets/packages/timezone/data/latest_all.tzf</key>
-		<data>
-		5s77BQ1+ZD3GXruCYOpWJQLPz3E=
+		tVkl6duicV79+mrQrpMJhIQW5Bo=
 		</data>
 		<key>flutter_assets/shaders/ink_sparkle.frag</key>
 		<data>
@@ -63,28 +55,28 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			tpHkQWUOhmwQ8Y1NGx0NY5e1SiwIH1tvcGlr7f+k27Q=
+			zd9wcuposVREMlf03DIy4eXirjy6np3qbIQArwRGjFc=
 			</data>
 		</dict>
 		<key>flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			om2Sjaz7sMryylXP0d6KJIrA6eRiurQpUGXQCXdKD0I=
+			TLwiaxIKwwJ1BdXodYZj5pZJJjVaAf9BTjqDGKX3hjs=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			zX4DZFvESy3Ue3y2JvUcTsv1Whl6t3JBYotHrBZfviE=
+			KLHrKz0uGtYLjIsPkQCxzL9JL3+pf1vrtR6pfnOSbn0=
 			</data>
 		</dict>
 		<key>flutter_assets/NOTICES.Z</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			ee/cW3ZSqPnh9wbgFauCn4P6U09p77dqH22U+RNbjns=
+			GTCeuoV/cO5DzNbdqttYSbDqGpqJRVVkKmEErCgXg2E=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/Roskilde_logo.png</key>
@@ -112,21 +104,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			pfV9/fgeK/gY45MIWu7pcu72a8Zw59qD59nLCrvREnQ=
-			</data>
-		</dict>
-		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			Z8RP6Rg7AC553ef2l34piGYcmj5KPF/OloeH79vtgjw=
-			</data>
-		</dict>
-		<key>flutter_assets/packages/timezone/data/latest_all.tzf</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			/ZUVCXJInPCuOViRyjISVR04mMwTt7h4M/JW2H6+yDs=
+			eCXdbtJkev0yKFe+/cvvYj+F4otqBFEC9yANvm0+iwQ=
 			</data>
 		</dict>
 		<key>flutter_assets/shaders/ink_sparkle.frag</key>
