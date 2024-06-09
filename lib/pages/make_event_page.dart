@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'select_weekdays.dart';
-
 
 class MakeEventPage extends StatefulWidget {
   const MakeEventPage({Key? key}) : super(key: key);
@@ -54,6 +54,10 @@ class _MakeEventPageState extends State<MakeEventPage> {
     final String startTime = _selectedTime.format(context);
     final List<String> selectedDays = _days.where((day) => day.isSelected).map((day) => day.name).toList();
 
+    // Get the current user
+    final user = FirebaseAuth.instance.currentUser;
+    final String submittedBy = user != null ? user.email ?? 'Unknown' : 'Unknown'; // Use the user's email or 'Unknown' if not available
+
     if (title.isEmpty || description.isEmpty || maxPeople == null || campName.isEmpty || duration == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please fill all fields')),
@@ -69,6 +73,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
       'Days': selectedDays,
       'CampName': campName,
       'Duration': duration,
+      'SubmittedBy': submittedBy, // Include the submitted by information
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -90,7 +95,6 @@ class _MakeEventPageState extends State<MakeEventPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -192,10 +196,4 @@ class _MakeEventPageState extends State<MakeEventPage> {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: MakeEventPage(),
-  ));
 }

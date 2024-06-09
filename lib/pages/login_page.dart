@@ -1,8 +1,8 @@
 import 'package:eventtide/main.dart';
-import 'package:eventtide/pages/swipe_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -38,11 +38,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _signOut() async {
-    await _auth.signOut();
-    await _googleSignIn.signOut();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,16 +54,11 @@ class _LoginPageState extends State<LoginPage> {
                 if (user != null) {
                   print('Logged in successfully: ${user.displayName}');
                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainNavigationWrapper()),);
-              
                 } else {
                   print('Failed to log in with Google');
                 }
               },
               child: const Text('Login with Google'),
-            ),
-            ElevatedButton(
-              onPressed: _signOut,
-              child: const Text('Logout'),
             ),
           ],
         ),

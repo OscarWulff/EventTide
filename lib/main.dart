@@ -6,6 +6,7 @@ import 'pages/swipe_page.dart';
 import 'pages/calendar_page.dart';
 import 'pages/make_event_page.dart';
 import 'pages/preview_event_page.dart';
+import 'pages/profile_page.dart'; // Import the profile page
 import 'package:eventtide/firebase_options.dart';
 
 void main() async {
@@ -34,6 +35,7 @@ class EventTideApp extends StatelessWidget {
         '/calendar': (context) => const CalendarPage(),
         '/make_event': (context) => const MakeEventPage(),
         '/preview_event': (context) => const PreviewEventPage(),
+        '/profile': (context) => const ProfilePage(), // Add the profile page route
       },
     );
   }
@@ -84,17 +86,29 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
       _selectedIndex = index;
     });
   }
-
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleAvatar(
+            backgroundColor: Colors.black, // Background color for the icon
+            child: IconButton(
+              icon: const Icon(Icons.person),
+              color: Colors.white,// const Color.fromRGBO(222, 121, 46, 1), // Icon color
+              onPressed: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+            ),
+          ),
+        ),
         title: Text(
           _titles[_selectedIndex],
           style: const TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontWeight: FontWeight.normal,
           ),
         ),
@@ -117,8 +131,8 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.white,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.black,
         onTap: _onItemTapped,
       ),
     );
