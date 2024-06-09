@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Google Sign-In Example'),
+        title: const Text('Google Sign-In'),
       ),
       body: Center(
         child: Column(
@@ -56,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                 User? user = await _signInWithGoogle();
                 if (user != null) {
                   print('Logged in successfully: ${user.displayName}');
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SwipePage()),);
                 } else {
                   print('Failed to log in with Google');
                 }

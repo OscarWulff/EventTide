@@ -46,7 +46,7 @@ class MainNavigationWrapper extends StatefulWidget {
 }
 
 class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
-  int _selectedIndex = 1; // Default to 'make' page
+  int _selectedIndex = 1; // Default to 'swipe' page
 
   void _onItemTapped(int index) {
     setState(() {

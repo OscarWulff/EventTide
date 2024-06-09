@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:card_swiper/card_swiper.dart';
 
+
 class SwipePage extends StatelessWidget {
   const SwipePage({Key? key}) : super(key: key);
 

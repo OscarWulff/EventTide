@@ -26,7 +26,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		X+5XWMXXKtKlgpHKswiYpfcS2w0=
+		7tpkSp9+9S+9X6k/GRjGVhuGIXM=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -34,7 +34,7 @@
 		</data>
 		<key>nanopb_Privacy.bundle/Info.plist</key>
 		<data>
-		8MUepa7lY7+d+CG8TQnWyJdXS1E=
+		ypyWAlpwuFvMIjL6O8NZt/1xG6s=
 		</data>
 		<key>nanopb_Privacy.bundle/PrivacyInfo.xcprivacy</key>
 		<data>
@@ -113,11 +113,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			8MUepa7lY7+d+CG8TQnWyJdXS1E=
+			ypyWAlpwuFvMIjL6O8NZt/1xG6s=
 			</data>
 			<key>hash2</key>
 			<data>
-			UpXrq+8DOosqHV+fGxu7mcnWTjcJEhUEUQLZRssOyDk=
+			mpMfRyREsai/rcznz9YccEIGylzBaCEcEL1vOMd7l+E=
 			</data>
 		</dict>
 		<key>nanopb_Privacy.bundle/PrivacyInfo.xcprivacy</key>

@@ -6,7 +6,7 @@
 	<dict>
 		<key>GoogleSignIn.bundle/Info.plist</key>
 		<data>
-		fEfN+CKnxQR5UCPAsRAYy1khgOA=
+		EQtHkUfP46qrLT1z9r2O2swuCHc=
 		</data>
 		<key>GoogleSignIn.bundle/PrivacyInfo.xcprivacy</key>
 		<data>
@@ -408,7 +408,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		VrVX2uycp5BzWHacqFLONjK2pYU=
+		xKmhDKK1XDkVCVlMD/o+cRSpxfU=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -421,11 +421,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			fEfN+CKnxQR5UCPAsRAYy1khgOA=
+			EQtHkUfP46qrLT1z9r2O2swuCHc=
 			</data>
 			<key>hash2</key>
 			<data>
-			DRe6576OwOqR07RP8CLvYZhd4/lxa1leqYJKFRpYM7M=
+			RDiMe+vjo3Cjxm0A6gQApvu6YuBphohWaYiqxtuvVjs=
 			</data>
 		</dict>
 		<key>GoogleSignIn.bundle/PrivacyInfo.xcprivacy</key>
