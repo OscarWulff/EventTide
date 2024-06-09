@@ -1,8 +1,8 @@
-import 'package:eventtide/main.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_button/sign_in_button.dart';
+import 'package:eventtide/main.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -42,23 +42,26 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Google Sign-In'),
+        title: const Text('Welcome to EventTide :)'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(
+            SignInButton(
+              Buttons.google,
               onPressed: () async {
                 User? user = await _signInWithGoogle();
                 if (user != null) {
                   print('Logged in successfully: ${user.displayName}');
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainNavigationWrapper()),);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MainNavigationWrapper()),
+                  );
                 } else {
                   print('Failed to log in with Google');
                 }
               },
-              child: const Text('Login with Google'),
             ),
           ],
         ),
