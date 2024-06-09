@@ -86,33 +86,36 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
       _selectedIndex = index;
     });
   }
-@override
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            backgroundColor: Colors.black, // Background color for the icon
-            child: IconButton(
-              icon: const Icon(Icons.person),
-              color: Colors.white,// const Color.fromRGBO(222, 121, 46, 1), // Icon color
-              onPressed: () {
-                Navigator.pushNamed(context, '/profile');
-              },
+      appBar: _selectedIndex == 2
+          ? null
+          : AppBar(
+              centerTitle: true,
+              backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
+              leading: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  backgroundColor: Colors.black, // Background color for the icon
+                  child: IconButton(
+                    icon: const Icon(Icons.person),
+                    color: Colors.white, // Icon color
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/profile');
+                    },
+                  ),
+                ),
+              ),
+              title: Text(
+                _titles[_selectedIndex],
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
             ),
-          ),
-        ),
-        title: Text(
-          _titles[_selectedIndex],
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.normal,
-          ),
-        ),
-      ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(222, 121, 46, 1),

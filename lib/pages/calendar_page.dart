@@ -37,22 +37,13 @@ class _CalendarPageState extends State<CalendarPage> {
 
     final List<Event> events = [
       Event('29', '10:00', 'Event 1 on 29 Lø', 2),
-      Event('29', '14:00', 'Event 2 on 29 Lø', 2),
       Event('29', '16:00', 'Event 3 on 29 Lø', 4),
       Event('30', '10:00', 'Event 1 on 30 Sø', 2),
       Event('30', '14:00', 'Event 2 on 30 Sø', 4),
-      Event('1', '10:00', 'Event 1 on 1 Ma', 2),
-      Event('1', '14:00', 'Event 2 on 1 Ma', 4),
-      Event('2', '10:00', 'Event 1 on 2 Ti', 2),
-      Event('2', '14:00', 'Event 2 on 2 Ti', 4),
     ];
 
     List<Event> getEventsForSelectedDay(String? day) {
       return events.where((event) => event.day == day).toList();
-    }
-
-    double getEventHeight(int duration) {
-      return 40.0 * (duration / 2); // 40.0 for each 2-hour slot, adjust as needed
     }
 
     return Scaffold(
@@ -138,7 +129,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     final eventAtTime = eventsForSelectedDay.firstWhere((event) => event.time == time, orElse: () => Event('', '', '', 0));
 
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 6), // Adjusted vertical padding
                       child: Row(
                         children: [
                           Text(
@@ -152,7 +143,7 @@ class _CalendarPageState extends State<CalendarPage> {
                           if (eventAtTime.description.isNotEmpty)
                             Container(
                               width: MediaQuery.of(context).size.width - 125, // Keep width constant
-                              height: getEventHeight(eventAtTime.duration), // Adjust height based on duration
+                              height: 20.0, // Reduced height for event boxes
                               alignment: Alignment.centerLeft,
                               decoration: BoxDecoration(
                                 color: Colors.orange.withOpacity(0.3),
