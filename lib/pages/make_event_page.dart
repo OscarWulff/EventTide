@@ -265,7 +265,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                                 onPressed: () => _showDatePicker(context, false),
                                 child: Text(
                                   'Select End Time',
-                                  style: TextStyle(fontSize: 12, color: Colors.black),
+                                  style: TextStyle(fontSize: 12, color: Colors.black)
                                 ),
                                 style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1))
                               ),
@@ -315,7 +315,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
                       ),
                       ElevatedButton(
                         onPressed: _saveEvent,
-                        child: Text('Save Event'),
+                        child: Text('Save Event',style: TextStyle(fontSize: 12, color: Colors.black)),
+                        style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1))
                       ),
                       SizedBox(height: 5), // Add this SizedBox to prevent bottom overflow
                     ],
@@ -325,7 +326,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
                   onPressed: () {
                     Navigator.pushNamed(context, '/preview_event');
                   },
-                  child: const Text('Preview Event'),
+                  child: const Text('Preview Event',style: TextStyle(fontSize: 12, color: Colors.black)),
+                  style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1))
                 ),
               ],
             ),
