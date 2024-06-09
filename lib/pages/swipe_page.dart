@@ -38,7 +38,7 @@ class SwipePage extends StatelessWidget {
                       Text('Events People Capacity: ${event['MaxPeople']}', style: TextStyle(fontSize: 18)),
                       Text('Day of Event: ${event['Days']}', style: TextStyle(fontSize: 18)),
                       Text('Start Time: ${event['StartTime']}', style: TextStyle(fontSize: 18)),
-                      Text('Duration: ${event['Duration']} hours', style: TextStyle(fontSize: 18)),
+                      Text('End Time: ${event['EndTime']}', style: TextStyle(fontSize: 18)),
                     ],
                   ),
                 ),

@@ -183,7 +183,7 @@
     },
     {
       "name": "intl",
-      "rootUri": "file:///Users/benyla/.pub-cache/hosted/pub.dev/intl-0.17.0",
+      "rootUri": "file:///Users/nillings/.pub-cache/hosted/pub.dev/intl-0.17.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -320,11 +320,7 @@
       "languageVersion": "3.2"
     }
   ],
-<<<<<<< Updated upstream
-  "generated": "2024-06-09T15:23:05.913887Z",
-=======
-  "generated": "2024-06-09T16:15:28.261465Z",
->>>>>>> Stashed changes
+  "generated": "2024-06-09T16:23:31.219711Z",
   "generator": "pub",
   "generatorVersion": "3.4.1",
   "flutterRoot": "file:///Users/nillings/Documents/EventTide/flutter",
