@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'pages/login_page.dart';
 import 'pages/swipe_page.dart';
 import 'pages/calendar_page.dart';
@@ -25,14 +26,32 @@ class EventTideApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/',
+      home: AuthCheck(), // Use AuthCheck as the home widget
       routes: {
-        '/': (context) => const LoginPage(),
-        '/login': (context) => const MainNavigationWrapper(),
+        '/login': (context) => const LoginPage(),
+        '/main': (context) => const MainNavigationWrapper(),
         '/swipe': (context) => const SwipePage(),
         '/calendar': (context) => const CalendarPage(),
         '/make_event': (context) => const MakeEventPage(),
         '/preview_event': (context) => const PreviewEventPage(),
+      },
+    );
+  }
+}
+
+class AuthCheck extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator(); // Show a loading indicator while checking authentication status
+        }
+        if (snapshot.hasData) {
+          return const MainNavigationWrapper(); // If logged in, navigate to the main screen
+        }
+        return const LoginPage(); // If not logged in, navigate to the login screen
       },
     );
   }
@@ -48,24 +67,41 @@ class MainNavigationWrapper extends StatefulWidget {
 class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
   int _selectedIndex = 1; // Default to 'swipe' page
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   static const List<Widget> _pages = <Widget>[
     MakeEventPage(),
     SwipePage(),
     CalendarPage(),
   ];
 
+  static const List<String> _titles = <String>[
+    'Create Event',
+    'Swipe Events',
+    'Calendar',
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
+        title: Text(
+          _titles[_selectedIndex],
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.normal,
+          ),
+        ),
+      ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color.fromRGBO(222, 121, 46, 1),
+        backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.add),

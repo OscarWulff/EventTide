@@ -10,11 +10,7 @@ class SwipePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Color.fromRGBO(222, 121, 46, 1),
-        title: const Text('Event', style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal)),
-      ),
+      
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('Events').snapshots(),
         builder: (context, snapshot) {

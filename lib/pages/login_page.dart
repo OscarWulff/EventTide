@@ -1,3 +1,5 @@
+import 'package:eventtide/main.dart';
+import 'package:eventtide/pages/swipe_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -56,7 +58,8 @@ class _LoginPageState extends State<LoginPage> {
                 User? user = await _signInWithGoogle();
                 if (user != null) {
                   print('Logged in successfully: ${user.displayName}');
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SwipePage()),);
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainNavigationWrapper()),);
+              
                 } else {
                   print('Failed to log in with Google');
                 }
