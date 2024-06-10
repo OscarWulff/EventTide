@@ -80,17 +80,29 @@ class SwipePage extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          IconButton(
-                            icon: Icon(Icons.close, color: Colors.red, size: 50),
-                            onPressed: () {
-                              // No action
-                            },
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black.withOpacity(0.5),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.close, color: Colors.red, size: 50),
+                              onPressed: () {
+                                // No action
+                              },
+                            ),
                           ),
-                          IconButton(
-                            icon: Icon(Icons.check, color: Colors.green, size: 50),
-                            onPressed: () {
-                              // No action
-                            },
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black.withOpacity(0.5),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.check, color: Colors.green, size: 50),
+                              onPressed: () {
+                                // No action
+                              },
+                            ),
                           ),
                         ],
                       ),

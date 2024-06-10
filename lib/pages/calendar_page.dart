@@ -142,7 +142,7 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
         ),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
           Align(
@@ -161,7 +161,7 @@ class _CalendarPageState extends State<CalendarPage> {
           SfCalendar(
             view: _calendarView,
             dataSource: EventDataSource(_appointments),
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.black,
             todayHighlightColor: Colors.orange,
             showCurrentTimeIndicator: true,
             selectionDecoration: BoxDecoration(
@@ -177,21 +177,23 @@ class _CalendarPageState extends State<CalendarPage> {
               timeRulerSize: 40, // Smaller time ruler size
               timeIntervalHeight:
                   28, // Adjusted time interval height to fit more intervals on screen
+              timeTextStyle: TextStyle(color: Colors.white),
             ),
             headerHeight: 0, // Remove the header
             viewHeaderHeight: 50,
             viewHeaderStyle: ViewHeaderStyle(
               dayTextStyle: TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
               dateTextStyle: TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            cellBorderColor: Color.fromRGBO(222, 121, 46, 0.9), // Set gridlines to white
             minDate: _startDate,
             maxDate: _endDate,
             initialDisplayDate: _startDate,
@@ -200,6 +202,9 @@ class _CalendarPageState extends State<CalendarPage> {
             onTap: _onAppointmentTap,
             monthViewSettings: MonthViewSettings(
               showTrailingAndLeadingDates: false,
+              monthCellStyle: MonthCellStyle(
+                textStyle: TextStyle(color: Colors.white),
+              ),
             ),
           ),
         ],

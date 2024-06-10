@@ -171,7 +171,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: Center(
         child: SingleChildScrollView(
           child: Center(
@@ -180,7 +180,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
               children: [
                 Container(
                   padding: EdgeInsets.all(16.0),
-                  color: Colors.white,
+                  color: Colors.black,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -194,17 +194,17 @@ class _MakeEventPageState extends State<MakeEventPage> {
                       SizedBox(height: 20),
                       TextField(
                         controller: _titleController,
-                        style: TextStyle(color: Colors.black),
+                        style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           hintText: 'Title of event',
-                          hintStyle: TextStyle(color: Colors.grey),
+                          hintStyle: TextStyle(color: Colors.white),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.grey),
+                            borderSide: BorderSide(color: Colors.white),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.blue),
+                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
                         ),
                         textAlign: TextAlign.center,
@@ -212,17 +212,17 @@ class _MakeEventPageState extends State<MakeEventPage> {
                       SizedBox(height: 20),
                       TextField(
                         controller: _campNameController,
-                        style: TextStyle(color: Colors.black),
+                        style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           hintText: 'Camp Name',
-                          hintStyle: TextStyle(color: Colors.grey),
+                          hintStyle: TextStyle(color: Colors.white),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.grey),
+                            borderSide: BorderSide(color: Colors.white),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.blue),
+                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
                         ),
                         textAlign: TextAlign.center,
@@ -230,17 +230,17 @@ class _MakeEventPageState extends State<MakeEventPage> {
                       SizedBox(height: 20),
                       TextField(
                         controller: _descriptionController,
-                        style: TextStyle(color: Colors.black),
+                        style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           hintText: 'Describe your event',
-                          hintStyle: TextStyle(color: Colors.grey),
+                          hintStyle: TextStyle(color: Colors.white),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.grey),
+                            borderSide: BorderSide(color: Colors.white),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.blue),
+                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
                         ),
                         textAlign: TextAlign.center,
@@ -248,17 +248,17 @@ class _MakeEventPageState extends State<MakeEventPage> {
                       SizedBox(height: 20),
                       TextField(
                         controller: _maxPeopleController,
-                        style: TextStyle(color: Colors.black),
+                        style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           hintText: 'Maximum number of people',
-                          hintStyle: TextStyle(color: Colors.grey),
+                          hintStyle: TextStyle(color: Colors.white),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.grey),
+                            borderSide: BorderSide(color: Colors.white),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.blue),
+                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
                         ),
                         keyboardType: TextInputType.number, // Only numbers as input
@@ -301,7 +301,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             Flexible(
                               child: Text(
                                 'Start time: ${_formatDateTime(_selectedStartTime)}',
-                                style: TextStyle(color: const Color.fromARGB(255, 131, 131, 131)),
+                                style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -309,7 +309,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             Flexible(
                               child: Text(
                                 'End time: ${_formatDateTime(_selectedEndTime)}',
-                                style: TextStyle(color: const Color.fromARGB(255, 131, 131, 131)),
+                                style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
