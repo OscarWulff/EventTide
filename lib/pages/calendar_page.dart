@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:eventtide/pages/preview_event_page.dart';
 
 class Event {
   final String day;
-  final String time;
+  final String startTime;
+  final String endTime;
+  final String title;
   final String description;
-  final int duration; // Duration in hours
+  final String campName;
+  final int maxPeople;
 
-  Event(this.day, this.time, this.description, this.duration);
+  Event(this.day, this.startTime, this.endTime, this.title, this.description,
+      this.campName, this.maxPeople);
 }
 
 class CalendarPage extends StatefulWidget {
@@ -17,41 +24,131 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  String? selectedDay;
+  List<Appointment> _appointments = [];
+  DateTime _startDate = DateTime(2024, 6, 30);
+  DateTime _endDate = DateTime(2024, 7, 6);
+  CalendarView _calendarView = CalendarView.week;
+
+  Future<List<Event>> fetchEvents() async {
+    try {
+      List<Event> events = [];
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('Events').get();
+      for (var doc in querySnapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        if (data.containsKey('Days') &&
+            data['Days'] is List &&
+            data['Days'].isNotEmpty &&
+            data.containsKey('StartTime') &&
+            data.containsKey('EndTime') &&
+            data.containsKey('EventTitle') &&
+            data.containsKey('EventDescription') &&
+            data.containsKey('CampName') &&
+            data.containsKey('MaxPeople')) {
+          DateTime startTime = DateTime.parse(data['StartTime']);
+          if (startTime.isAfter(_startDate.subtract(Duration(days: 1))) &&
+              startTime.isBefore(_endDate.add(Duration(days: 1)))) {
+            events.add(Event(
+              data['Days'][0].toString(),
+              data['StartTime'],
+              data['EndTime'],
+              data['EventTitle'],
+              data['EventDescription'],
+              data['CampName'],
+              data['MaxPeople'],
+            ));
+          }
+        }
+      }
+      return events;
+    } catch (e) {
+      print('Error fetching events: $e');
+      throw e; // Re-throw the error after logging it
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchEvents().then((events) {
+      setState(() {
+        _appointments = events.map((event) {
+          return Appointment(
+            startTime: DateTime.parse(event.startTime),
+            endTime: DateTime.parse(event.endTime),
+            subject: event.title,
+            notes:
+                '${event.description}|${event.campName}|${event.maxPeople}|${event.startTime}|${event.endTime}',
+            color: Colors.orange.withOpacity(0.7),
+          );
+        }).toList();
+      });
+    });
+  }
+
+  void _onAppointmentTap(CalendarTapDetails details) {
+    if (details.appointments == null) return;
+
+    final Appointment appointment = details.appointments!.first;
+    final List<String> notes =
+        appointment.notes?.split('|') ?? ['', '', '', '', ''];
+    final String description = notes[0];
+    final String campName = notes[1];
+    final int maxPeople = int.tryParse(notes[2]) ?? 1;
+    final String startTime = notes[3];
+    final String endTime = notes[4];
+
+    final event = Event(
+      appointment.startTime.toString(),
+      startTime,
+      endTime,
+      appointment.subject,
+      description,
+      campName,
+      maxPeople,
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PreviewEventPage(event: event),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> days = [
-      {'date': '29', 'day': 'Lø'},
-      {'date': '30', 'day': 'Sø'},
-      {'date': '1', 'day': 'Ma'},
-      {'date': '2', 'day': 'Ti'},
-      {'date': '3', 'day': 'On'},
-      {'date': '4', 'day': 'To'},
-      {'date': '5', 'day': 'Fr'},
-    ];
-
-    final List<String> times = [
-      '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00', '24:00'
-    ];
-
-    final List<Event> events = [
-      Event('29', '10:00', 'Event 1 on 29 Lø', 2),
-      Event('29', '16:00', 'Event 3 on 29 Lø', 4),
-      Event('30', '10:00', 'Event 1 on 30 Sø', 2),
-      Event('30', '14:00', 'Event 2 on 30 Sø', 4),
-    ];
-
-    List<Event> getEventsForSelectedDay(String? day) {
-      return events.where((event) => event.day == day).toList();
-    }
-
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleAvatar(
+            backgroundColor: Colors.black, // Background color for the icon
+            child: IconButton(
+              icon: const Icon(Icons.person),
+              color: Colors.white, // Icon color
+              onPressed: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+            ),
+          ),
+        ),
+        title: const Text(
+          'Roskilde Festival',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.normal,
+          ),
+        ),
+      ),
       backgroundColor: Colors.white,
       body: Stack(
         children: [
           Align(
-            alignment: const Alignment(0.0, -1.2), // Move the image upwards by 20% of the screen height
+            alignment: const Alignment(0.0,
+                -1.2), // Move the image upwards by 20% of the screen height
             child: Opacity(
               opacity: 0.2, // Adjust the opacity value as needed
               child: Image.asset(
@@ -62,110 +159,60 @@ class _CalendarPageState extends State<CalendarPage> {
               ),
             ),
           ),
-          Column(
-            children: [
-              const SizedBox(height: 200), // Adjust the height to position the calendar
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: days.map((day) {
-                  return InkWell(
-                    onTap: () {
-                      setState(() {
-                        selectedDay = day['date'];
-                      });
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: selectedDay == day['date'] ? Colors.orange.withOpacity(0.3) : Colors.transparent,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            day['date']!,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: selectedDay == day['date'] ? Colors.orange : Colors.black,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          day['day']!,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Color.fromARGB(255, 137, 135, 135),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
+          SfCalendar(
+            view: _calendarView,
+            dataSource: EventDataSource(_appointments),
+            backgroundColor: Colors.white,
+            todayHighlightColor: Colors.orange,
+            showCurrentTimeIndicator: true,
+            selectionDecoration: BoxDecoration(
+              color: Colors.orange.withOpacity(0.3),
+              border: Border.all(color: Colors.orange, width: 2),
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+            ),
+            timeSlotViewSettings: TimeSlotViewSettings(
+              timeInterval: Duration(minutes: 60), // Set larger time interval
+              timeFormat: 'HH:mm',
+              startHour: 0,
+              endHour: 24,
+              timeRulerSize: 40, // Smaller time ruler size
+              timeIntervalHeight:
+                  28, // Smaller time interval height to fit more intervals on screen
+            ),
+            headerHeight: 0, // Remove the header
+            viewHeaderHeight: 50,
+            viewHeaderStyle: ViewHeaderStyle(
+              dayTextStyle: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: 30), // Add some space between the calendar and the text
-              Container(
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: const Text(
-                  'Events i dag',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold, // Make the text bold
-                    color: Colors.black,
-                  ),
-                ),
+              dateTextStyle: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: 20), // Add some space between "Events i dag" and the times
-              Container(
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.fromLTRB(38, 0, 16.0, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: times.map((time) {
-                    final eventsForSelectedDay = getEventsForSelectedDay(selectedDay);
-                    final eventAtTime = eventsForSelectedDay.firstWhere((event) => event.time == time, orElse: () => Event('', '', '', 0));
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6), // Adjusted vertical padding
-                      child: Row(
-                        children: [
-                          Text(
-                            time,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Color.fromARGB(255, 137, 135, 135),
-                            ),
-                          ),
-                          const SizedBox(width: 10), // Adjust the spacing between the time and event box
-                          if (eventAtTime.description.isNotEmpty)
-                            Container(
-                              width: MediaQuery.of(context).size.width - 125, // Keep width constant
-                              height: 20.0, // Reduced height for event boxes
-                              alignment: Alignment.centerLeft,
-                              decoration: BoxDecoration(
-                                color: Colors.orange.withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
-                              child: Text(
-                                eventAtTime.description,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.orange,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
+            ),
+            minDate: _startDate,
+            maxDate: _endDate,
+            initialDisplayDate: _startDate,
+            initialSelectedDate: _startDate,
+            allowedViews: [CalendarView.day, CalendarView.week],
+            onTap: _onAppointmentTap,
+            specialRegions: [
+              TimeRegion(
+                startTime: _startDate,
+                endTime: _endDate,
+                color: Colors.transparent,
+                textStyle: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
+            monthViewSettings: MonthViewSettings(
+              showTrailingAndLeadingDates: false,
+            ),
           ),
         ],
       ),
@@ -173,9 +220,8 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 }
 
-void main() {
-  runApp(MaterialApp(
-    home: CalendarPage(),
-  ));
+class EventDataSource extends CalendarDataSource {
+  EventDataSource(List<Appointment> source) {
+    appointments = source;
+  }
 }
-
