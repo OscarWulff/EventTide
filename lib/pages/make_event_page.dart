@@ -1,11 +1,9 @@
-// make_event_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io' show Platform;
 import 'package:intl/intl.dart';
-import 'select_weekdays.dart';
 import 'package:eventtide/add_image.dart'; // Import the AddImage component
 
 class MakeEventPage extends StatefulWidget {
@@ -22,19 +20,15 @@ class _MakeEventPageState extends State<MakeEventPage> {
   final TextEditingController _campNameController = TextEditingController();
   DateTime? _selectedStartTime;
   DateTime? _selectedEndTime;
-  List<DayInWeek> _days = [
-    DayInWeek("Lø", isSelected: false),
-    DayInWeek("Sø", isSelected: false),
-    DayInWeek("Ma", isSelected: false),
-    DayInWeek("Ti", isSelected: false),
-    DayInWeek("On", isSelected: false),
-    DayInWeek("To", isSelected: false),
-    DayInWeek("Fr", isSelected: false),
-  ];
-
   String imageUrl = '';
 
   void _showIOSDatePicker(BuildContext ctx, bool isStart) {
+    DateTime initialDateTime = DateTime.now().isBefore(DateTime(2024, 6, 30))
+        ? DateTime(2024, 6, 30)
+        : DateTime.now().isAfter(DateTime(2024, 7, 6))
+            ? DateTime(2024, 7, 6)
+            : DateTime.now();
+
     showCupertinoModalPopup(
       context: ctx,
       builder: (_) => Container(
@@ -46,8 +40,10 @@ class _MakeEventPageState extends State<MakeEventPage> {
               height: 200,
               child: CupertinoDatePicker(
                 use24hFormat: true,
-                initialDateTime: DateTime.now(),
-                mode: CupertinoDatePickerMode.time,
+                initialDateTime: initialDateTime,
+                mode: CupertinoDatePickerMode.dateAndTime,
+                minimumDate: DateTime(2024, 6, 30),
+                maximumDate: DateTime(2024, 7, 6),
                 onDateTimeChanged: (val) {
                   setState(() {
                     if (isStart) {
@@ -69,27 +65,40 @@ class _MakeEventPageState extends State<MakeEventPage> {
     );
   }
 
-  Future<void> _showAndroidTimePicker(BuildContext context, bool isStart) async {
-    final TimeOfDay? picked = await showTimePicker(
+  Future<void> _showAndroidDatePicker(BuildContext context, bool isStart) async {
+    final DateTime now = DateTime.now();
+    final DateTime firstDate = DateTime(2024, 6, 30);
+    final DateTime lastDate = DateTime(2024, 7, 6);
+
+    final DateTime? picked = await showDatePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
-      builder: (BuildContext context, Widget? child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-          child: child!,
-        );
-      },
+      initialDate: now.isBefore(firstDate) ? firstDate : (now.isAfter(lastDate) ? lastDate : now),
+      firstDate: firstDate,
+      lastDate: lastDate,
     );
+
     if (picked != null) {
-      final now = DateTime.now();
-      final selectedDateTime = DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
-      setState(() {
-        if (isStart) {
-          _selectedStartTime = selectedDateTime;
-        } else {
-          _selectedEndTime = selectedDateTime;
-        }
-      });
+      final TimeOfDay? time = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(now),
+        builder: (BuildContext context, Widget? child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child!,
+          );
+        },
+      );
+
+      if (time != null) {
+        final DateTime selectedDateTime = DateTime(picked.year, picked.month, picked.day, time.hour, time.minute);
+        setState(() {
+          if (isStart) {
+            _selectedStartTime = selectedDateTime;
+          } else {
+            _selectedEndTime = selectedDateTime;
+          }
+        });
+      }
     }
   }
 
@@ -97,14 +106,14 @@ class _MakeEventPageState extends State<MakeEventPage> {
     if (Platform.isIOS) {
       _showIOSDatePicker(context, isStart);
     } else {
-      _showAndroidTimePicker(context, isStart);
+      _showAndroidDatePicker(context, isStart);
     }
   }
 
-  String _formatTime(DateTime? time) {
-    if (time == null) return 'Not selected';
-    final DateFormat formatter = DateFormat.Hm();
-    return formatter.format(time);
+  String _formatDateTime(DateTime? dateTime) {
+    if (dateTime == null) return 'Not selected';
+    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm');
+    return formatter.format(dateTime);
   }
 
   Future<void> _saveEvent() async {
@@ -114,7 +123,6 @@ class _MakeEventPageState extends State<MakeEventPage> {
     final String campName = _campNameController.text;
     final String startTime = _selectedStartTime != null ? _selectedStartTime!.toIso8601String() : '';
     final String endTime = _selectedEndTime != null ? _selectedEndTime!.toIso8601String() : '';
-    final List<String> selectedDays = _days.where((day) => day.isSelected).map((day) => day.name).toList();
 
     // Get the current user
     final user = FirebaseAuth.instance.currentUser;
@@ -141,7 +149,6 @@ class _MakeEventPageState extends State<MakeEventPage> {
       'MaxPeople': maxPeople,
       'StartTime': startTime,
       'EndTime': endTime,
-      'Days': selectedDays,
       'CampName': campName,
       'SubmittedBy': submittedBy, // Include the submitted by information
       'imageUrl': imageUrl, // Include the image URL
@@ -158,7 +165,6 @@ class _MakeEventPageState extends State<MakeEventPage> {
     setState(() {
       _selectedStartTime = null;
       _selectedEndTime = null;
-      _days.forEach((day) => day.isSelected = false);
       imageUrl = ''; // Reset the image URL
     });
   }
@@ -186,7 +192,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           });
                         },
                       ),
-                                            SizedBox(height: 20),
+                      SizedBox(height: 20),
                       TextField(
                         controller: _titleController,
                         style: TextStyle(color: Colors.black),
@@ -270,8 +276,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
                                 child: Text(
                                   'Select Start Time',
                                   style: TextStyle(fontSize: 12, color: Colors.black),
-                                ), 
-                                style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1))
+                                ),
+                                style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
                               ),
                             ),
                             SizedBox(width: 10),
@@ -280,9 +286,9 @@ class _MakeEventPageState extends State<MakeEventPage> {
                                 onPressed: () => _showDatePicker(context, false),
                                 child: Text(
                                   'Select End Time',
-                                  style: TextStyle(fontSize: 12, color: Colors.black)
+                                  style: TextStyle(fontSize: 12, color: Colors.black),
                                 ),
-                                style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1))
+                                style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
                               ),
                             ),
                           ],
@@ -295,7 +301,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           children: [
                             Flexible(
                               child: Text(
-                                'Start time: ${_formatTime(_selectedStartTime)}',
+                                'Start time: ${_formatDateTime(_selectedStartTime)}',
                                 style: TextStyle(color: const Color.fromARGB(255, 131, 131, 131)),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -303,7 +309,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             SizedBox(width: 10),
                             Flexible(
                               child: Text(
-                                'End time: ${_formatTime(_selectedEndTime)}',
+                                'End time: ${_formatDateTime(_selectedEndTime)}',
                                 style: TextStyle(color: const Color.fromARGB(255, 131, 131, 131)),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -311,27 +317,10 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           ],
                         ),
                       ),
-                      SelectWeekDays(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        days: _days,
-                        border: false,
-                        boxDecoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30.0),
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            colors: [Colors.orange, const Color.fromARGB(255, 204, 127, 12)],
-                            tileMode: TileMode.repeated, // repeats the gradient over the canvas
-                          ),
-                        ),
-                        onSelect: (values) {
-                          print(values);
-                        },
-                      ),
                       ElevatedButton(
                         onPressed: _saveEvent,
-                        child: Text('Save Event',style: TextStyle(fontSize: 12, color: Colors.black)),
-                        style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1))
+                        child: Text('Save Event', style: TextStyle(fontSize: 12, color: Colors.black)),
+                        style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
                       ),
                       SizedBox(height: 5), // Add this SizedBox to prevent bottom overflow
                     ],
@@ -341,8 +330,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
                   onPressed: () {
                     Navigator.pushNamed(context, '/preview_event');
                   },
-                  child: const Text('Preview Event',style: TextStyle(fontSize: 12, color: Colors.black)),
-                  style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1))
+                  child: const Text('Preview Event', style: TextStyle(fontSize: 12, color: Colors.black)),
+                  style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
                 ),
               ],
             ),
@@ -352,4 +341,3 @@ class _MakeEventPageState extends State<MakeEventPage> {
     );
   }
 }
-
