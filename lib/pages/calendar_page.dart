@@ -4,16 +4,16 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:eventtide/pages/preview_event_page.dart';
 
 class Event {
-  final String day;
   final String startTime;
   final String endTime;
   final String title;
   final String description;
   final String campName;
   final int maxPeople;
+  final String imageUrl;
 
-  Event(this.day, this.startTime, this.endTime, this.title, this.description,
-      this.campName, this.maxPeople);
+  Event(this.startTime, this.endTime, this.title, this.description,
+      this.campName, this.maxPeople, this.imageUrl);
 }
 
 class CalendarPage extends StatefulWidget {
@@ -36,26 +36,24 @@ class _CalendarPageState extends State<CalendarPage> {
           await FirebaseFirestore.instance.collection('Events').get();
       for (var doc in querySnapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        if (data.containsKey('Days') &&
-            data['Days'] is List &&
-            data['Days'].isNotEmpty &&
-            data.containsKey('StartTime') &&
+        if (data.containsKey('StartTime') &&
             data.containsKey('EndTime') &&
             data.containsKey('EventTitle') &&
             data.containsKey('EventDescription') &&
             data.containsKey('CampName') &&
-            data.containsKey('MaxPeople')) {
+            data.containsKey('MaxPeople') &&
+            data.containsKey('imageUrl')) {
           DateTime startTime = DateTime.parse(data['StartTime']);
           if (startTime.isAfter(_startDate.subtract(Duration(days: 1))) &&
               startTime.isBefore(_endDate.add(Duration(days: 1)))) {
             events.add(Event(
-              data['Days'][0].toString(),
               data['StartTime'],
               data['EndTime'],
               data['EventTitle'],
               data['EventDescription'],
               data['CampName'],
               data['MaxPeople'],
+              data['imageUrl'],
             ));
           }
         }
@@ -78,7 +76,7 @@ class _CalendarPageState extends State<CalendarPage> {
             endTime: DateTime.parse(event.endTime),
             subject: event.title,
             notes:
-                '${event.description}|${event.campName}|${event.maxPeople}|${event.startTime}|${event.endTime}',
+                '${event.description}|${event.campName}|${event.maxPeople}|${event.startTime}|${event.endTime}|${event.imageUrl}',
             color: Colors.orange.withOpacity(0.7),
           );
         }).toList();
@@ -91,21 +89,22 @@ class _CalendarPageState extends State<CalendarPage> {
 
     final Appointment appointment = details.appointments!.first;
     final List<String> notes =
-        appointment.notes?.split('|') ?? ['', '', '', '', ''];
+        appointment.notes?.split('|') ?? ['', '', '', '', '', ''];
     final String description = notes[0];
     final String campName = notes[1];
     final int maxPeople = int.tryParse(notes[2]) ?? 1;
     final String startTime = notes[3];
     final String endTime = notes[4];
+    final String imageUrl = notes[5];
 
     final event = Event(
-      appointment.startTime.toString(),
       startTime,
       endTime,
       appointment.subject,
       description,
       campName,
       maxPeople,
+      imageUrl,
     );
 
     Navigator.push(
@@ -177,7 +176,7 @@ class _CalendarPageState extends State<CalendarPage> {
               endHour: 24,
               timeRulerSize: 40, // Smaller time ruler size
               timeIntervalHeight:
-                  28, // Smaller time interval height to fit more intervals on screen
+                  28, // Adjusted time interval height to fit more intervals on screen
             ),
             headerHeight: 0, // Remove the header
             viewHeaderHeight: 50,
@@ -199,17 +198,6 @@ class _CalendarPageState extends State<CalendarPage> {
             initialSelectedDate: _startDate,
             allowedViews: [CalendarView.day, CalendarView.week],
             onTap: _onAppointmentTap,
-            specialRegions: [
-              TimeRegion(
-                startTime: _startDate,
-                endTime: _endDate,
-                color: Colors.transparent,
-                textStyle: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
             monthViewSettings: MonthViewSettings(
               showTrailingAndLeadingDates: false,
             ),

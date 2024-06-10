@@ -17,6 +17,9 @@ class PreviewEventPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (event.imageUrl.isNotEmpty)
+              Image.network(event.imageUrl, height: 200, fit: BoxFit.cover),
+            SizedBox(height: 20),
             Text('Title: ${event.title}', style: TextStyle(fontSize: 18)),
             Text('Description: ${event.description}',
                 style: TextStyle(fontSize: 18)),
