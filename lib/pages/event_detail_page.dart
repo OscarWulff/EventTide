@@ -22,22 +22,61 @@ class EventDetailPage extends StatelessWidget {
           if (!snapshot.hasData || !snapshot.data!.exists) {
             return Center(child: Text('Event not found'));
           }
-          final event = snapshot.data!;
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(event['EventTitle'], style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                SizedBox(height: 10),
-                Text('Camp: ${event['CampName']}', style: TextStyle(fontSize: 18)),
-                Text('Description: ${event['EventDescription']}', style: TextStyle(fontSize: 18)),
-                Text('Events People Capacity: ${event['MaxPeople']}', style: TextStyle(fontSize: 18)),
-                Text('Day of Event: ${event['Days']}', style: TextStyle(fontSize: 18)),
-                Text('Start Time: ${event['StartTime']}', style: TextStyle(fontSize: 18)),
-                Text('End Time: ${event['EndTime']}', style: TextStyle(fontSize: 18)),
-              ],
-            ),
+          final event = snapshot.data!.data() as Map<String, dynamic>;
+          final imageUrl = event['imageUrl'] ?? '';
+          return Stack(
+            children: [
+              if (imageUrl.isNotEmpty)
+                Positioned.fill(
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.5), // Optional: Add a dark overlay for better text visibility
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20), // Padding from the top
+                    Text(
+                      event['EventTitle'],
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Camp: ${event['CampName']}',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                    Text(
+                      'Description: ${event['EventDescription']}',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                    Text(
+                      'Events People Capacity: ${event['MaxPeople']}',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                    Text(
+                      'Start Time: ${event['StartTime']}',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                    Text(
+                      'End Time: ${event['EndTime']}',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           );
         },
       ),

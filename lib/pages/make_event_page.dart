@@ -327,7 +327,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/preview_event');
+                    Navigator.pushNamed(context, '/event_detail');
                   },
                   child: const Text('Preview Event', style: TextStyle(fontSize: 12, color: Colors.black)),
                   style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
