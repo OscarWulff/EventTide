@@ -1,3 +1,4 @@
+// make_event_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io' show Platform;
 import 'package:intl/intl.dart';
 import 'select_weekdays.dart';
+import 'package:eventtide/add_image.dart'; // Import the AddImage component
 
 class MakeEventPage extends StatefulWidget {
   const MakeEventPage({Key? key}) : super(key: key);
@@ -29,6 +31,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
     DayInWeek("To", isSelected: false),
     DayInWeek("Fr", isSelected: false),
   ];
+
+  String imageUrl = '';
 
   void _showIOSDatePicker(BuildContext ctx, bool isStart) {
     showCupertinoModalPopup(
@@ -130,6 +134,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
       return;
     }
 
+    // Save the event details to Firestore
     await FirebaseFirestore.instance.collection('Events').add({
       'EventTitle': title,
       'EventDescription': description,
@@ -139,6 +144,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
       'Days': selectedDays,
       'CampName': campName,
       'SubmittedBy': submittedBy, // Include the submitted by information
+      'imageUrl': imageUrl, // Include the image URL
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -153,6 +159,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
       _selectedStartTime = null;
       _selectedEndTime = null;
       _days.forEach((day) => day.isSelected = false);
+      imageUrl = ''; // Reset the image URL
     });
   }
 
@@ -172,6 +179,14 @@ class _MakeEventPageState extends State<MakeEventPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      AddImage(
+                        onImageUploaded: (url) {
+                          setState(() {
+                            imageUrl = url;
+                          });
+                        },
+                      ),
+                                            SizedBox(height: 20),
                       TextField(
                         controller: _titleController,
                         style: TextStyle(color: Colors.black),
