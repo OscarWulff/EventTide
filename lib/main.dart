@@ -5,7 +5,6 @@ import 'pages/login_page.dart';
 import 'pages/swipe_page.dart';
 import 'pages/calendar_page.dart';
 import 'pages/make_event_page.dart';
-import 'pages/preview_event_page.dart';
 import 'pages/profile_page.dart'; // Import the profile page
 import 'package:eventtide/firebase_options.dart';
 
@@ -33,8 +32,6 @@ class EventTideApp extends StatelessWidget {
         '/main': (context) => const MainNavigationWrapper(),
         '/swipe': (context) => const SwipePage(),
         '/calendar': (context) => const CalendarPage(),
-        '/make_event': (context) => const MakeEventPage(),
-        '/preview_event': (context) => const PreviewEventPage(),
         '/profile': (context) => const ProfilePage(), // Add the profile page route
       },
     );
