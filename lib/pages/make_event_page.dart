@@ -36,8 +36,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
         color: Color.fromARGB(255, 255, 255, 255),
         child: Column(
           children: [
-            Container(
-              height: 200,
+            Expanded(
               child: CupertinoDatePicker(
                 use24hFormat: true,
                 initialDateTime: initialDateTime,
