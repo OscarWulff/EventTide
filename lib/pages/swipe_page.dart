@@ -1,29 +1,99 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:card_swiper/card_swiper.dart';
 
 class SwipePage extends StatelessWidget {
   const SwipePage({Key? key}) : super(key: key);
 
+  Future<void> _joinEvent(BuildContext context, String eventId) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('Events')
+            .doc(eventId)
+            .collection('Join_Registry')
+            .add({
+          'email': user.email,
+          'eventId': eventId,
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Successfully joined the event')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to join the event')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No user is logged in')),
+      );
+    }
+  }
+
+  Future<List<QueryDocumentSnapshot>> _fetchEvents() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return [];
+    }
+
+    // Fetch all events
+    QuerySnapshot eventSnapshot;
+    try {
+      eventSnapshot = await FirebaseFirestore.instance.collection('Events').get();
+    } catch (e) {
+      return [];
+    }
+
+    List<QueryDocumentSnapshot> allEvents = eventSnapshot.docs;
+
+    // Fetch joined events
+    QuerySnapshot joinSnapshot;
+    try {
+      joinSnapshot = await FirebaseFirestore.instance
+          .collectionGroup('Join_Registry')
+          .where('email', isEqualTo: user.email)
+          .get();
+    } catch (e) {
+      return [];
+    }
+
+    List<String> joinedEventIds;
+    try {
+      joinedEventIds = joinSnapshot.docs.map((doc) => doc['eventId'] as String).toList();
+    } catch (e) {
+      return [];
+    }
+
+    // Filter events to exclude those already joined
+    List<QueryDocumentSnapshot> filteredEvents = allEvents.where((event) => !joinedEventIds.contains(event.id)).toList();
+
+    return filteredEvents;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('Events').snapshots(),
+      body: FutureBuilder<List<QueryDocumentSnapshot>>(
+        future: _fetchEvents(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('No events found'));
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No events found', style: TextStyle(color: Colors.white)));
           }
-          final events = snapshot.data!.docs;
+          final events = snapshot.data!;
           return Swiper(
             itemCount: events.length,
             itemBuilder: (BuildContext context, int index) {
               final event = events[index].data() as Map<String, dynamic>;
               final imageUrl = event.containsKey('imageUrl') ? event['imageUrl'] : '';
+              final eventId = events[index].id;
 
               return Card(
                 child: Stack(
@@ -100,7 +170,7 @@ class SwipePage extends StatelessWidget {
                             child: IconButton(
                               icon: Icon(Icons.check, color: Colors.green, size: 50),
                               onPressed: () {
-                                // No action
+                                _joinEvent(context, eventId);
                               },
                             ),
                           ),
