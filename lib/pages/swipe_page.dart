@@ -116,9 +116,12 @@ class _SwipePageState extends State<SwipePage> {
                 onHorizontalDragEnd: (DragEndDetails details) {
                   if (details.primaryVelocity != null && details.primaryVelocity! > 0) {
                     _joinEvent(context, eventId);
+                    swiperController.previous();
+                  }
+                  if (details.primaryVelocity != null && details.primaryVelocity! < 0) {
                     swiperController.next();
                   }
-                },
+                  },
                 child: Card(
                   child: Stack(
                     children: [
