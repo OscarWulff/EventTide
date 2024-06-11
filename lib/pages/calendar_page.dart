@@ -146,8 +146,7 @@ class _CalendarPageState extends State<CalendarPage> {
       body: Stack(
         children: [
           Align(
-            alignment: const Alignment(0.0,
-                -1.2), // Move the image upwards by 20% of the screen height
+            alignment: const Alignment(0.0, -1.2), // Move the image upwards by 20% of the screen height
             child: Opacity(
               opacity: 0.2, // Adjust the opacity value as needed
               child: Image.asset(
@@ -172,11 +171,10 @@ class _CalendarPageState extends State<CalendarPage> {
             timeSlotViewSettings: TimeSlotViewSettings(
               timeInterval: Duration(minutes: 60), // Set larger time interval
               timeFormat: 'HH:mm',
-              startHour: 0,
-              endHour: 24,
+              startHour: 7, // Start at 07:00
+              endHour: 24, // End at 23:00
               timeRulerSize: 40, // Smaller time ruler size
-              timeIntervalHeight:
-                  28, // Adjusted time interval height to fit more intervals on screen
+              timeIntervalHeight: 28, // Adjusted time interval height to fit more intervals on screen
               timeTextStyle: TextStyle(color: Colors.white),
             ),
             headerHeight: 0, // Remove the header
