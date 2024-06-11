@@ -47,11 +47,12 @@ class _MakeEventPageState extends State<MakeEventPage> {
   }
 
   void _showIOSDatePicker(BuildContext ctx, bool isStart) {
-    DateTime initialDateTime = DateTime.now().isBefore(DateTime(2024, 6, 30))
-        ? DateTime(2024, 6, 30)
-        : DateTime.now().isAfter(DateTime(2024, 7, 6))
-            ? DateTime(2024, 7, 6)
-            : DateTime.now();
+    DateTime now = DateTime.now();
+    DateTime initialDateTime = now.isBefore(DateTime(2024, 6, 30))
+        ? DateTime(2024, 6, 30, 7, 0)
+        : now.isAfter(DateTime(2024, 7, 6))
+            ? DateTime(2024, 7, 6, 7, 0)
+            : DateTime(now.year, now.month, now.day, now.hour, 0);
 
     showCupertinoModalPopup(
       context: ctx,
@@ -65,9 +66,14 @@ class _MakeEventPageState extends State<MakeEventPage> {
                 use24hFormat: true,
                 initialDateTime: initialDateTime,
                 mode: CupertinoDatePickerMode.dateAndTime,
-                minimumDate: DateTime(2024, 6, 30),
-                maximumDate: DateTime(2024, 7, 6),
+                minimumDate: DateTime(2024, 6, 30, 7, 0),
+                maximumDate: DateTime(2024, 7, 6, 23, 59),
                 onDateTimeChanged: (val) {
+                  if (val.hour < 7) {
+                    val = DateTime(val.year, val.month, val.day, 7, val.minute);
+                  } else if (val.hour >= 24) {
+                    val = DateTime(val.year, val.month, val.day, 23, 59);
+                  }
                   setState(() {
                     if (isStart) {
                       _selectedStartTime = val;
@@ -88,17 +94,14 @@ class _MakeEventPageState extends State<MakeEventPage> {
     );
   }
 
-  Future<void> _showAndroidDatePicker(
-      BuildContext context, bool isStart) async {
+  Future<void> _showAndroidDatePicker(BuildContext context, bool isStart) async {
     final DateTime now = DateTime.now();
     final DateTime firstDate = DateTime(2024, 6, 30);
     final DateTime lastDate = DateTime(2024, 7, 6);
 
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: now.isBefore(firstDate)
-          ? firstDate
-          : (now.isAfter(lastDate) ? lastDate : now),
+      initialDate: now.isBefore(firstDate) ? firstDate : (now.isAfter(lastDate) ? lastDate : now),
       firstDate: firstDate,
       lastDate: lastDate,
     );
@@ -106,7 +109,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
     if (picked != null) {
       final TimeOfDay? time = await showTimePicker(
         context: context,
-        initialTime: TimeOfDay.fromDateTime(now),
+        initialTime: TimeOfDay(hour: 7, minute: 0),
         builder: (BuildContext context, Widget? child) {
           return MediaQuery(
             data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
@@ -116,15 +119,20 @@ class _MakeEventPageState extends State<MakeEventPage> {
       );
 
       if (time != null) {
-        final DateTime selectedDateTime = DateTime(
-            picked.year, picked.month, picked.day, time.hour, time.minute);
-        setState(() {
-          if (isStart) {
-            _selectedStartTime = selectedDateTime;
-          } else {
-            _selectedEndTime = selectedDateTime;
-          }
-        });
+        final DateTime selectedDateTime = DateTime(picked.year, picked.month, picked.day, time.hour, time.minute);
+        if (time.hour < 7 || time.hour >= 24) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Please select a time between 07:00 and 24:00')),
+          );
+        } else {
+          setState(() {
+            if (isStart) {
+              _selectedStartTime = selectedDateTime;
+            } else {
+              _selectedEndTime = selectedDateTime;
+            }
+          });
+        }
       }
     }
   }
@@ -137,9 +145,9 @@ class _MakeEventPageState extends State<MakeEventPage> {
     }
   }
 
-  String _formatDateTime(DateTime? dateTime) {
+  String _formatTime(DateTime? dateTime) {
     if (dateTime == null) return 'Not selected';
-    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm');
+    final DateFormat formatter = DateFormat('E MMM d, HH:mm');
     return formatter.format(dateTime);
   }
 
@@ -171,11 +179,17 @@ class _MakeEventPageState extends State<MakeEventPage> {
       return;
     }
 
+    if (_selectedStartTime!.day != _selectedEndTime!.day) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please keep events within the same day')),
+      );
+      return;
+    }
+
     if (maxPeople == null || maxPeople <= 0 || maxPeople > 1000) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content:
-                Text('Maximum number of people must be between 1 and 1000')),
+            content: Text('Maximum number of people must be between 1 and 1000')),
       );
       return;
     }
@@ -265,8 +279,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(
-                                color: Color.fromRGBO(222, 121, 46, 1)),
+                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
                           errorText: _validateTitle(_titleController.text),
                           counterText: '${_titleController.text.length}/50',
@@ -290,11 +303,9 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(
-                                color: Color.fromRGBO(222, 121, 46, 1)),
+                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
-                          errorText:
-                              _validateCampName(_campNameController.text),
+                          errorText: _validateCampName(_campNameController.text),
                           counterText: '${_campNameController.text.length}/50',
                         ),
                         textAlign: TextAlign.center,
@@ -316,13 +327,10 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(
-                                color: Color.fromRGBO(222, 121, 46, 1)),
+                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
-                          errorText:
-                              _validateDescription(_descriptionController.text),
-                          counterText:
-                              '${_descriptionController.text.length}/300',
+                          errorText: _validateDescription(_descriptionController.text),
+                          counterText: '${_descriptionController.text.length}/300',
                         ),
                         textAlign: TextAlign.center,
                         maxLength: 300,
@@ -345,12 +353,10 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(
-                                color: Color.fromRGBO(222, 121, 46, 1)),
+                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
                         ),
-                        keyboardType:
-                            TextInputType.number, // Only numbers as input
+                        keyboardType: TextInputType.number, // Only numbers as input
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 10), // Reduce spacing
@@ -366,8 +372,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(
-                                color: Color.fromRGBO(222, 121, 46, 1)),
+                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(Icons.map, color: Colors.black),
@@ -387,27 +392,20 @@ class _MakeEventPageState extends State<MakeEventPage> {
                                 onPressed: () => _showDatePicker(context, true),
                                 child: Text(
                                   'Select Start Time',
-                                  style: TextStyle(
-                                      fontSize: 12, color: Colors.black),
+                                  style: TextStyle(fontSize: 12, color: Colors.black),
                                 ),
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        Color.fromRGBO(222, 121, 46, 1)),
+                                style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
                               ),
                             ),
                             SizedBox(width: 10),
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: () =>
-                                    _showDatePicker(context, false),
+                                onPressed: () => _showDatePicker(context, false),
                                 child: Text(
                                   'Select End Time',
-                                  style: TextStyle(
-                                      fontSize: 12, color: Colors.black),
+                                  style: TextStyle(fontSize: 12, color: Colors.black),
                                 ),
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        Color.fromRGBO(222, 121, 46, 1)),
+                                style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
                               ),
                             ),
                           ],
@@ -420,16 +418,17 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           children: [
                             Flexible(
                               child: Text(
-                                'Start time: ${_formatDateTime(_selectedStartTime)}',
-                                style: TextStyle(color: Colors.black),
+                                'Start time: ${_formatTime(_selectedStartTime)}',
+                                style: TextStyle(color: Colors.black, fontSize: 12),
                                 overflow: TextOverflow.ellipsis,
+                                
                               ),
                             ),
                             SizedBox(width: 10),
                             Flexible(
                               child: Text(
-                                'End time: ${_formatDateTime(_selectedEndTime)}',
-                                style: TextStyle(color: Colors.black),
+                                'End time: ${_formatTime(_selectedEndTime)}',
+                                style: TextStyle(color: Colors.black, fontSize: 12),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -443,12 +442,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             width: 150, // Set the desired width
                             child: ElevatedButton(
                               onPressed: _saveEvent,
-                              child: Text('Save Event',
-                                  style: TextStyle(
-                                      fontSize: 12, color: Colors.black)),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Color.fromRGBO(222, 121, 46, 1)),
+                              child: Text('Save Event', style: TextStyle(fontSize: 12, color: Colors.black)),
+                              style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
                             ),
                           ),
                           SizedBox(width: 10),
@@ -458,12 +453,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
                               onPressed: () {
                                 Navigator.pushNamed(context, '/event_detail');
                               },
-                              child: const Text('Preview Event',
-                                  style: TextStyle(
-                                      fontSize: 12, color: Colors.black)),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Color.fromRGBO(222, 121, 46, 1)),
+                              child: const Text('Preview Event', style: TextStyle(fontSize: 12, color: Colors.black)),
+                              style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
                             ),
                           ),
                         ],
