@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io' show Platform;
 import 'package:intl/intl.dart';
 import 'package:eventtide/add_image.dart'; // Import the AddImage component
+import 'map_page.dart';
 
 class MakeEventPage extends StatefulWidget {
   const MakeEventPage({Key? key}) : super(key: key);
@@ -18,30 +19,11 @@ class _MakeEventPageState extends State<MakeEventPage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _maxPeopleController = TextEditingController();
   final TextEditingController _campNameController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
   DateTime? _selectedStartTime;
   DateTime? _selectedEndTime;
   String imageUrl = '';
-
-  String? _validateTitle(String value) {
-    if (value.length > 50) {
-      return 'Title cannot exceed 50 characters';
-    }
-    return null;
-  }
-
-  String? _validateCampName(String value) {
-    if (value.length > 50) {
-      return 'Camp name cannot exceed 50 characters';
-    }
-    return null;
-  }
-
-  String? _validateDescription(String value) {
-    if (value.length > 300) {
-      return 'Description cannot exceed 300 characters';
-    }
-    return null;
-  }
+  Offset? _selectedLocation;
 
   void _showIOSDatePicker(BuildContext ctx, bool isStart) {
     DateTime initialDateTime = DateTime.now().isBefore(DateTime(2024, 6, 30))
@@ -85,14 +67,17 @@ class _MakeEventPageState extends State<MakeEventPage> {
     );
   }
 
-  Future<void> _showAndroidDatePicker(BuildContext context, bool isStart) async {
+  Future<void> _showAndroidDatePicker(
+      BuildContext context, bool isStart) async {
     final DateTime now = DateTime.now();
     final DateTime firstDate = DateTime(2024, 6, 30);
     final DateTime lastDate = DateTime(2024, 7, 6);
 
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: now.isBefore(firstDate) ? firstDate : (now.isAfter(lastDate) ? lastDate : now),
+      initialDate: now.isBefore(firstDate)
+          ? firstDate
+          : (now.isAfter(lastDate) ? lastDate : now),
       firstDate: firstDate,
       lastDate: lastDate,
     );
@@ -110,7 +95,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
       );
 
       if (time != null) {
-        final DateTime selectedDateTime = DateTime(picked.year, picked.month, picked.day, time.hour, time.minute);
+        final DateTime selectedDateTime = DateTime(
+            picked.year, picked.month, picked.day, time.hour, time.minute);
         setState(() {
           if (isStart) {
             _selectedStartTime = selectedDateTime;
@@ -141,14 +127,23 @@ class _MakeEventPageState extends State<MakeEventPage> {
     final String description = _descriptionController.text;
     final int? maxPeople = int.tryParse(_maxPeopleController.text);
     final String campName = _campNameController.text;
-    final String startTime = _selectedStartTime != null ? _selectedStartTime!.toIso8601String() : '';
-    final String endTime = _selectedEndTime != null ? _selectedEndTime!.toIso8601String() : '';
+    final String startTime =
+        _selectedStartTime != null ? _selectedStartTime!.toIso8601String() : '';
+    final String endTime =
+        _selectedEndTime != null ? _selectedEndTime!.toIso8601String() : '';
 
     // Get the current user
     final user = FirebaseAuth.instance.currentUser;
-    final String submittedBy = user != null ? user.email ?? 'Unknown' : 'Unknown'; // Use the user's email or 'Unknown' if not available
+    final String submittedBy = user != null
+        ? user.email ?? 'Unknown'
+        : 'Unknown'; // Use the user's email or 'Unknown' if not available
 
-    if (title.isEmpty || description.isEmpty || campName.isEmpty || _selectedStartTime == null || _selectedEndTime == null) {
+    if (title.isEmpty ||
+        description.isEmpty ||
+        campName.isEmpty ||
+        _selectedStartTime == null ||
+        _selectedEndTime == null ||
+        _selectedLocation == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please fill all fields')),
       );
@@ -157,7 +152,9 @@ class _MakeEventPageState extends State<MakeEventPage> {
 
     if (maxPeople == null || maxPeople <= 0 || maxPeople > 1000) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Maximum number of people must be between 1 and 1000')),
+        SnackBar(
+            content:
+                Text('Maximum number of people must be between 1 and 1000')),
       );
       return;
     }
@@ -170,6 +167,10 @@ class _MakeEventPageState extends State<MakeEventPage> {
       'StartTime': startTime,
       'EndTime': endTime,
       'CampName': campName,
+      'Location': {
+        'dx': _selectedLocation!.dx,
+        'dy': _selectedLocation!.dy,
+      }, // Include the location
       'SubmittedBy': submittedBy, // Include the submitted by information
       'imageUrl': imageUrl, // Include the image URL
     });
@@ -185,14 +186,31 @@ class _MakeEventPageState extends State<MakeEventPage> {
     setState(() {
       _selectedStartTime = null;
       _selectedEndTime = null;
+      _selectedLocation = null; // Reset the location
       imageUrl = ''; // Reset the image URL
     });
+  }
+
+  void _selectLocation() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ZoomableMapPage(
+          onLocationSelected: (Offset location) {
+            setState(() {
+              _selectedLocation = location;
+              _locationController.text = 'X: ${location.dx}, Y: ${location.dy}';
+            });
+          },
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
           child: Center(
@@ -201,7 +219,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
               children: [
                 Container(
                   padding: EdgeInsets.all(16.0),
-                  color: Colors.black,
+                  color: Colors.white,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -212,97 +230,101 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           });
                         },
                       ),
-                      SizedBox(height: 10), // Reduce spacing
+                      SizedBox(height: 20),
                       TextField(
                         controller: _titleController,
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
-                          hintText: 'Title of Event',
-                          hintStyle: TextStyle(color: Colors.white),
+                          hintText: 'Title of event',
+                          hintStyle: TextStyle(color: Colors.grey),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: BorderSide(color: Colors.grey),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
-                          errorText: _validateTitle(_titleController.text),
-                          counterText: '${_titleController.text.length}/50',
                         ),
                         textAlign: TextAlign.center,
-                        maxLength: 50,
-                        onChanged: (value) {
-                          setState(() {});
-                        },
                       ),
-                      SizedBox(height: 10), // Reduce spacing
+                      SizedBox(height: 20),
                       TextField(
                         controller: _campNameController,
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
                           hintText: 'Camp Name',
-                          hintStyle: TextStyle(color: Colors.white),
+                          hintStyle: TextStyle(color: Colors.grey),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: BorderSide(color: Colors.grey),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
-                          errorText: _validateCampName(_campNameController.text),
-                          counterText: '${_campNameController.text.length}/50',
                         ),
                         textAlign: TextAlign.center,
-                        maxLength: 50,
-                        onChanged: (value) {
-                          setState(() {});
-                        },
                       ),
-                      SizedBox(height: 10), // Reduce spacing
+                      SizedBox(height: 20),
                       TextField(
                         controller: _descriptionController,
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
                           hintText: 'Describe your event',
-                          hintStyle: TextStyle(color: Colors.white),
+                          hintStyle: TextStyle(color: Colors.grey),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: BorderSide(color: Colors.grey),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
-                          errorText: _validateDescription(_descriptionController.text),
-                          counterText: '${_descriptionController.text.length}/300',
                         ),
                         textAlign: TextAlign.center,
-                        maxLength: 300,
-                        maxLines: 3, // Allow up to 3 lines of text
-                        minLines: 1,
-                        onChanged: (value) {
-                          setState(() {});
-                        },
                       ),
-                      SizedBox(height: 10), // Reduce spacing
+                      SizedBox(height: 20),
                       TextField(
                         controller: _maxPeopleController,
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
                           hintText: 'Maximum number of people',
-                          hintStyle: TextStyle(color: Colors.white),
+                          hintStyle: TextStyle(color: Colors.grey),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: BorderSide(color: Colors.grey),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                         ),
-                        keyboardType: TextInputType.number, // Only numbers as input
+                        keyboardType:
+                            TextInputType.number, // Only numbers as input
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 20),
+                      TextField(
+                        controller: _locationController,
+                        style: TextStyle(color: Colors.black),
+                        decoration: InputDecoration(
+                          hintText: 'Location (Tap map to select)',
+                          hintStyle: TextStyle(color: Colors.grey),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.map),
+                            onPressed: _selectLocation,
+                          ),
+                        ),
+                        readOnly: true, // Make the field read-only
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 20),
@@ -315,20 +337,27 @@ class _MakeEventPageState extends State<MakeEventPage> {
                                 onPressed: () => _showDatePicker(context, true),
                                 child: Text(
                                   'Select Start Time',
-                                  style: TextStyle(fontSize: 12, color: Colors.black),
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.black),
                                 ),
-                                style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        Color.fromRGBO(222, 121, 46, 1)),
                               ),
                             ),
                             SizedBox(width: 10),
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: () => _showDatePicker(context, false),
+                                onPressed: () =>
+                                    _showDatePicker(context, false),
                                 child: Text(
                                   'Select End Time',
-                                  style: TextStyle(fontSize: 12, color: Colors.black),
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.black),
                                 ),
-                                style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        Color.fromRGBO(222, 121, 46, 1)),
                               ),
                             ),
                           ],
@@ -342,7 +371,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             Flexible(
                               child: Text(
                                 'Start time: ${_formatDateTime(_selectedStartTime)}',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: Colors.grey),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -350,39 +379,35 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             Flexible(
                               child: Text(
                                 'End time: ${_formatDateTime(_selectedEndTime)}',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: Colors.grey),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 150, // Set the desired width
-                            child: ElevatedButton(
-                              onPressed: _saveEvent,
-                              child: Text('Save Event', style: TextStyle(fontSize: 12, color: Colors.black)),
-                              style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          SizedBox(
-                            width: 150, // Set the desired width
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/event_detail');
-                              },
-                              child: const Text('Preview Event', style: TextStyle(fontSize: 12, color: Colors.black)),
-                              style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
-                            ),
-                          ),
-                        ],
+                      ElevatedButton(
+                        onPressed: _saveEvent,
+                        child: Text('Save Event',
+                            style:
+                                TextStyle(fontSize: 12, color: Colors.black)),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
                       ),
+                      SizedBox(
+                          height:
+                              5), // Add this SizedBox to prevent bottom overflow
                     ],
                   ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/preview_event');
+                  },
+                  child: const Text('Preview Event',
+                      style: TextStyle(fontSize: 12, color: Colors.black)),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
                 ),
               ],
             ),
@@ -392,4 +417,3 @@ class _MakeEventPageState extends State<MakeEventPage> {
     );
   }
 }
-

@@ -29,4 +29,5 @@ dev_dependencies:
 flutter:  
   assets:    #Include images
     - assets/Roskilde_logo.png
+    - assets/RF23_Map.png
   uses-material-design: true #Include icons
