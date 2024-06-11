@@ -22,6 +22,27 @@ class _MakeEventPageState extends State<MakeEventPage> {
   DateTime? _selectedEndTime;
   String imageUrl = '';
 
+  String? _validateTitle(String value) {
+    if (value.length > 50) {
+      return 'Title cannot exceed 50 characters';
+    }
+    return null;
+  }
+
+  String? _validateCampName(String value) {
+    if (value.length > 50) {
+      return 'Camp name cannot exceed 50 characters';
+    }
+    return null;
+  }
+
+  String? _validateDescription(String value) {
+    if (value.length > 300) {
+      return 'Description cannot exceed 300 characters';
+    }
+    return null;
+  }
+
   void _showIOSDatePicker(BuildContext ctx, bool isStart) {
     DateTime initialDateTime = DateTime.now().isBefore(DateTime(2024, 6, 30))
         ? DateTime(2024, 6, 30)
@@ -191,12 +212,12 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           });
                         },
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10), // Reduce spacing
                       TextField(
                         controller: _titleController,
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
-                          hintText: 'Title of event',
+                          hintText: 'Title of Event',
                           hintStyle: TextStyle(color: Colors.white),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
@@ -206,10 +227,16 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
+                          errorText: _validateTitle(_titleController.text),
+                          counterText: '${_titleController.text.length}/50',
                         ),
                         textAlign: TextAlign.center,
+                        maxLength: 50,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10), // Reduce spacing
                       TextField(
                         controller: _campNameController,
                         style: TextStyle(color: Colors.white),
@@ -224,10 +251,16 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
+                          errorText: _validateCampName(_campNameController.text),
+                          counterText: '${_campNameController.text.length}/50',
                         ),
                         textAlign: TextAlign.center,
+                        maxLength: 50,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10), // Reduce spacing
                       TextField(
                         controller: _descriptionController,
                         style: TextStyle(color: Colors.white),
@@ -242,10 +275,18 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
+                          errorText: _validateDescription(_descriptionController.text),
+                          counterText: '${_descriptionController.text.length}/300',
                         ),
                         textAlign: TextAlign.center,
+                        maxLength: 300,
+                        maxLines: 3, // Allow up to 3 lines of text
+                        minLines: 1,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10), // Reduce spacing
                       TextField(
                         controller: _maxPeopleController,
                         style: TextStyle(color: Colors.white),
@@ -316,21 +357,32 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           ],
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: _saveEvent,
-                        child: Text('Save Event', style: TextStyle(fontSize: 12, color: Colors.black)),
-                        style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 150, // Set the desired width
+                            child: ElevatedButton(
+                              onPressed: _saveEvent,
+                              child: Text('Save Event', style: TextStyle(fontSize: 12, color: Colors.black)),
+                              style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          SizedBox(
+                            width: 150, // Set the desired width
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/event_detail');
+                              },
+                              child: const Text('Preview Event', style: TextStyle(fontSize: 12, color: Colors.black)),
+                              style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 5), // Add this SizedBox to prevent bottom overflow
                     ],
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/event_detail');
-                  },
-                  child: const Text('Preview Event', style: TextStyle(fontSize: 12, color: Colors.black)),
-                  style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
                 ),
               ],
             ),
@@ -340,3 +392,4 @@ class _MakeEventPageState extends State<MakeEventPage> {
     );
   }
 }
+
