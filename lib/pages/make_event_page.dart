@@ -9,7 +9,9 @@ import 'map_page.dart';
 import 'event_detail_page.dart'; // Import EventDetailPage
 
 class MakeEventPage extends StatefulWidget {
-  const MakeEventPage({Key? key}) : super(key: key);
+  final Map<String, dynamic>? eventData; // Optional event data for editing mode
+
+  const MakeEventPage({Key? key, this.eventData}) : super(key: key);
 
   @override
   _MakeEventPageState createState() => _MakeEventPageState();
@@ -25,6 +27,27 @@ class _MakeEventPageState extends State<MakeEventPage> {
   DateTime? _selectedEndTime;
   String imageUrl = '';
   Offset? _selectedLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.eventData != null) {
+      _titleController.text = widget.eventData!['EventTitle'];
+      _descriptionController.text = widget.eventData!['EventDescription'];
+      _maxPeopleController.text = widget.eventData!['MaxPeople'].toString();
+      _campNameController.text = widget.eventData!['CampName'];
+      _selectedStartTime = DateTime.parse(widget.eventData!['StartTime']);
+      _selectedEndTime = DateTime.parse(widget.eventData!['EndTime']);
+      imageUrl = widget.eventData!['imageUrl'];
+      if (widget.eventData!['Location'] != null) {
+        _selectedLocation = Offset(
+          widget.eventData!['Location']['dx'],
+          widget.eventData!['Location']['dy'],
+        );
+        _locationController.text = 'X: ${_selectedLocation!.dx}, Y: ${_selectedLocation!.dy}';
+      }
+    }
+  }
 
   String? _validateTitle(String value) {
     if (value.length > 50) {

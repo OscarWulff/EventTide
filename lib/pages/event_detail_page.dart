@@ -59,25 +59,22 @@ class EventDetailPage extends StatelessWidget {
           final event = snapshot.data!.data() as Map<String, dynamic>;
           final imageUrl = event['imageUrl'] ?? '';
           return Stack(
+            fit: StackFit.expand,
             children: [
               if (imageUrl.isNotEmpty)
-                Positioned.fill(
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                  ),
+                Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
                 ),
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black.withOpacity(0.5), // Optional: Add a dark overlay for better text visibility
-                ),
+              Container(
+                color: Colors.black.withOpacity(0.5), // Optional: Add a dark overlay for better text visibility
               ),
               SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 20), // Padding from the top
+                    const SizedBox(height: 20), // Padding from the top
                     Text(
                       event['EventTitle'],
                       style: const TextStyle(
@@ -234,10 +231,8 @@ class EventDetailPage extends StatelessWidget {
               ),
             );
           } else if (mode == 'view' && index == 1) {
-            // Logic to disjoin the event
             _leaveEvent(context, eventId);
             Navigator.pushNamed(context, '/main');
-            
           }
         },
       ),

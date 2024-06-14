@@ -94,7 +94,7 @@ class _SwipePageState extends State<SwipePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Color.fromRGBO(0, 0, 0, 0.85),
       body: FutureBuilder<List<QueryDocumentSnapshot>>(
         future: _eventsFuture,
         builder: (context, snapshot) {

@@ -135,7 +135,7 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
         ),
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           Align(
@@ -153,7 +153,7 @@ class _CalendarPageState extends State<CalendarPage> {
           SfCalendar(
             view: _calendarView,
             dataSource: EventDataSource(_appointments),
-            backgroundColor: Colors.black,
+            backgroundColor: Colors.white,
             todayHighlightColor: Colors.orange,
             showCurrentTimeIndicator: true,
             selectionDecoration: BoxDecoration(
@@ -168,23 +168,23 @@ class _CalendarPageState extends State<CalendarPage> {
               endHour: 24, // End at 23:00
               timeRulerSize: 40, // Smaller time ruler size
               timeIntervalHeight: 28, // Adjusted time interval height to fit more intervals on screen
-              timeTextStyle: TextStyle(color: Colors.white),
+              timeTextStyle: TextStyle(color: Colors.black),
             ),
             headerHeight: 0, // Remove the header
             viewHeaderHeight: 50,
             viewHeaderStyle: ViewHeaderStyle(
               dayTextStyle: TextStyle(
-                color: Colors.white,
+                color: Colors.black,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
               dateTextStyle: TextStyle(
-                color: Colors.white,
+                color: Colors.black,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            cellBorderColor: Color.fromRGBO(222, 121, 46, 0.9), // Set gridlines to white
+            cellBorderColor: Color.fromRGBO(222, 121, 46, 0.9), // Set gridlines to orange
             minDate: _startDate,
             maxDate: _endDate,
             initialDisplayDate: _startDate,
@@ -194,7 +194,7 @@ class _CalendarPageState extends State<CalendarPage> {
             monthViewSettings: MonthViewSettings(
               showTrailingAndLeadingDates: false,
               monthCellStyle: MonthCellStyle(
-                textStyle: TextStyle(color: Colors.white),
+                textStyle: TextStyle(color: Colors.black),
               ),
             ),
           ),

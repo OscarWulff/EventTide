@@ -24,16 +24,16 @@ class ProfilePage extends StatelessWidget {
           ),
         ),
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (user != null) ...[
-              Text('Name: ${user.displayName ?? 'Anonymous'}', style: TextStyle(fontSize: 18, color: Colors.white)),
+              Text('Name: ${user.displayName ?? 'Anonymous'}', style: TextStyle(fontSize: 18, color: Colors.black)),
               const SizedBox(height: 8),
-              Text('Email: ${user.email ?? 'No email'}', style: TextStyle(fontSize: 18, color: Colors.white)),
+              Text('Email: ${user.email ?? 'No email'}', style: TextStyle(fontSize: 18, color: Colors.black)),
               const SizedBox(height: 16),
               Center(
                 child: ElevatedButton(
@@ -92,7 +92,7 @@ class ProfilePage extends StatelessWidget {
                           return Center(child: CircularProgressIndicator());
                         }
                         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                          return Center(child: Text('No events found', style: TextStyle(color: Colors.white)));
+                          return Center(child: Text('No events found', style: TextStyle(color: Colors.black)));
                         }
                         final events = snapshot.data!.docs;
                         return ListView.builder(
@@ -100,7 +100,7 @@ class ProfilePage extends StatelessWidget {
                           itemBuilder: (context, index) {
                             final event = events[index];
                             return ListTile(
-                              title: Text(event['EventTitle'], style: TextStyle(color: Colors.white)),
+                              title: Text(event['EventTitle'], style: TextStyle(color: Colors.black)),
                               trailing: ElevatedButton(
                                 onPressed: () {
                                   Navigator.push(
@@ -124,7 +124,7 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
             ] else ...[
-              const Text('No user information available', style: TextStyle(fontSize: 18, color: Colors.white)),
+              const Text('No user information available', style: TextStyle(fontSize: 18, color: Colors.black)),
             ],
           ],
         ),
