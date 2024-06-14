@@ -8,6 +8,8 @@ import 'pages/make_event_page.dart';
 import 'pages/profile_page.dart'; // Import the profile page
 import 'package:eventtide/firebase_options.dart';
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

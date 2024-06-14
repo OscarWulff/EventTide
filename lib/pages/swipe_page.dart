@@ -121,7 +121,7 @@ class _SwipePageState extends State<SwipePage> {
                   if (details.primaryVelocity != null && details.primaryVelocity! < 0) {
                     swiperController.next();
                   }
-                  },
+                },
                 child: Card(
                   child: Stack(
                     children: [
@@ -144,28 +144,76 @@ class _SwipePageState extends State<SwipePage> {
                           children: [
                             Text(
                               event['EventTitle'],
-                              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
-                            SizedBox(height: 10),
-                            Text(
-                              'Camp: ${event['CampName']}',
-                              style: TextStyle(fontSize: 18, color: Colors.white),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Icon(Icons.location_on, color: Colors.white),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Camp: ${event['CampName']}',
+                                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              'Description: ${event['EventDescription']}',
-                              style: TextStyle(fontSize: 18, color: Colors.white),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Icon(Icons.description, color: Colors.white),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Description: ${event['EventDescription']}',
+                                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              'Events People Capacity: ${event['MaxPeople']}',
-                              style: TextStyle(fontSize: 18, color: Colors.white),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Icon(Icons.people, color: Colors.white),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Capacity: ${event['MaxPeople']} people',
+                                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              'Start Time: ${event['StartTime']}',
-                              style: TextStyle(fontSize: 18, color: Colors.white),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Icon(Icons.access_time, color: Colors.white),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Start Time: ${event['StartTime']}',
+                                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              'End Time: ${event['EndTime']}',
-                              style: TextStyle(fontSize: 18, color: Colors.white),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Icon(Icons.access_time_filled, color: Colors.white),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'End Time: ${event['EndTime']}',
+                                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -185,7 +233,7 @@ class _SwipePageState extends State<SwipePage> {
                               child: IconButton(
                                 icon: Icon(Icons.close, color: Colors.red, size: 50),
                                 onPressed: () {
-                                  swiperController.previous();
+                                  swiperController.next();
                                 },
                               ),
                             ),
@@ -198,7 +246,7 @@ class _SwipePageState extends State<SwipePage> {
                                 icon: Icon(Icons.check, color: Colors.green, size: 50),
                                 onPressed: () {
                                   _joinEvent(context, eventId);
-                                  swiperController.next();
+                                  swiperController.previous();
                                 },
                               ),
                             ),

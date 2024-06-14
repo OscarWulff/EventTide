@@ -6,6 +6,7 @@ import 'dart:io' show Platform;
 import 'package:intl/intl.dart';
 import 'package:eventtide/add_image.dart'; // Import the AddImage component
 import 'map_page.dart';
+import 'event_detail_page.dart'; // Import EventDetailPage
 
 class MakeEventPage extends StatefulWidget {
   const MakeEventPage({Key? key}) : super(key: key);
@@ -151,7 +152,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
     return formatter.format(dateTime);
   }
 
-  Future<void> _saveEvent() async {
+  Future<void> _saveEventAndNavigate() async {
     final String title = _titleController.text;
     final String description = _descriptionController.text;
     final int? maxPeople = int.tryParse(_maxPeopleController.text);
@@ -195,7 +196,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
     }
 
     // Save the event details to Firestore
-    await FirebaseFirestore.instance.collection('Events').add({
+    DocumentReference eventRef = await FirebaseFirestore.instance.collection('Events').add({
       'EventTitle': title,
       'EventDescription': description,
       'MaxPeople': maxPeople,
@@ -208,6 +209,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
       }, // Include the location
       'SubmittedBy': submittedBy, // Include the submitted by information
       'imageUrl': imageUrl, // Include the image URL
+      'Published_TF': false
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -225,6 +227,14 @@ class _MakeEventPageState extends State<MakeEventPage> {
       _selectedLocation = null; // Reset the location
       imageUrl = ''; // Reset the image URL
     });
+
+    // Navigate to the EventDetailPage in Publishing mode
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventDetailPage(eventId: eventRef.id, mode: 'Publishing'),
+      ),
+    );
   }
 
   void _selectLocation() {
@@ -441,22 +451,12 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           SizedBox(
                             width: 150, // Set the desired width
                             child: ElevatedButton(
-                              onPressed: _saveEvent,
-                              child: Text('Save Event', style: TextStyle(fontSize: 12, color: Colors.black)),
+                              onPressed: _saveEventAndNavigate,
+                              child: Text('Publish Event', style: TextStyle(fontSize: 12, color: Colors.black)),
                               style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
                             ),
                           ),
                           SizedBox(width: 10),
-                          SizedBox(
-                            width: 150, // Set the desired width
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/event_detail');
-                              },
-                              child: const Text('Preview Event', style: TextStyle(fontSize: 12, color: Colors.black)),
-                              style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
-                            ),
-                          ),
                         ],
                       ),
                     ],

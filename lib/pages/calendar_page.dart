@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:eventtide/pages/preview_event_page.dart';
+import 'package:eventtide/pages/event_detail_page.dart';
 
 class Event {
+  final String id; // Add this field
   final String startTime;
   final String endTime;
   final String title;
@@ -12,7 +13,7 @@ class Event {
   final int maxPeople;
   final String imageUrl;
 
-  Event(this.startTime, this.endTime, this.title, this.description,
+  Event(this.id, this.startTime, this.endTime, this.title, this.description,
       this.campName, this.maxPeople, this.imageUrl);
 }
 
@@ -47,6 +48,7 @@ class _CalendarPageState extends State<CalendarPage> {
           if (startTime.isAfter(_startDate.subtract(Duration(days: 1))) &&
               startTime.isBefore(_endDate.add(Duration(days: 1)))) {
             events.add(Event(
+              doc.id, // Use the document ID as the event ID
               data['StartTime'],
               data['EndTime'],
               data['EventTitle'],
@@ -76,7 +78,7 @@ class _CalendarPageState extends State<CalendarPage> {
             endTime: DateTime.parse(event.endTime),
             subject: event.title,
             notes:
-                '${event.description}|${event.campName}|${event.maxPeople}|${event.startTime}|${event.endTime}|${event.imageUrl}',
+                '${event.description}|${event.campName}|${event.maxPeople}|${event.startTime}|${event.endTime}|${event.imageUrl}|${event.id}',
             color: Colors.orange.withOpacity(0.7),
           );
         }).toList();
@@ -89,28 +91,19 @@ class _CalendarPageState extends State<CalendarPage> {
 
     final Appointment appointment = details.appointments!.first;
     final List<String> notes =
-        appointment.notes?.split('|') ?? ['', '', '', '', '', ''];
+        appointment.notes?.split('|') ?? ['', '', '', '', '', '', ''];
     final String description = notes[0];
     final String campName = notes[1];
     final int maxPeople = int.tryParse(notes[2]) ?? 1;
     final String startTime = notes[3];
     final String endTime = notes[4];
     final String imageUrl = notes[5];
-
-    final event = Event(
-      startTime,
-      endTime,
-      appointment.subject,
-      description,
-      campName,
-      maxPeople,
-      imageUrl,
-    );
+    final String id = notes[6];
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PreviewEventPage(event: event),
+        builder: (context) => EventDetailPage(eventId: id, mode: 'view'),
       ),
     );
   }

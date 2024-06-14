@@ -106,7 +106,7 @@ class ProfilePage extends StatelessWidget {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => EventDetailPage(eventId: event.id),
+                                      builder: (context) => EventDetailPage(eventId: event.id, mode: 'edit'),
                                     ),
                                   );
                                 },
