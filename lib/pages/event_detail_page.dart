@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'make_event_page.dart'; // Import the MakeEventPage
+import 'package:eventtide/main.dart';
 
 class EventDetailPage extends StatelessWidget {
   final String eventId;
@@ -155,104 +157,102 @@ class EventDetailPage extends StatelessWidget {
           );
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
-        selectedItemColor: Colors.black,  // Set selected item color to black
-        unselectedItemColor: Colors.black, // Set unselected item color to black
-        items: [
-          if (mode == 'edit') ...[
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.edit),
-              label: 'Edit',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.delete),
-              label: 'Delete',
-            ),
-          ] else if (mode == 'Publishing') ...[
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.publish),
-              label: 'Publish',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.edit),
-              label: 'Edit',
-            ),
-          ] else if (mode == 'view') ...[
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.more_horiz, color: Colors.transparent),
-              label: '',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.exit_to_app),
-              label: 'Leave',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.more_horiz, color: Colors.transparent),
-              label: '',
-            ),
-          ],
-        ],
-        onTap: (index) {
-          if (mode == 'edit' && index == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EditEventPage(eventId: eventId),
-              ),
-            );
-          } else if (mode == 'edit' && index == 1) {
-            FirebaseFirestore.instance
-                .collection('Events')
-                .doc(eventId)
-                .delete()
-                .then((_) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Event deleted successfully')),
-              );
-              Navigator.pop(context);
-            });
-          } else if (mode == 'Publishing' && index == 0) {
-            FirebaseFirestore.instance
-                .collection('Events')
-                .doc(eventId)
-                .update({'Published_TF': true})
-                .then((_) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Event published successfully')),
-              );
-              Navigator.pop(context);
-            });
-          } else if (mode == 'Publishing' && index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EditEventPage(eventId: eventId),
-              ),
-            );
-          } else if (mode == 'view' && index == 1) {
-            _leaveEvent(context, eventId);
-            Navigator.pushNamed(context, '/main');
+      bottomNavigationBar: FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance.collection('Events').doc(eventId).get(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
           }
+          if (!snapshot.hasData || !snapshot.data!.exists) {
+            return const Center(child: Text('Event not found'));
+          }
+          final event = snapshot.data!.data() as Map<String, dynamic>;
+          return BottomNavigationBar(
+            backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
+            selectedItemColor: Colors.black,  // Set selected item color to black
+            unselectedItemColor: Colors.black, // Set unselected item color to black
+            items: [
+              if (mode == 'edit') ...[
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.edit),
+                  label: 'Edit',
+                ),
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.delete),
+                  label: 'Delete',
+                ),
+              ] else if (mode == 'Publishing') ...[
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.publish),
+                  label: 'Publish',
+                ),
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.edit),
+                  label: 'Edit',
+                ),
+              ] else if (mode == 'view') ...[
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.more_horiz, color: Colors.transparent),
+                  label: '',
+                ),
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.exit_to_app),
+                  label: 'Leave',
+                ),
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.more_horiz, color: Colors.transparent),
+                  label: '',
+                ),
+              ],
+            ],
+            onTap: (index) {
+              if (mode == 'edit' && index == 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MakeEventPage(eventData: event),
+                  ),
+                );
+              } else if (mode == 'edit' && index == 1) {
+                FirebaseFirestore.instance
+                    .collection('Events')
+                    .doc(eventId)
+                    .delete()
+                    .then((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Event deleted successfully')),
+                  );
+                  Navigator.pop(context);
+                });
+              } else if (mode == 'Publishing' && index == 0) {
+                FirebaseFirestore.instance
+                    .collection('Events')
+                    .doc(eventId)
+                    .update({'Published_TF': true})
+                    .then((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Event published successfully')),
+                  );
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MainNavigationWrapper()),
+                    (Route<dynamic> route) => false,
+                  );
+                });
+              } else if (mode == 'Publishing' && index == 1) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MakeEventPage(eventData: event),
+                  ),
+                );
+              } else if (mode == 'view' && index == 1) {
+                _leaveEvent(context, eventId);
+                Navigator.pushNamed(context, '/main');
+              }
+            },
+          );
         },
-      ),
-    );
-  }
-}
-
-class EditEventPage extends StatelessWidget {
-  final String eventId;
-  const EditEventPage({Key? key, required this.eventId}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // Implement your edit event page here
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit Event'),
-      ),
-      body: Center(
-        child: Text('Edit Event Page for $eventId'),
       ),
     );
   }

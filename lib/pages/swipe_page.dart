@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'dart:math';
 
 class SwipePage extends StatefulWidget {
   const SwipePage({Key? key}) : super(key: key);
@@ -87,6 +88,8 @@ class _SwipePageState extends State<SwipePage> {
 
     // Filter events to exclude those already joined
     List<QueryDocumentSnapshot> filteredEvents = allEvents.where((event) => !joinedEventIds.contains(event.id)).toList();
+
+    filteredEvents.shuffle(Random());
 
     return filteredEvents;
   }
