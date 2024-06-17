@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Add this import for Firebase Auth
 import 'package:eventtide/pages/event_detail_page.dart';
 
 class Event {
-  final String id; // Add this field
+  final String id;
   final String startTime;
   final String endTime;
   final String title;
@@ -32,10 +33,31 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Future<List<Event>> fetchEvents() async {
     try {
+      User? user = FirebaseAuth.instance.currentUser; // Get the current user
+      if (user == null) {
+        throw Exception('No user logged in');
+      }
+
+      // Fetch joined events
+      QuerySnapshot joinSnapshot = await FirebaseFirestore.instance
+          .collectionGroup('Join_Registry')
+          .where('email', isEqualTo: user.email)
+          .get();
+
+      List<String> joinedEventIds = joinSnapshot.docs.map((doc) => doc['eventId'] as String).toList();
+
+      if (joinedEventIds.isEmpty) {
+        return [];
+      }
+
+      // Fetch event details for joined events
+      QuerySnapshot eventSnapshot = await FirebaseFirestore.instance
+          .collection('Events')
+          .where(FieldPath.documentId, whereIn: joinedEventIds)
+          .get();
+
       List<Event> events = [];
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('Events').get();
-      for (var doc in querySnapshot.docs) {
+      for (var doc in eventSnapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         if (data.containsKey('StartTime') &&
             data.containsKey('EndTime') &&

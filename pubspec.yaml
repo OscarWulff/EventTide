@@ -19,6 +19,7 @@ dependencies:
   firebase_storage: ^12.0.1
   image_picker: ^1.1.2
   calendar_view: ^1.2.0
+  syncfusion_flutter_calendar: ^21.2.3
   
 
 dev_dependencies:
