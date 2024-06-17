@@ -27,11 +27,13 @@ class _MakeEventPageState extends State<MakeEventPage> {
   DateTime? _selectedEndTime;
   String imageUrl = '';
   Offset? _selectedLocation;
+  String? _eventId;
 
   @override
   void initState() {
     super.initState();
     if (widget.eventData != null) {
+      _eventId = widget.eventData!['id'];
       _titleController.text = widget.eventData!['EventTitle'];
       _descriptionController.text = widget.eventData!['EventDescription'];
       _maxPeopleController.text = widget.eventData!['MaxPeople'].toString();
@@ -175,7 +177,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
     return formatter.format(dateTime);
   }
 
-  Future<void> _saveEventAndNavigate() async {
+  Future<void> _saveEvent() async {
     final String title = _titleController.text;
     final String description = _descriptionController.text;
     final int? maxPeople = int.tryParse(_maxPeopleController.text);
@@ -218,26 +220,40 @@ class _MakeEventPageState extends State<MakeEventPage> {
       return;
     }
 
-    // Save the event details to Firestore
-    DocumentReference eventRef = await FirebaseFirestore.instance.collection('Events').add({
-      'EventTitle': title,
-      'EventDescription': description,
-      'MaxPeople': maxPeople,
-      'StartTime': startTime,
-      'EndTime': endTime,
-      'CampName': campName,
-      'Location': {
-        'dx': _selectedLocation!.dx,
-        'dy': _selectedLocation!.dy,
-      }, // Include the location
-      'SubmittedBy': submittedBy, // Include the submitted by information
-      'imageUrl': imageUrl, // Include the image URL
-      'Published_TF': false
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Event created successfully')),
-    );
+    if (_eventId != null) {
+      // Update existing event
+      await FirebaseFirestore.instance.collection('Events').doc(_eventId).update({
+        'EventTitle': title,
+        'EventDescription': description,
+        'MaxPeople': maxPeople,
+        'StartTime': startTime,
+        'EndTime': endTime,
+        'CampName': campName,
+        'Location': {
+          'dx': _selectedLocation!.dx,
+          'dy': _selectedLocation!.dy,
+        },
+        'SubmittedBy': submittedBy,
+        'imageUrl': imageUrl,
+      });
+    } else {
+      // Save new event
+      await FirebaseFirestore.instance.collection('Events').add({
+        'EventTitle': title,
+        'EventDescription': description,
+        'MaxPeople': maxPeople,
+        'StartTime': startTime,
+        'EndTime': endTime,
+        'CampName': campName,
+        'Location': {
+          'dx': _selectedLocation!.dx,
+          'dy': _selectedLocation!.dy,
+        },
+        'SubmittedBy': submittedBy,
+        'imageUrl': imageUrl,
+        'Published_TF': false
+      });
+    }
 
     _titleController.clear();
     _descriptionController.clear();
@@ -247,15 +263,15 @@ class _MakeEventPageState extends State<MakeEventPage> {
     setState(() {
       _selectedStartTime = null;
       _selectedEndTime = null;
-      _selectedLocation = null; // Reset the location
-      imageUrl = ''; // Reset the image URL
+      _selectedLocation = null;
+      imageUrl = '';
     });
 
     // Navigate to the EventDetailPage in Publishing mode
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EventDetailPage(eventId: eventRef.id, mode: 'Publishing'),
+        builder: (context) => EventDetailPage(eventId: _eventId ?? '', mode: 'Publishing'),
       ),
     );
   }
@@ -474,8 +490,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           SizedBox(
                             width: 150, // Set the desired width
                             child: ElevatedButton(
-                              onPressed: _saveEventAndNavigate,
-                              child: Text('Publish Event', style: TextStyle(fontSize: 12, color: Colors.black)),
+                              onPressed: _saveEvent,
+                              child: Text('Save Event', style: TextStyle(fontSize: 12, color: Colors.black)),
                               style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
                             ),
                           ),
