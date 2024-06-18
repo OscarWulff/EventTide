@@ -75,11 +75,19 @@ class _MakeEventPageState extends State<MakeEventPage> {
 
   void _showIOSDatePicker(BuildContext ctx, bool isStart) {
     DateTime now = DateTime.now();
-    DateTime initialDateTime = now.isBefore(DateTime(2024, 6, 30))
-        ? DateTime(2024, 6, 30, 7, 0)
-        : now.isAfter(DateTime(2024, 7, 6))
-            ? DateTime(2024, 7, 6, 7, 0)
-            : DateTime(now.year, now.month, now.day, now.hour, 0);
+    DateTime initialDateTime = isStart
+        ? (now.isBefore(DateTime(2024, 6, 29))
+            ? DateTime(2024, 6, 29, 0, 0)
+            : (now.isAfter(DateTime(2024, 7, 6))
+                ? DateTime(2024, 7, 6, 0, 0)
+                : DateTime(now.year, now.month, now.day, now.hour, now.minute)))
+        : (_selectedStartTime != null
+            ? _selectedStartTime!.add(Duration(minutes: 1))
+            : DateTime(2024, 6, 29, 0, 0));
+
+    DateTime? minimumDate =
+        isStart ? DateTime(2024, 6, 29, 0, 0) : _selectedStartTime;
+    DateTime? maximumDate = DateTime(2024, 7, 6, 23, 59);
 
     showCupertinoModalPopup(
       context: ctx,
@@ -91,19 +99,20 @@ class _MakeEventPageState extends State<MakeEventPage> {
             Expanded(
               child: CupertinoDatePicker(
                 use24hFormat: true,
-                initialDateTime: initialDateTime,
+                initialDateTime: initialDateTime.isBefore(minimumDate!)
+                    ? minimumDate
+                    : initialDateTime,
                 mode: CupertinoDatePickerMode.dateAndTime,
-                minimumDate: DateTime(2024, 6, 30, 7, 0),
-                maximumDate: DateTime(2024, 7, 6, 23, 59),
+                minimumDate: minimumDate,
+                maximumDate: maximumDate,
                 onDateTimeChanged: (val) {
-                  if (val.hour < 7) {
-                    val = DateTime(val.year, val.month, val.day, 7, val.minute);
-                  } else if (val.hour >= 24) {
-                    val = DateTime(val.year, val.month, val.day, 23, 59);
-                  }
                   setState(() {
                     if (isStart) {
                       _selectedStartTime = val;
+                      if (_selectedEndTime == null ||
+                          _selectedEndTime!.isBefore(val)) {
+                        _selectedEndTime = val;
+                      }
                     } else {
                       _selectedEndTime = val;
                     }
@@ -124,14 +133,19 @@ class _MakeEventPageState extends State<MakeEventPage> {
   Future<void> _showAndroidDatePicker(
       BuildContext context, bool isStart) async {
     final DateTime now = DateTime.now();
-    final DateTime firstDate = DateTime(2024, 6, 30);
+    final DateTime firstDate = DateTime(2024, 6, 29);
     final DateTime lastDate = DateTime(2024, 7, 6);
+    DateTime? initialDate = isStart
+        ? (now.isBefore(firstDate)
+            ? firstDate
+            : (now.isAfter(lastDate) ? lastDate : now))
+        : (_selectedStartTime != null
+            ? _selectedStartTime!.add(Duration(minutes: 1))
+            : firstDate);
 
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: now.isBefore(firstDate)
-          ? firstDate
-          : (now.isAfter(lastDate) ? lastDate : now),
+      initialDate: initialDate,
       firstDate: firstDate,
       lastDate: lastDate,
     );
@@ -139,7 +153,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
     if (picked != null) {
       final TimeOfDay? time = await showTimePicker(
         context: context,
-        initialTime: TimeOfDay(hour: 7, minute: 0),
+        initialTime: TimeOfDay(hour: 0, minute: 0),
         builder: (BuildContext context, Widget? child) {
           return MediaQuery(
             data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
@@ -151,20 +165,17 @@ class _MakeEventPageState extends State<MakeEventPage> {
       if (time != null) {
         final DateTime selectedDateTime = DateTime(
             picked.year, picked.month, picked.day, time.hour, time.minute);
-        if (time.hour < 7 || time.hour >= 24) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text('Please select a time between 07:00 and 24:00')),
-          );
-        } else {
-          setState(() {
-            if (isStart) {
-              _selectedStartTime = selectedDateTime;
-            } else {
+        setState(() {
+          if (isStart) {
+            _selectedStartTime = selectedDateTime;
+            if (_selectedEndTime == null ||
+                _selectedEndTime!.isBefore(selectedDateTime)) {
               _selectedEndTime = selectedDateTime;
             }
-          });
-        }
+          } else {
+            _selectedEndTime = selectedDateTime;
+          }
+        });
       }
     }
   }
@@ -210,14 +221,6 @@ class _MakeEventPageState extends State<MakeEventPage> {
       );
       return;
     }
-
-    if (_selectedStartTime!.day != _selectedEndTime!.day) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please keep events within the same day')),
-      );
-      return;
-    }
-
     if (maxPeople == null || maxPeople <= 0 || maxPeople > 1000) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -278,13 +281,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
     });
 
     // Navigate to the EventDetailPage in Publishing mode
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            EventDetailPage(eventId: _eventId ?? '', mode: 'Publishing'),
-      ),
-    );
+    Navigator.pushNamed(context, '/main');
   }
 
   void _selectLocation() {
