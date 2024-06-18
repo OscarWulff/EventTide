@@ -4,6 +4,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Add this import for Firebase Auth
 import 'package:eventtide/pages/event_detail_page.dart';
 
+/////////// BACK_END ////////////
 class Event {
   final String id;
   final String startTime;
@@ -11,11 +12,10 @@ class Event {
   final String title;
   final String description;
   final String campName;
-  final int maxPeople;
-  final String imageUrl;
+  
 
   Event(this.id, this.startTime, this.endTime, this.title, this.description,
-      this.campName, this.maxPeople, this.imageUrl); 
+      this.campName); 
 }
 
 class CalendarPage extends StatefulWidget {
@@ -69,12 +69,10 @@ class _CalendarPageState extends State<CalendarPage> {
             data.containsKey('EndTime') &&
             data.containsKey('EventTitle') &&
             data.containsKey('EventDescription') &&
-            data.containsKey('CampName') &&
-            data.containsKey('MaxPeople') &&
-            data.containsKey('imageUrl')) {
+            data.containsKey('CampName')) {
           DateTime startTime = DateTime.parse(data['StartTime']);
-          if (startTime.isAfter(_startDate.subtract(Duration(days: 1))) &&
-              startTime.isBefore(_endDate.add(Duration(days: 1)))) {
+          if (startTime.isAfter(_startDate.subtract(const Duration(days: 1))) &&
+              startTime.isBefore(_endDate.add(const Duration(days: 1)))) {
             events.add(Event(
               doc.id, // Use the document ID as the event ID
               data['StartTime'],
@@ -82,8 +80,6 @@ class _CalendarPageState extends State<CalendarPage> {
               data['EventTitle'],
               data['EventDescription'],
               data['CampName'],
-              data['MaxPeople'],
-              data['imageUrl'],
             ));
           }
         }
@@ -105,8 +101,7 @@ class _CalendarPageState extends State<CalendarPage> {
             startTime: DateTime.parse(event.startTime),
             endTime: DateTime.parse(event.endTime),
             subject: event.title,
-            notes:
-                '${event.description}|${event.campName}|${event.maxPeople}|${event.startTime}|${event.endTime}|${event.imageUrl}|${event.id}',
+            notes: event.id, //For Navigation 
             color: const Color.fromRGBO(222, 121, 46, 1),
           );
         }).toList();
@@ -115,18 +110,10 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   void _onAppointmentTap(CalendarTapDetails details) {
-    if (details.appointments == null) return;
+    if (details.appointments == null || details.appointments!.isEmpty) return;
 
     final Appointment appointment = details.appointments!.first;
-    final List<String> notes =
-        appointment.notes?.split('|') ?? ['', '', '', '', '', '', ''];
-    final String description = notes[0];
-    final String campName = notes[1];
-    final int maxPeople = int.tryParse(notes[2]) ?? 1;
-    final String startTime = notes[3];
-    final String endTime = notes[4];
-    final String imageUrl = notes[5];
-    final String id = notes[6];
+    final String id = appointment.notes ?? '';
 
     Navigator.push(
       context,
@@ -136,6 +123,8 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
+
+/////////// FRONT_END ////////////
   @override
   Widget build(BuildContext context) {
     return Scaffold(
