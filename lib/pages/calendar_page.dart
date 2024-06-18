@@ -145,7 +145,7 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
         ),
         title: const Text(
-          'Roskilde Festival',
+          'Calendar',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.normal,

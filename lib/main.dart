@@ -77,7 +77,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
   static const List<String> _titles = <String>[
     'Create Event',
     'Swipe Events',
-    'Calendar',
+    'My Events',
   ];
 
   void _onItemTapped(int index) {
