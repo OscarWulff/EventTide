@@ -15,7 +15,7 @@ class Event {
   final String imageUrl;
 
   Event(this.id, this.startTime, this.endTime, this.title, this.description,
-      this.campName, this.maxPeople, this.imageUrl);
+      this.campName, this.maxPeople, this.imageUrl); 
 }
 
 class CalendarPage extends StatefulWidget {
@@ -25,11 +25,17 @@ class CalendarPage extends StatefulWidget {
   _CalendarPageState createState() => _CalendarPageState();
 }
 
+class EventDataSource extends CalendarDataSource {
+  EventDataSource(List<Appointment> source) {
+    appointments = source;
+  }
+}
+
 class _CalendarPageState extends State<CalendarPage> {
   List<Appointment> _appointments = [];
-  DateTime _startDate = DateTime(2024, 6, 30);
+  DateTime _startDate = DateTime(2024, 6, 29);
   DateTime _endDate = DateTime(2024, 7, 6);
-  CalendarView _calendarView = CalendarView.week;
+  CalendarView _calendarView = CalendarView.day;
 
   Future<List<Event>> fetchEvents() async {
     try {
@@ -101,7 +107,7 @@ class _CalendarPageState extends State<CalendarPage> {
             subject: event.title,
             notes:
                 '${event.description}|${event.campName}|${event.maxPeople}|${event.startTime}|${event.endTime}|${event.imageUrl}|${event.id}',
-            color: Colors.orange.withOpacity(0.7),
+            color: const Color.fromRGBO(222, 121, 46, 1),
           );
         }).toList();
       });
@@ -174,22 +180,23 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
           SfCalendar(
             view: _calendarView,
+            firstDayOfWeek: 1,
             dataSource: EventDataSource(_appointments),
             backgroundColor: Colors.white,
-            todayHighlightColor: Colors.orange,
+            todayHighlightColor: Color.fromRGBO(222, 121, 46, 1),
             showCurrentTimeIndicator: true,
             selectionDecoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.3),
-              border: Border.all(color: Colors.orange, width: 2),
+              color: Color.fromRGBO(222, 121, 46, 1),
+              border: Border.all(color: Color.fromRGBO(222, 121, 46, 1), width: 10),
               borderRadius: BorderRadius.all(Radius.circular(4)),
             ),
             timeSlotViewSettings: TimeSlotViewSettings(
-              timeInterval: Duration(minutes: 60), // Set larger time interval
+              timeInterval: Duration(minutes: 120), // Set larger time interval
               timeFormat: 'HH:mm',
-              startHour: 7, // Start at 07:00
+              startHour: 00, // Start at 07:00
               endHour: 24, // End at 23:00
-              timeRulerSize: 40, // Smaller time ruler size
-              timeIntervalHeight: 28, // Adjusted time interval height to fit more intervals on screen
+              timeRulerSize: 50, // Smaller time ruler size
+              timeIntervalHeight: 49, // Adjusted time interval height to fit more intervals on screen
               timeTextStyle: TextStyle(color: Colors.black),
             ),
             headerHeight: 0, // Remove the header
@@ -211,7 +218,7 @@ class _CalendarPageState extends State<CalendarPage> {
             maxDate: _endDate,
             initialDisplayDate: _startDate,
             initialSelectedDate: _startDate,
-            allowedViews: [CalendarView.day, CalendarView.week],
+            allowedViews: [CalendarView.day],
             onTap: _onAppointmentTap,
             monthViewSettings: MonthViewSettings(
               showTrailingAndLeadingDates: false,
@@ -226,8 +233,4 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 }
 
-class EventDataSource extends CalendarDataSource {
-  EventDataSource(List<Appointment> source) {
-    appointments = source;
-  }
-}
+
