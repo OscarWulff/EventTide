@@ -77,7 +77,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
   static const List<String> _titles = <String>[
     'Create Event',
     'Swipe Events',
-    'My Events',
+    'Calendar',
   ];
 
   void _onItemTapped(int index) {
@@ -129,7 +129,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today_sharp),
-            label: 'Calendar',
+            label: 'My Events',
           ),
         ],
         currentIndex: _selectedIndex,
