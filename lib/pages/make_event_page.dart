@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io' show Platform;
 import 'package:intl/intl.dart';
-import 'package:eventtide/add_image.dart'; // Import the AddImage component
+import 'package:eventtide/Services/add_image.dart'; // Import the AddImage component
 import 'map_page.dart';
 import 'event_detail_page.dart'; // Import EventDetailPage
 
@@ -46,7 +46,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
           widget.eventData!['Location']['dx'],
           widget.eventData!['Location']['dy'],
         );
-        _locationController.text = 'X: ${_selectedLocation!.dx}, Y: ${_selectedLocation!.dy}';
+        _locationController.text =
+            'X: ${_selectedLocation!.dx}, Y: ${_selectedLocation!.dy}';
       }
     }
   }
@@ -120,14 +121,17 @@ class _MakeEventPageState extends State<MakeEventPage> {
     );
   }
 
-  Future<void> _showAndroidDatePicker(BuildContext context, bool isStart) async {
+  Future<void> _showAndroidDatePicker(
+      BuildContext context, bool isStart) async {
     final DateTime now = DateTime.now();
     final DateTime firstDate = DateTime(2024, 6, 30);
     final DateTime lastDate = DateTime(2024, 7, 6);
 
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: now.isBefore(firstDate) ? firstDate : (now.isAfter(lastDate) ? lastDate : now),
+      initialDate: now.isBefore(firstDate)
+          ? firstDate
+          : (now.isAfter(lastDate) ? lastDate : now),
       firstDate: firstDate,
       lastDate: lastDate,
     );
@@ -145,10 +149,12 @@ class _MakeEventPageState extends State<MakeEventPage> {
       );
 
       if (time != null) {
-        final DateTime selectedDateTime = DateTime(picked.year, picked.month, picked.day, time.hour, time.minute);
+        final DateTime selectedDateTime = DateTime(
+            picked.year, picked.month, picked.day, time.hour, time.minute);
         if (time.hour < 7 || time.hour >= 24) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Please select a time between 07:00 and 24:00')),
+            SnackBar(
+                content: Text('Please select a time between 07:00 and 24:00')),
           );
         } else {
           setState(() {
@@ -215,14 +221,18 @@ class _MakeEventPageState extends State<MakeEventPage> {
     if (maxPeople == null || maxPeople <= 0 || maxPeople > 1000) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Maximum number of people must be between 1 and 1000')),
+            content:
+                Text('Maximum number of people must be between 1 and 1000')),
       );
       return;
     }
 
     if (_eventId != null) {
       // Update existing event
-      await FirebaseFirestore.instance.collection('Events').doc(_eventId).update({
+      await FirebaseFirestore.instance
+          .collection('Events')
+          .doc(_eventId)
+          .update({
         'EventTitle': title,
         'EventDescription': description,
         'MaxPeople': maxPeople,
@@ -271,7 +281,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EventDetailPage(eventId: _eventId ?? '', mode: 'Publishing'),
+        builder: (context) =>
+            EventDetailPage(eventId: _eventId ?? '', mode: 'Publishing'),
       ),
     );
   }
@@ -328,7 +339,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
+                            borderSide: BorderSide(
+                                color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
                           errorText: _validateTitle(_titleController.text),
                           counterText: '${_titleController.text.length}/50',
@@ -352,9 +364,11 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
+                            borderSide: BorderSide(
+                                color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
-                          errorText: _validateCampName(_campNameController.text),
+                          errorText:
+                              _validateCampName(_campNameController.text),
                           counterText: '${_campNameController.text.length}/50',
                         ),
                         textAlign: TextAlign.center,
@@ -376,10 +390,13 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
+                            borderSide: BorderSide(
+                                color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
-                          errorText: _validateDescription(_descriptionController.text),
-                          counterText: '${_descriptionController.text.length}/300',
+                          errorText:
+                              _validateDescription(_descriptionController.text),
+                          counterText:
+                              '${_descriptionController.text.length}/300',
                         ),
                         textAlign: TextAlign.center,
                         maxLength: 300,
@@ -402,10 +419,12 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
+                            borderSide: BorderSide(
+                                color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
                         ),
-                        keyboardType: TextInputType.number, // Only numbers as input
+                        keyboardType:
+                            TextInputType.number, // Only numbers as input
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 10), // Reduce spacing
@@ -421,7 +440,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Color.fromRGBO(222, 121, 46, 1)),
+                            borderSide: BorderSide(
+                                color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(Icons.map, color: Colors.black),
@@ -441,20 +461,27 @@ class _MakeEventPageState extends State<MakeEventPage> {
                                 onPressed: () => _showDatePicker(context, true),
                                 child: Text(
                                   'Select Start Time',
-                                  style: TextStyle(fontSize: 12, color: Colors.black),
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.black),
                                 ),
-                                style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        Color.fromRGBO(222, 121, 46, 1)),
                               ),
                             ),
                             SizedBox(width: 10),
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: () => _showDatePicker(context, false),
+                                onPressed: () =>
+                                    _showDatePicker(context, false),
                                 child: Text(
                                   'Select End Time',
-                                  style: TextStyle(fontSize: 12, color: Colors.black),
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.black),
                                 ),
-                                style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        Color.fromRGBO(222, 121, 46, 1)),
                               ),
                             ),
                           ],
@@ -468,16 +495,17 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             Flexible(
                               child: Text(
                                 'Start time: ${_formatTime(_selectedStartTime)}',
-                                style: TextStyle(color: Colors.black, fontSize: 12),
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 12),
                                 overflow: TextOverflow.ellipsis,
-                                
                               ),
                             ),
                             SizedBox(width: 10),
                             Flexible(
                               child: Text(
                                 'End time: ${_formatTime(_selectedEndTime)}',
-                                style: TextStyle(color: Colors.black, fontSize: 12),
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 12),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -491,8 +519,12 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             width: 150, // Set the desired width
                             child: ElevatedButton(
                               onPressed: _saveEvent,
-                              child: Text('Save Event', style: TextStyle(fontSize: 12, color: Colors.black)),
-                              style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(222, 121, 46, 1)),
+                              child: Text('Save Event',
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.black)),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Color.fromRGBO(222, 121, 46, 1)),
                             ),
                           ),
                           SizedBox(width: 10),
