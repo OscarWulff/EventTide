@@ -1,3 +1,4 @@
+import 'package:eventtide/pages/calendar_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -95,12 +96,14 @@ class ProfilePage extends StatelessWidget {
                           return Center(child: Text('No events found', style: TextStyle(color: Colors.black)));
                         }
                         final events = snapshot.data!.docs;
+                        //FirebaseFirestore.instance.collection('Events').doc(event.id).collection('Join_registry').get();
                         return ListView.builder(
                           itemCount: events.length,
                           itemBuilder: (context, index) {
                             final event = events[index];
                             return ListTile(
-                              title: Text(event['EventTitle'], style: TextStyle(color: Colors.black)),
+                              leading: Text(event['EventTitle'], style: TextStyle(color: Colors.black)),
+                              title: Text('${event['MaxPeople']}', style: TextStyle(color: Colors.black)),
                               trailing: ElevatedButton(
                                 onPressed: () {
                                   Navigator.push(

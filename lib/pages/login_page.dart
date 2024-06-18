@@ -38,16 +38,40 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  
+  Future<void> _signInAsGuest() async {
+    try {
+      final UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
+      print("Signed in with temporary account.");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainNavigationWrapper()),
+      );
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case "operation-not-allowed":
+          print("Anonymous auth hasn't been enabled for this project.");
+          break;
+        default:
+          print("Unknown error: ${e.code}");
+      }
+    } catch (e) {
+      print("Error signing in as guest: $e");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Welcome to EventTide :)'),
+        backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
+        centerTitle: true,
+        title: const Text('Welcome to EventTide'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Image.asset('assets/Roskilde_logo.png', height: 150,),
             SignInButton(
               Buttons.google,
               onPressed: () async {
@@ -62,6 +86,32 @@ class _LoginPageState extends State<LoginPage> {
                   print('Failed to log in with Google');
                 }
               },
+            ),
+            const SizedBox(height: 8),
+            Container(
+              height: 37,
+              decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(2.0),
+              border: Border(
+                bottom: BorderSide(color: Colors.grey.withOpacity(0.01)),
+              ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 0,
+                    blurRadius: 4,
+                    offset: Offset(0, 2), // Changes position of shadow to the bottom only
+                  ),
+                ],
+              ),
+              child: SignInButtonBuilder(
+                text: 'Login as Guest',
+                icon: Icons.person,
+                backgroundColor: Colors.white,
+                textColor: Colors.black,
+                onPressed: _signInAsGuest,
+              ),
             ),
           ],
         ),
