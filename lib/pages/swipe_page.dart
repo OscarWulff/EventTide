@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'dart:math';
+import 'package:eventtide/Services/custom_cache_manager.dart';
 
 class SwipePage extends StatefulWidget {
   const SwipePage({Key? key}) : super(key: key);
@@ -61,7 +63,8 @@ class _SwipePageState extends State<SwipePage> {
     // Fetch all events
     QuerySnapshot eventSnapshot;
     try {
-      eventSnapshot = await FirebaseFirestore.instance.collection('Events').get();
+      eventSnapshot =
+          await FirebaseFirestore.instance.collection('Events').get();
     } catch (e) {
       return [];
     }
@@ -81,17 +84,25 @@ class _SwipePageState extends State<SwipePage> {
 
     List<String> joinedEventIds;
     try {
-      joinedEventIds = joinSnapshot.docs.map((doc) => doc['eventId'] as String).toList();
+      joinedEventIds =
+          joinSnapshot.docs.map((doc) => doc['eventId'] as String).toList();
     } catch (e) {
       return [];
     }
 
     // Filter events to exclude those already joined
-    List<QueryDocumentSnapshot> filteredEvents = allEvents.where((event) => !joinedEventIds.contains(event.id)).toList();
+    List<QueryDocumentSnapshot> filteredEvents =
+        allEvents.where((event) => !joinedEventIds.contains(event.id)).toList();
 
     filteredEvents.shuffle(Random());
 
     return filteredEvents;
+  }
+
+  Future<void> _prefetchImages(List<String> imageUrls) async {
+    for (String url in imageUrls) {
+      await CustomCacheManager.instance.downloadFile(url);
+    }
   }
 
   @override
@@ -105,23 +116,43 @@ class _SwipePageState extends State<SwipePage> {
             return Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No events found', style: TextStyle(color: Colors.white)));
+            return Center(
+                child: Text('No events found',
+                    style: TextStyle(color: Colors.white)));
           }
           final events = snapshot.data!;
+
+          // Prefetch initial set of images
+          final imageUrls = events
+              .take(10)
+              .map((event) {
+                final data = event.data() as Map<String, dynamic>;
+                return data.containsKey('imageUrl')
+                    ? data['imageUrl'] as String
+                    : '';
+              })
+              .where((url) => url.isNotEmpty)
+              .toList();
+          _prefetchImages(imageUrls);
+
           return Swiper(
             itemCount: events.length,
             itemBuilder: (BuildContext context, int index) {
               final event = events[index].data() as Map<String, dynamic>;
-              final imageUrl = event.containsKey('imageUrl') ? event['imageUrl'] : '';
+              final imageUrl = event.containsKey('imageUrl')
+                  ? event['imageUrl'] as String
+                  : '';
               final eventId = events[index].id;
 
               return GestureDetector(
                 onHorizontalDragEnd: (DragEndDetails details) {
-                  if (details.primaryVelocity != null && details.primaryVelocity! > 0) {
+                  if (details.primaryVelocity != null &&
+                      details.primaryVelocity! > 0) {
                     _joinEvent(context, eventId);
                     swiperController.previous();
                   }
-                  if (details.primaryVelocity != null && details.primaryVelocity! < 0) {
+                  if (details.primaryVelocity != null &&
+                      details.primaryVelocity! < 0) {
                     swiperController.next();
                   }
                 },
@@ -130,14 +161,20 @@ class _SwipePageState extends State<SwipePage> {
                     children: [
                       if (imageUrl.isNotEmpty)
                         Positioned.fill(
-                          child: Image.network(
-                            imageUrl,
+                          child: CachedNetworkImage(
+                            cacheManager: CustomCacheManager.instance,
+                            imageUrl: imageUrl,
                             fit: BoxFit.cover,
+                            placeholder: (context, url) =>
+                                Center(child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
                           ),
                         ),
                       Positioned.fill(
                         child: Container(
-                          color: Colors.black.withOpacity(0.5), // Optional: Add a dark overlay for better text visibility
+                          color: Colors.black.withOpacity(
+                              0.5), // Optional: Add a dark overlay for better text visibility
                         ),
                       ),
                       Padding(
@@ -161,7 +198,8 @@ class _SwipePageState extends State<SwipePage> {
                                 Expanded(
                                   child: Text(
                                     'Camp: ${event['CampName']}',
-                                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                                    style: const TextStyle(
+                                        fontSize: 20, color: Colors.white),
                                   ),
                                 ),
                               ],
@@ -174,7 +212,8 @@ class _SwipePageState extends State<SwipePage> {
                                 Expanded(
                                   child: Text(
                                     'Description: ${event['EventDescription']}',
-                                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                                    style: const TextStyle(
+                                        fontSize: 20, color: Colors.white),
                                   ),
                                 ),
                               ],
@@ -187,7 +226,8 @@ class _SwipePageState extends State<SwipePage> {
                                 Expanded(
                                   child: Text(
                                     'Capacity: ${event['MaxPeople']} people',
-                                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                                    style: const TextStyle(
+                                        fontSize: 20, color: Colors.white),
                                   ),
                                 ),
                               ],
@@ -200,7 +240,8 @@ class _SwipePageState extends State<SwipePage> {
                                 Expanded(
                                   child: Text(
                                     'Start Time: ${event['StartTime']}',
-                                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                                    style: const TextStyle(
+                                        fontSize: 20, color: Colors.white),
                                   ),
                                 ),
                               ],
@@ -208,12 +249,14 @@ class _SwipePageState extends State<SwipePage> {
                             const SizedBox(height: 10),
                             Row(
                               children: [
-                                Icon(Icons.access_time_filled, color: Colors.white),
+                                Icon(Icons.access_time_filled,
+                                    color: Colors.white),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     'End Time: ${event['EndTime']}',
-                                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                                    style: const TextStyle(
+                                        fontSize: 20, color: Colors.white),
                                   ),
                                 ),
                               ],
@@ -234,7 +277,8 @@ class _SwipePageState extends State<SwipePage> {
                                 color: Colors.black.withOpacity(0.5),
                               ),
                               child: IconButton(
-                                icon: Icon(Icons.close, color: Colors.red, size: 50),
+                                icon: Icon(Icons.close,
+                                    color: Colors.red, size: 50),
                                 onPressed: () {
                                   swiperController.next();
                                 },
@@ -246,7 +290,8 @@ class _SwipePageState extends State<SwipePage> {
                                 color: Colors.black.withOpacity(0.5),
                               ),
                               child: IconButton(
-                                icon: Icon(Icons.check, color: Colors.green, size: 50),
+                                icon: Icon(Icons.check,
+                                    color: Colors.green, size: 50),
                                 onPressed: () {
                                   _joinEvent(context, eventId);
                                   swiperController.previous();
@@ -270,10 +315,4 @@ class _SwipePageState extends State<SwipePage> {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: SwipePage(),
-  ));
 }

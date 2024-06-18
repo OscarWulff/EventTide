@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'make_event_page.dart'; // Import the MakeEventPage
 import 'package:eventtide/main.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:eventtide/Services/custom_cache_manager.dart';
 
 class EventDetailPage extends StatelessWidget {
   final String eventId;
@@ -20,7 +22,8 @@ class EventDetailPage extends StatelessWidget {
             .doc(eventId)
             .collection('Join_Registry');
 
-        final querySnapshot = await joinRegistry.where('email', isEqualTo: user.email).get();
+        final querySnapshot =
+            await joinRegistry.where('email', isEqualTo: user.email).get();
 
         for (var doc in querySnapshot.docs) {
           await doc.reference.delete();
@@ -50,7 +53,8 @@ class EventDetailPage extends StatelessWidget {
         backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
       ),
       body: FutureBuilder<DocumentSnapshot>(
-        future: FirebaseFirestore.instance.collection('Events').doc(eventId).get(),
+        future:
+            FirebaseFirestore.instance.collection('Events').doc(eventId).get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -64,12 +68,17 @@ class EventDetailPage extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               if (imageUrl.isNotEmpty)
-                Image.network(
-                  imageUrl,
+                CachedNetworkImage(
+                  cacheManager: CustomCacheManager.instance,
+                  imageUrl: imageUrl,
                   fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      Center(child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
               Container(
-                color: Colors.black.withOpacity(0.5), // Optional: Add a dark overlay for better text visibility
+                color: Colors.black.withOpacity(
+                    0.5), // Optional: Add a dark overlay for better text visibility
               ),
               SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
@@ -93,7 +102,8 @@ class EventDetailPage extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'Camp: ${event['CampName']}',
-                            style: const TextStyle(fontSize: 20, color: Colors.white),
+                            style: const TextStyle(
+                                fontSize: 20, color: Colors.white),
                           ),
                         ),
                       ],
@@ -106,7 +116,8 @@ class EventDetailPage extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'Description: ${event['EventDescription']}',
-                            style: const TextStyle(fontSize: 20, color: Colors.white),
+                            style: const TextStyle(
+                                fontSize: 20, color: Colors.white),
                           ),
                         ),
                       ],
@@ -119,7 +130,8 @@ class EventDetailPage extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'Capacity: ${event['MaxPeople']} people',
-                            style: const TextStyle(fontSize: 20, color: Colors.white),
+                            style: const TextStyle(
+                                fontSize: 20, color: Colors.white),
                           ),
                         ),
                       ],
@@ -132,7 +144,8 @@ class EventDetailPage extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'Start Time: ${event['StartTime']}',
-                            style: const TextStyle(fontSize: 20, color: Colors.white),
+                            style: const TextStyle(
+                                fontSize: 20, color: Colors.white),
                           ),
                         ),
                       ],
@@ -145,7 +158,8 @@ class EventDetailPage extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'End Time: ${event['EndTime']}',
-                            style: const TextStyle(fontSize: 20, color: Colors.white),
+                            style: const TextStyle(
+                                fontSize: 20, color: Colors.white),
                           ),
                         ),
                       ],
@@ -158,7 +172,8 @@ class EventDetailPage extends StatelessWidget {
         },
       ),
       bottomNavigationBar: FutureBuilder<DocumentSnapshot>(
-        future: FirebaseFirestore.instance.collection('Events').doc(eventId).get(),
+        future:
+            FirebaseFirestore.instance.collection('Events').doc(eventId).get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -169,8 +184,9 @@ class EventDetailPage extends StatelessWidget {
           final event = snapshot.data!.data() as Map<String, dynamic>;
           return BottomNavigationBar(
             backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
-            selectedItemColor: Colors.black,  // Set selected item color to black
-            unselectedItemColor: Colors.black, // Set unselected item color to black
+            selectedItemColor: Colors.black, // Set selected item color to black
+            unselectedItemColor:
+                Colors.black, // Set unselected item color to black
             items: [
               if (mode == 'edit') ...[
                 const BottomNavigationBarItem(
@@ -228,14 +244,14 @@ class EventDetailPage extends StatelessWidget {
                 FirebaseFirestore.instance
                     .collection('Events')
                     .doc(eventId)
-                    .update({'Published_TF': true})
-                    .then((_) {
+                    .update({'Published_TF': true}).then((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Event published successfully')),
                   );
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => const MainNavigationWrapper()),
+                    MaterialPageRoute(
+                        builder: (context) => const MainNavigationWrapper()),
                     (Route<dynamic> route) => false,
                   );
                 });
