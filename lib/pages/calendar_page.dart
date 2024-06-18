@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Add this import for Firebase Auth
 import 'package:eventtide/pages/event_detail_page.dart';
@@ -33,9 +34,8 @@ class EventDataSource extends CalendarDataSource {
 
 class _CalendarPageState extends State<CalendarPage> {
   List<Appointment> _appointments = [];
-  DateTime _startDate = DateTime(2024, 6, 29);
-  DateTime _endDate = DateTime(2024, 7, 6);
-  CalendarView _calendarView = CalendarView.day;
+  final DateTime _startDate = DateTime(2024, 6, 29);
+  final DateTime _endDate = DateTime(2024, 7, 6);
 
   Future<List<Event>> fetchEvents() async {
     try {
@@ -101,6 +101,7 @@ class _CalendarPageState extends State<CalendarPage> {
             startTime: DateTime.parse(event.startTime),
             endTime: DateTime.parse(event.endTime),
             subject: event.title,
+            
             notes: event.id, //For Navigation 
             color: const Color.fromRGBO(222, 121, 46, 1),
           );
@@ -155,66 +156,54 @@ class _CalendarPageState extends State<CalendarPage> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          Align(
-            alignment: const Alignment(0.0, -1.2), // Move the image upwards by 20% of the screen height
-            child: Opacity(
-              opacity: 0.2, // Adjust the opacity value as needed
-              child: Image.asset(
-                'assets/Roskilde_logo.png',
-                fit: BoxFit.cover,
-                width: MediaQuery.of(context).size.width * 2,
-                height: MediaQuery.of(context).size.height * 0.5,
-              ),
-            ),
-          ),
           SfCalendar(
-            view: _calendarView,
-            firstDayOfWeek: 1,
+            view: CalendarView.schedule,
+            scheduleViewSettings: const ScheduleViewSettings(
+              monthHeaderSettings: MonthHeaderSettings(
+                backgroundColor: Color.fromRGBO(0, 0, 0, 0.7),
+                height: 70),
+            ),
+            scheduleViewMonthHeaderBuilder: (BuildContext context, ScheduleViewMonthHeaderDetails details) {
+              String formattedDate = DateFormat.yMMMM().format(details.date);
+              return Container(
+                color: const Color.fromRGBO(0, 0, 0, 0.7),
+                height: 70,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        formattedDate,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: Image.asset(
+                        'assets/Roskilde_logo.png',
+                        fit: BoxFit.fitHeight,
+                        width: 90,
+                        height: 60,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
             dataSource: EventDataSource(_appointments),
+            headerHeight: 0, // Adjust the height to not show
             backgroundColor: Colors.white,
-            todayHighlightColor: Color.fromRGBO(222, 121, 46, 1),
+            todayHighlightColor: const Color.fromRGBO(222, 121, 46, 1),
             showCurrentTimeIndicator: true,
-            selectionDecoration: BoxDecoration(
-              color: Color.fromRGBO(222, 121, 46, 1),
-              border: Border.all(color: Color.fromRGBO(222, 121, 46, 1), width: 10),
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-            ),
-            timeSlotViewSettings: TimeSlotViewSettings(
-              timeInterval: Duration(minutes: 120), // Set larger time interval
-              timeFormat: 'HH:mm',
-              startHour: 00, // Start at 07:00
-              endHour: 24, // End at 23:00
-              timeRulerSize: 50, // Smaller time ruler size
-              timeIntervalHeight: 49, // Adjusted time interval height to fit more intervals on screen
-              timeTextStyle: TextStyle(color: Colors.black),
-            ),
-            headerHeight: 0, // Remove the header
-            viewHeaderHeight: 50,
-            viewHeaderStyle: ViewHeaderStyle(
-              dayTextStyle: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              dateTextStyle: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            cellBorderColor: Color.fromRGBO(222, 121, 46, 0.9), // Set gridlines to orange
             minDate: _startDate,
             maxDate: _endDate,
-            initialDisplayDate: _startDate,
-            initialSelectedDate: _startDate,
-            allowedViews: [CalendarView.day],
+            allowedViews: const [CalendarView.schedule],
             onTap: _onAppointmentTap,
-            monthViewSettings: MonthViewSettings(
-              showTrailingAndLeadingDates: false,
-              monthCellStyle: MonthCellStyle(
-                textStyle: TextStyle(color: Colors.black),
-              ),
-            ),
           ),
         ],
       ),
