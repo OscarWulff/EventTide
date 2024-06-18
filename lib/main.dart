@@ -6,7 +6,7 @@ import 'pages/swipe_page.dart';
 import 'pages/calendar_page.dart';
 import 'pages/make_event_page.dart';
 import 'pages/profile_page.dart'; // Import the profile page
-import 'package:eventtide/firebase_options.dart';
+import 'package:eventtide/Services/firebase_options.dart';
 
 
 
