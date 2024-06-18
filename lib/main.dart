@@ -129,7 +129,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today_sharp),
-            label: 'My Events',
+            label: 'Events',
           ),
         ],
         currentIndex: _selectedIndex,

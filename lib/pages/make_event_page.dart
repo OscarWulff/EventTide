@@ -264,7 +264,6 @@ class _MakeEventPageState extends State<MakeEventPage> {
         },
         'SubmittedBy': submittedBy,
         'imageUrl': imageUrl,
-        'Published_TF': false
       });
     }
 
@@ -279,8 +278,6 @@ class _MakeEventPageState extends State<MakeEventPage> {
       _selectedLocation = null;
       imageUrl = '';
     });
-
-    // Navigate to the EventDetailPage in Publishing mode
     Navigator.pushNamed(context, '/main');
   }
 
