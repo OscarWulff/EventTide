@@ -63,11 +63,23 @@ class EventDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Event Details'),
-        centerTitle: true,
-        backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
-      ),
+      appBar: mode == 'edit'
+          ? AppBar(
+              title: const Text('Edit Event'),
+              centerTitle: true,
+              backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            )
+          : AppBar(
+              title: const Text('Event Details'),
+              centerTitle: true,
+              backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
+            ),
       body: FutureBuilder<DocumentSnapshot>(
         future:
             FirebaseFirestore.instance.collection('Events').doc(eventId).get(),
@@ -99,11 +111,12 @@ class EventDetailPage extends StatelessWidget {
                   placeholder: (context, url) =>
                       Center(child: CircularProgressIndicator()),
                   errorWidget: (context, url, error) => Icon(Icons.error),
-                ) else
-                   Image.asset(
+                )
+              else
+                Image.asset(
                   'assets/RosRos.png',
                   fit: BoxFit.cover,
-            ),
+                ),
               Container(
                 color: Colors.black.withOpacity(0.5),
               ),
@@ -243,15 +256,6 @@ class EventDetailPage extends StatelessWidget {
                   icon: Icon(Icons.delete),
                   label: 'Delete',
                 ),
-              ] else if (mode == 'Publishing') ...[
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.publish),
-                  label: 'Publish',
-                ),
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.edit),
-                  label: 'Edit',
-                ),
               ] else if (mode == 'view') ...[
                 const BottomNavigationBarItem(
                   icon: Icon(Icons.more_horiz, color: Colors.transparent),
@@ -291,33 +295,6 @@ class EventDetailPage extends StatelessWidget {
                   );
                   Navigator.pop(context);
                 });
-              } else if (mode == 'Publishing' && index == 0) {
-                FirebaseFirestore.instance
-                    .collection('Events')
-                    .doc(eventId)
-                    .update({'Published_TF': true}).then((_) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Event published successfully')),
-                  );
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const MainNavigationWrapper()),
-                    (Route<dynamic> route) => false,
-                  );
-                });
-              } else if (mode == 'Publishing' && index == 1) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MakeEventPage(
-                      eventData: {
-                        'id': eventId,
-                        ...event,
-                      },
-                    ),
-                  ),
-                );
               } else if (mode == 'view' && index == 1) {
                 _leaveEvent(context, eventId);
                 Navigator.pushNamed(context, '/main');

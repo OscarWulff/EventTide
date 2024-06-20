@@ -90,7 +90,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
         : _selectedStartTime ?? DateTime(2024, 6, 29, 0, 0);
     DateTime maximumDate = isStart
         ? DateTime(2024, 7, 6, 23, 59)
-        : (_selectedStartTime ?? DateTime(2024, 6, 29, 0, 0)).add(Duration(days: 1));
+        : (_selectedStartTime ?? DateTime(2024, 6, 29, 0, 0))
+            .add(Duration(days: 1));
 
     if (!isStart && _selectedStartTime == null) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -171,7 +172,9 @@ class _MakeEventPageState extends State<MakeEventPage> {
         context: context,
         initialDate: initialDate,
         firstDate: firstDate,
-        lastDate: isStart ? lastDate : (_selectedStartTime ?? firstDate).add(Duration(days: 1)),
+        lastDate: isStart
+            ? lastDate
+            : (_selectedStartTime ?? firstDate).add(Duration(days: 1)),
       );
 
       if (picked != null) {
@@ -339,6 +342,13 @@ class _MakeEventPageState extends State<MakeEventPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: widget.eventData != null
+          ? AppBar(
+              title: Text('Edit Event'),
+              centerTitle: true,
+              backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
+            )
+          : null,
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
