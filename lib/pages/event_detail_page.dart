@@ -226,7 +226,12 @@ class EventDetailPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MakeEventPage(eventData: event),
+                    builder: (context) => MakeEventPage(
+                      eventData: {
+                        'id': eventId,
+                        ...event, // Spread the rest of the event data
+                      },
+                    ),
                   ),
                 );
               } else if (mode == 'edit' && index == 1) {
@@ -259,7 +264,12 @@ class EventDetailPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MakeEventPage(eventData: event),
+                    builder: (context) => MakeEventPage(
+                      eventData: {
+                        'id': eventId,
+                        ...event, // Spread the rest of the event data
+                      },
+                    ),
                   ),
                 );
               } else if (mode == 'view' && index == 1) {
