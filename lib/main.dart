@@ -123,7 +123,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Transform.translate(
-                        offset: Offset(0, 10), // Adjust the second value to move the image down
+                        offset: Offset(0, 3), // Adjust the second value to move the image down
                         child: Image.asset(
                           'assets/sandlogo.png',
                           height: 55,
