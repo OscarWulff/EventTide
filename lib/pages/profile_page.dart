@@ -93,7 +93,7 @@ class ProfilePage extends StatelessWidget {
                   },
                   child: const Text('Log out', style: TextStyle(color: Colors.black)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(222, 121, 46, 1), // Set the button color to orange
+                    backgroundColor: Colors.grey, // Set the button color to grey
                   ),
                 ),
               ),
@@ -143,22 +143,41 @@ class ProfilePage extends StatelessWidget {
                           itemCount: events.length,
                           itemBuilder: (context, index) {
                             final event = events[index];
-                            return ListTile(
-                              leading: Text(event['EventTitle'], style: TextStyle(color: Colors.black)),
-                              title: Text('${event['MaxPeople']}', style: TextStyle(color: Colors.black)),
-                              trailing: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EventDetailPage(eventId: event.id, mode: 'edit'),
+                            return Container(
+                              margin: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding: const EdgeInsets.all(16.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(event['EventTitle'], style: TextStyle(color: Colors.black)),
+                                        const SizedBox(height: 8),
+                                        Text('Max People: ${event['MaxPeople']}', style: TextStyle(color: Colors.black)),
+                                      ],
                                     ),
-                                  );
-                                },
-                                child: const Text('View', style: TextStyle(color: Colors.black)),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color.fromRGBO(222, 121, 46, 1), // Set the button color to orange
-                                ),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EventDetailPage(eventId: event.id, mode: 'edit'),
+                                        ),
+                                      );
+                                    },
+                                    child: const Text('View', style: TextStyle(color: Colors.black)),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromRGBO(222, 121, 46, 1), // Set the button color to orange
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
                           },
