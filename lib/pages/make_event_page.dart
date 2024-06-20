@@ -55,15 +55,15 @@ class _MakeEventPageState extends State<MakeEventPage> {
   }
 
   String? _validateTitle(String value) {
-    if (value.length > 50) {
-      return 'Title cannot exceed 50 characters';
+    if (value.length > 30) {
+      return 'Title cannot exceed 30 characters';
     }
     return null;
   }
 
   String? _validateCampName(String value) {
-    if (value.length > 50) {
-      return 'Camp name cannot exceed 50 characters';
+    if (value.length > 30) {
+      return 'Camp name cannot exceed 30 characters';
     }
     return null;
   }
@@ -375,10 +375,10 @@ class _MakeEventPageState extends State<MakeEventPage> {
                                 color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
                           errorText: _validateTitle(_titleController.text),
-                          counterText: '${_titleController.text.length}/50',
+                          counterText: '${_titleController.text.length}/30',
                         ),
                         textAlign: TextAlign.center,
-                        maxLength: 50,
+                        maxLength: 30,
                         onChanged: (value) {
                           setState(() {});
                         },
@@ -401,10 +401,10 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           ),
                           errorText:
                               _validateCampName(_campNameController.text),
-                          counterText: '${_campNameController.text.length}/50',
+                          counterText: '${_campNameController.text.length}/30',
                         ),
                         textAlign: TextAlign.center,
-                        maxLength: 50,
+                        maxLength: 30,
                         onChanged: (value) {
                           setState(() {});
                         },
