@@ -157,9 +157,40 @@ class ProfilePage extends StatelessWidget {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(event['EventTitle'], style: TextStyle(color: Colors.black)),
+                                        Text(
+                                          event['EventTitle'],
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 20, // Adjust the font size as needed
+                                            fontWeight: FontWeight.bold, // Optional: Make the text bold
+                                          ),
+                                        ),
                                         const SizedBox(height: 8),
-                                        Text('Max People: ${event['MaxPeople']}', style: TextStyle(color: Colors.black)),
+                                        StreamBuilder<QuerySnapshot>(
+                                          stream: FirebaseFirestore.instance
+                                              .collection('Join_Registry')
+                                              .where('eventId', isEqualTo: event.id)
+                                              .snapshots(),
+                                          builder: (context, joinSnapshot) {
+                                            if (joinSnapshot.connectionState == ConnectionState.waiting) {
+                                              return Text(
+                                                'Loading participants...',
+                                                style: TextStyle(color: Colors.black),
+                                              );
+                                            }
+                                            if (!joinSnapshot.hasData || joinSnapshot.data!.docs.isEmpty) {
+                                              return Text(
+                                                'Participants: 0/${event['MaxPeople']}',
+                                                style: TextStyle(color: Colors.black),
+                                              );
+                                            }
+                                            final participantCount = joinSnapshot.data!.docs.length;
+                                            return Text(
+                                              'Participants: $participantCount/${event['MaxPeople']}',
+                                              style: TextStyle(color: Colors.black),
+                                            );
+                                          },
+                                        ),
                                       ],
                                     ),
                                   ),
