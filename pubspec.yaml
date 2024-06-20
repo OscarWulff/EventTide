@@ -35,4 +35,6 @@ flutter:
     - assets/RF23_Map.png
     - assets/NoPhoto_new.png
     - assets/RosRos.png
+    - assets/logo.png
+    - assets/sandlogo.png
   uses-material-design: true #Include icons

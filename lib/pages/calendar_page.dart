@@ -129,30 +129,6 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            backgroundColor: Colors.black, // Background color for the icon
-            child: IconButton(
-              icon: const Icon(Icons.person),
-              color: Colors.white, // Icon color
-              onPressed: () {
-                Navigator.pushNamed(context, '/profile');
-              },
-            ),
-          ),
-        ),
-        title: const Text(
-          'Calendar',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.normal,
-          ),
-        ),
-      ),
       backgroundColor: Colors.white,
       body: Stack(
         children: [

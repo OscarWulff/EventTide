@@ -65,13 +65,30 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
         centerTitle: true,
-        title: const Text('Welcome to EventTide'),
+        title: const Text('EventTide'),
+           flexibleSpace: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Transform.translate(
+                        offset: Offset(0, 10), // Adjust the second value to move the image down
+                        child: Image.asset(
+                          'assets/sandlogo.png',
+                          height: 55,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image.asset('assets/Roskilde_logo.png', height: 150,),
+            Image.asset('assets/logo.png', height: 250,),
             SignInButton(
               Buttons.google,
               onPressed: () async {

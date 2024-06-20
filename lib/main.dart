@@ -93,9 +93,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _selectedIndex == 2
-          ? null
-          : AppBar(
+      appBar: AppBar(
               centerTitle: true,
               backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
               leading: Padding(
@@ -118,7 +116,25 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
                   fontWeight: FontWeight.normal,
                 ),
               ),
+              flexibleSpace: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Transform.translate(
+                        offset: Offset(0, 10), // Adjust the second value to move the image down
+                        child: Image.asset(
+                          'assets/sandlogo.png',
+                          height: 55,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
+
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
