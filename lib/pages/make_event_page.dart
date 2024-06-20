@@ -432,8 +432,6 @@ class _MakeEventPageState extends State<MakeEventPage> {
                         ),
                         textAlign: TextAlign.center,
                         maxLength: 200,
-                        maxLines: 3, // Allow up to 3 lines of text
-                        minLines: 1,
                         onChanged: (value) {
                           setState(() {});
                         },
