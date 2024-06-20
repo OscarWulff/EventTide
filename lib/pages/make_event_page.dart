@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:eventtide/Services/add_image.dart'; // Import the AddImage component
 import 'map_page.dart';
 import 'event_detail_page.dart'; // Import EventDetailPage
+import 'package:flutter/services.dart';
 
 class MakeEventPage extends StatefulWidget {
   final Map<String, dynamic>? eventData; // Optional event data for editing mode
@@ -282,7 +283,9 @@ class _MakeEventPageState extends State<MakeEventPage> {
   }
 
   void _selectLocation() {
+    FocusScope.of(context).requestFocus(FocusNode());
     Navigator.push(
+        // Unfocus the keyboard
       context,
       MaterialPageRoute(
         builder: (context) => ZoomableMapPage(
@@ -316,6 +319,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      const SizedBox(height: 20),
                       AddImage(
                         onImageUploaded: (url) {
                           setState(() {

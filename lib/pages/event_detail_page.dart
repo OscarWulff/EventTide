@@ -99,7 +99,11 @@ class EventDetailPage extends StatelessWidget {
                   placeholder: (context, url) =>
                       Center(child: CircularProgressIndicator()),
                   errorWidget: (context, url, error) => Icon(Icons.error),
-                ),
+                ) else
+                   Image.asset(
+                  'assets/Roskilde_logo.png',
+                  fit: BoxFit.cover,
+            ),
               Container(
                 color: Colors.black.withOpacity(0.5),
               ),
