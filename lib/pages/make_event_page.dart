@@ -82,9 +82,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
             : (now.isAfter(DateTime(2024, 7, 6))
                 ? DateTime(2024, 7, 6, 0, 0)
                 : DateTime(now.year, now.month, now.day, now.hour, now.minute)))
-        : (_selectedStartTime != null
-            ? _selectedStartTime!.add(Duration(minutes: 1))
-            : DateTime(2024, 6, 29, 0, 0));
+        : (_selectedStartTime ?? DateTime(2024, 6, 29, 0, 0));
 
     DateTime? minimumDate =
         isStart ? DateTime(2024, 6, 29, 0, 0) : _selectedStartTime;
@@ -133,51 +131,55 @@ class _MakeEventPageState extends State<MakeEventPage> {
 
   Future<void> _showAndroidDatePicker(
       BuildContext context, bool isStart) async {
-    final DateTime now = DateTime.now();
-    final DateTime firstDate = DateTime(2024, 6, 29);
-    final DateTime lastDate = DateTime(2024, 7, 6);
-    DateTime? initialDate = isStart
-        ? (now.isBefore(firstDate)
-            ? firstDate
-            : (now.isAfter(lastDate) ? lastDate : now))
-        : (_selectedStartTime != null
-            ? _selectedStartTime!.add(Duration(minutes: 1))
-            : firstDate);
+    try {
+      final DateTime now = DateTime.now();
+      final DateTime firstDate = DateTime(2024, 6, 29);
+      final DateTime lastDate = DateTime(2024, 7, 6);
+      DateTime? initialDate = isStart
+          ? (now.isBefore(firstDate)
+              ? firstDate
+              : (now.isAfter(lastDate) ? lastDate : now))
+          : (_selectedStartTime ?? firstDate);
 
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: firstDate,
-      lastDate: lastDate,
-    );
-
-    if (picked != null) {
-      final TimeOfDay? time = await showTimePicker(
+      final DateTime? picked = await showDatePicker(
         context: context,
-        initialTime: TimeOfDay(hour: 0, minute: 0),
-        builder: (BuildContext context, Widget? child) {
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-            child: child!,
-          );
-        },
+        initialDate: initialDate,
+        firstDate: firstDate,
+        lastDate: lastDate,
       );
 
-      if (time != null) {
-        final DateTime selectedDateTime = DateTime(
-            picked.year, picked.month, picked.day, time.hour, time.minute);
-        setState(() {
-          if (isStart) {
-            _selectedStartTime = selectedDateTime;
-            if (_selectedEndTime == null ||
-                _selectedEndTime!.isBefore(selectedDateTime)) {
+      if (picked != null) {
+        final TimeOfDay? time = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay(hour: 0, minute: 0),
+          builder: (BuildContext context, Widget? child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              child: child!,
+            );
+          },
+        );
+
+        if (time != null) {
+          final DateTime selectedDateTime = DateTime(
+              picked.year, picked.month, picked.day, time.hour, time.minute);
+          setState(() {
+            if (isStart) {
+              _selectedStartTime = selectedDateTime;
+              if (_selectedEndTime == null ||
+                  _selectedEndTime!.isBefore(selectedDateTime)) {
+                _selectedEndTime = selectedDateTime;
+              }
+            } else {
               _selectedEndTime = selectedDateTime;
             }
-          } else {
-            _selectedEndTime = selectedDateTime;
-          }
-        });
+          });
+        }
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select a start time first')),
+      );
     }
   }
 

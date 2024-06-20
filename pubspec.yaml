@@ -33,4 +33,6 @@ flutter:
   assets:    #Include images
     - assets/Roskilde_logo.png
     - assets/RF23_Map.png
+    - assets/NoPhoto_new.png
+    - assets/RosRos.png
   uses-material-design: true #Include icons

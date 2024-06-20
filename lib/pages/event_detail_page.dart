@@ -101,7 +101,7 @@ class EventDetailPage extends StatelessWidget {
                   errorWidget: (context, url, error) => Icon(Icons.error),
                 ) else
                    Image.asset(
-                  'assets/Roskilde_logo.png',
+                  'assets/RosRos.png',
                   fit: BoxFit.cover,
             ),
               Container(

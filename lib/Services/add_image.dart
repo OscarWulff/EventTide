@@ -63,7 +63,7 @@ class _AddImageState extends State<AddImage> {
             fit: BoxFit.cover,
           ) else
             Image.asset(
-              'assets/Roskilde_logo.png',
+              'assets/NoPhoto_new.png',
               width: 200,
               height: 200,
               fit: BoxFit.cover,
