@@ -18,6 +18,7 @@ class SwipePage extends StatefulWidget {
 class _SwipePageState extends State<SwipePage> {
   final SwiperController swiperController = SwiperController();
   late Future<List<QueryDocumentSnapshot>> _eventsFuture;
+  bool _isTextVisible = true;
 
   @override
   void initState() {
@@ -179,6 +180,16 @@ class _SwipePageState extends State<SwipePage> {
                     swiperController.next();
                   }
                 },
+                onLongPress: () {
+                  setState(() {
+                    _isTextVisible = false;
+                  });
+                },
+                onLongPressUp: () {
+                  setState(() {
+                    _isTextVisible = true;
+                  });
+                },
                 child: Card(
                   child: Stack(
                     children: [
@@ -194,158 +205,161 @@ class _SwipePageState extends State<SwipePage> {
                                 Icon(Icons.error),
                           ),
                         ),
-                      Positioned.fill(
-                        child: Container(
-                          color: Colors.black.withOpacity(
-                              0.5), // Optional: Add a dark overlay for better text visibility
+                      if (_isTextVisible)
+                        Positioned.fill(
+                          child: Container(
+                            color: Colors.black.withOpacity(
+                                0.5), // Optional: Add a dark overlay for better text visibility
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              event['EventTitle'],
-                              style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                      if (_isTextVisible)
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                event['EventTitle'],
+                                style: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Icon(Icons.location_on, color: Colors.white),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Camp: ${event['CampName']}',
-                                    style: const TextStyle(
-                                        fontSize: 20, color: Colors.white),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Icon(Icons.location_on, color: Colors.white),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Camp: ${event['CampName']}',
+                                      style: const TextStyle(
+                                          fontSize: 20, color: Colors.white),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Icon(Icons.description, color: Colors.white),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Description: ${event['EventDescription']}',
-                                    style: const TextStyle(
-                                        fontSize: 20, color: Colors.white),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Icon(Icons.people, color: Colors.white),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Capacity: ${event['MaxPeople']} people',
-                                    style: const TextStyle(
-                                        fontSize: 20, color: Colors.white),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Icon(Icons.access_time, color: Colors.white),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Starts: $formattedStartTime',
-                                    style: const TextStyle(
-                                        fontSize: 20, color: Colors.white),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Icon(Icons.access_time_filled,
-                                    color: Colors.white),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Ends: $formattedEndTime',
-                                    style: const TextStyle(
-                                        fontSize: 20, color: Colors.white),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            ElevatedButton(
-                              onPressed: () {
-                                final location = event['Location'];
-                                if (location != null) {
-                                  final Offset eventLocation = Offset(
-                                    location['dx'],
-                                    location['dy'],
-                                  );
-                                  _showLocationOnMap(context, eventLocation);
-                                }
-                              },
-                              child: Text(
-                                'Show Location',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.black),
+                                ],
                               ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Color.fromRGBO(222, 121, 46, 1),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Icon(Icons.description, color: Colors.white),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Description: ${event['EventDescription']}',
+                                      style: const TextStyle(
+                                          fontSize: 20, color: Colors.white),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 16,
-                        left: 16,
-                        right: 16,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.black.withOpacity(0.5),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Icon(Icons.people, color: Colors.white),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Capacity: ${event['MaxPeople']} people',
+                                      style: const TextStyle(
+                                          fontSize: 20, color: Colors.white),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              child: IconButton(
-                                icon: Icon(Icons.close,
-                                    color: Colors.red, size: 50),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Icon(Icons.access_time, color: Colors.white),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Starts: $formattedStartTime',
+                                      style: const TextStyle(
+                                          fontSize: 20, color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Icon(Icons.access_time_filled,
+                                      color: Colors.white),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Ends: $formattedEndTime',
+                                      style: const TextStyle(
+                                          fontSize: 20, color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              ElevatedButton(
                                 onPressed: () {
-                                  swiperController.next();
+                                  final location = event['Location'];
+                                  if (location != null) {
+                                    final Offset eventLocation = Offset(
+                                      location['dx'],
+                                      location['dy'],
+                                    );
+                                    _showLocationOnMap(context, eventLocation);
+                                  }
                                 },
+                                child: Text(
+                                  'Show Location',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.black),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Color.fromRGBO(222, 121, 46, 1),
+                                ),
                               ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.black.withOpacity(0.5),
-                              ),
-                              child: IconButton(
-                                icon: Icon(Icons.check,
-                                    color: Colors.green, size: 50),
-                                onPressed: () {
-                                  _joinEvent(context, eventId);
-                                  swiperController.previous();
-                                },
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
+                      if (_isTextVisible)
+                        Positioned(
+                          bottom: 16,
+                          left: 16,
+                          right: 16,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.black.withOpacity(0.5),
+                                ),
+                                child: IconButton(
+                                  icon: Icon(Icons.close,
+                                      color: Colors.red, size: 50),
+                                  onPressed: () {
+                                    swiperController.next();
+                                  },
+                                ),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.black.withOpacity(0.5),
+                                ),
+                                child: IconButton(
+                                  icon: Icon(Icons.check,
+                                      color: Colors.green, size: 50),
+                                  onPressed: () {
+                                    _joinEvent(context, eventId);
+                                    swiperController.previous();
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                 ),
