@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class ZoomableMapPage extends StatefulWidget {
   final Function(Offset) onLocationSelected;
-  final Offset initialLocation;
+  final Offset? initialLocation; // Made initialLocation nullable
   final bool enableZoom;
   final bool editable;
 
   ZoomableMapPage({
     required this.onLocationSelected,
-    required this.initialLocation,
+    this.initialLocation,
     this.enableZoom = false,
     this.editable = false,
   });
@@ -28,29 +28,40 @@ class _ZoomableMapPageState extends State<ZoomableMapPage> {
   @override
   void initState() {
     super.initState();
+    _tapPosition = widget.initialLocation;
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       _setInitialPosition();
     });
-
-    // Set the initial position based on passed location
-    _tapPosition = widget.initialLocation;
   }
 
   void _setInitialPosition() {
-    // Manually set the initial translation values (in pixels)
-    final double initialTranslateX = widget.editable
-        ? -1100
-        : -1100 / 2; // Adjust translation based on the scale
-    final double initialTranslateY = widget.editable
-        ? -750
-        : -750 / 2; // Adjust translation based on the scale
+    final double scale = widget.editable ? _fixedScale : _viewScale;
+    final Size screenSize = MediaQuery.of(context).size;
+    final double screenCenterX = screenSize.width / 2;
+    final double screenCenterY = screenSize.height / 2;
+
+    double initialTranslateX;
+    double initialTranslateY;
+
+    if (_tapPosition == Offset(0.0, 0.0)) {
+      // Default translation values
+      initialTranslateX = widget.editable
+          ? -1100
+          : -1100 / 2; // Adjust translation based on the scale
+      initialTranslateY = widget.editable
+          ? -750
+          : -750 / 2; // Adjust translation based on the scale
+    } else {
+      print('Initial location: $_tapPosition');
+      // Centering around the pin
+      initialTranslateX = screenCenterX - (_tapPosition!.dx * scale);
+      initialTranslateY = screenCenterY - (_tapPosition!.dy * scale);
+    }
 
     setState(() {
       _transformationController.value = Matrix4.identity()
         ..translate(initialTranslateX, initialTranslateY)
-        ..scale(widget.editable
-            ? _fixedScale
-            : _viewScale); // Use view scale when not editable
+        ..scale(scale);
     });
   }
 
