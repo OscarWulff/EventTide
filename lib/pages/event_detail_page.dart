@@ -6,6 +6,7 @@ import 'package:eventtide/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eventtide/Services/custom_cache_manager.dart';
 import 'package:intl/intl.dart';
+import 'map_page.dart';
 
 class EventDetailPage extends StatelessWidget {
   final String eventId;
@@ -43,6 +44,20 @@ class EventDetailPage extends StatelessWidget {
         SnackBar(content: Text('No user is logged in')),
       );
     }
+  }
+
+  void _showLocationOnMap(BuildContext context, Offset location) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ZoomableMapPage(
+          onLocationSelected: (Offset _) {},
+          initialLocation: location,
+          enableZoom: true, // Enable zoom for the EventDetailPage
+          editable: false, // Make the location not editable
+        ),
+      ),
+    );
   }
 
   @override
@@ -171,6 +186,26 @@ class EventDetailPage extends StatelessWidget {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        final location = event['Location'];
+                        if (location != null) {
+                          final Offset eventLocation = Offset(
+                            location['dx'],
+                            location['dy'],
+                          );
+                          _showLocationOnMap(context, eventLocation);
+                        }
+                      },
+                      child: Text(
+                        'Show Location',
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromRGBO(222, 121, 46, 1),
+                      ),
                     ),
                   ],
                 ),
