@@ -69,140 +69,144 @@ class _MakeEventPageState extends State<MakeEventPage> {
   }
 
   String? _validateDescription(String value) {
-    if (value.length > 300) {
-      return 'Description cannot exceed 300 characters';
+    if (value.length > 200) {
+      return 'Description cannot exceed 200 characters';
     }
     return null;
   }
 
   void _showIOSDatePicker(BuildContext ctx, bool isStart) {
-  DateTime now = DateTime.now();
-  DateTime initialDateTime = isStart
-      ? (now.isBefore(DateTime(2024, 6, 29))
-          ? DateTime(2024, 6, 29, 0, 0)
-          : (now.isAfter(DateTime(2024, 7, 6))
-              ? DateTime(2024, 7, 6, 0, 0)
-              : DateTime(now.year, now.month, now.day, now.hour, now.minute)))
-      : (_selectedStartTime ?? DateTime(2024, 6, 29, 0, 0));
+    DateTime now = DateTime.now();
+    DateTime initialDateTime = isStart
+        ? (now.isBefore(DateTime(2024, 6, 29))
+            ? DateTime(2024, 6, 29, 0, 0)
+            : (now.isAfter(DateTime(2024, 7, 6))
+                ? DateTime(2024, 7, 6, 0, 0)
+                : DateTime(now.year, now.month, now.day, now.hour, now.minute)))
+        : (_selectedStartTime ?? DateTime(2024, 6, 29, 0, 0));
 
-  DateTime minimumDate = isStart ? DateTime(2024, 6, 29, 0, 0) : _selectedStartTime ?? DateTime(2024, 6, 29, 0, 0);
-  DateTime maximumDate = DateTime(2024, 7, 6, 23, 59);
+    DateTime minimumDate = isStart
+        ? DateTime(2024, 6, 29, 0, 0)
+        : _selectedStartTime ?? DateTime(2024, 6, 29, 0, 0);
+    DateTime maximumDate = DateTime(2024, 7, 6, 23, 59);
 
-  if (!isStart && _selectedStartTime == null) {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(content: Text('Please select a start time first')),
-      );
-    });
-    return;
-  }
+    if (!isStart && _selectedStartTime == null) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          SnackBar(content: Text('Please select a start time first')),
+        );
+      });
+      return;
+    }
 
-  showCupertinoModalPopup(
-    context: ctx,
-    builder: (_) => Container(
-      height: 250,
-      color: Color.fromARGB(255, 255, 255, 255),
-      child: Column(
-        children: [
-          Expanded(
-            child: CupertinoDatePicker(
-              use24hFormat: true,
-              initialDateTime: initialDateTime.isBefore(minimumDate)
-                  ? minimumDate
-                  : initialDateTime,
-              mode: CupertinoDatePickerMode.dateAndTime,
-              minimumDate: minimumDate,
-              maximumDate: maximumDate,
-              onDateTimeChanged: (val) {
-                try {
-                  setState(() {
-                    if (isStart) {
-                      _selectedStartTime = val;
-                      if (_selectedEndTime != null && _selectedEndTime!.isBefore(val)) {
+    showCupertinoModalPopup(
+      context: ctx,
+      builder: (_) => Container(
+        height: 250,
+        color: Color.fromARGB(255, 255, 255, 255),
+        child: Column(
+          children: [
+            Expanded(
+              child: CupertinoDatePicker(
+                use24hFormat: true,
+                initialDateTime: initialDateTime.isBefore(minimumDate)
+                    ? minimumDate
+                    : initialDateTime,
+                mode: CupertinoDatePickerMode.dateAndTime,
+                minimumDate: minimumDate,
+                maximumDate: maximumDate,
+                onDateTimeChanged: (val) {
+                  try {
+                    setState(() {
+                      if (isStart) {
+                        _selectedStartTime = val;
+                        if (_selectedEndTime != null &&
+                            _selectedEndTime!.isBefore(val)) {
+                          _selectedEndTime = val;
+                        }
+                      } else {
                         _selectedEndTime = val;
                       }
-                    } else {
-                      _selectedEndTime = val;
-                    }
-                  });
-                } catch (e) {
-                  print('Error: $e');
-                }
-              },
+                    });
+                  } catch (e) {
+                    print('Error: $e');
+                  }
+                },
+              ),
             ),
-          ),
-          CupertinoButton(
-            child: Text('OK'),
-            onPressed: () => Navigator.of(ctx).pop(),
-          ),
-        ],
+            CupertinoButton(
+              child: Text('OK'),
+              onPressed: () => Navigator.of(ctx).pop(),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
-
-Future<void> _showAndroidDatePicker(BuildContext context, bool isStart) async {
-  if (!isStart && _selectedStartTime == null) {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select a start time first')),
-      );
-    });
-    return;
+    );
   }
 
-  try {
-    final DateTime now = DateTime.now();
-    final DateTime firstDate = DateTime(2024, 6, 29);
-    final DateTime lastDate = DateTime(2024, 7, 6);
-    DateTime? initialDate = isStart
-        ? (now.isBefore(firstDate)
-            ? firstDate
-            : (now.isAfter(lastDate) ? lastDate : now))
-        : (_selectedStartTime ?? firstDate);
+  Future<void> _showAndroidDatePicker(
+      BuildContext context, bool isStart) async {
+    if (!isStart && _selectedStartTime == null) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please select a start time first')),
+        );
+      });
+      return;
+    }
 
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: firstDate,
-      lastDate: lastDate,
-    );
+    try {
+      final DateTime now = DateTime.now();
+      final DateTime firstDate = DateTime(2024, 6, 29);
+      final DateTime lastDate = DateTime(2024, 7, 6);
+      DateTime? initialDate = isStart
+          ? (now.isBefore(firstDate)
+              ? firstDate
+              : (now.isAfter(lastDate) ? lastDate : now))
+          : (_selectedStartTime ?? firstDate);
 
-    if (picked != null) {
-      final TimeOfDay? time = await showTimePicker(
+      final DateTime? picked = await showDatePicker(
         context: context,
-        initialTime: TimeOfDay(hour: 0, minute: 0),
-        builder: (BuildContext context, Widget? child) {
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-            child: child!,
-          );
-        },
+        initialDate: initialDate,
+        firstDate: firstDate,
+        lastDate: lastDate,
       );
 
-      if (time != null) {
-        final DateTime selectedDateTime = DateTime(
-            picked.year, picked.month, picked.day, time.hour, time.minute);
-        setState(() {
-          if (isStart) {
-            print('Selected start time is: $selectedDateTime');
-            _selectedStartTime = selectedDateTime;
-            if (_selectedEndTime != null && _selectedEndTime!.isBefore(selectedDateTime)) {
+      if (picked != null) {
+        final TimeOfDay? time = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay(hour: 0, minute: 0),
+          builder: (BuildContext context, Widget? child) {
+            return MediaQuery(
+              data:
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              child: child!,
+            );
+          },
+        );
+
+        if (time != null) {
+          final DateTime selectedDateTime = DateTime(
+              picked.year, picked.month, picked.day, time.hour, time.minute);
+          setState(() {
+            if (isStart) {
+              print('Selected start time is: $selectedDateTime');
+              _selectedStartTime = selectedDateTime;
+              if (_selectedEndTime != null &&
+                  _selectedEndTime!.isBefore(selectedDateTime)) {
+                _selectedEndTime = selectedDateTime;
+              }
+            } else {
+              print('Selected end time is: $selectedDateTime');
               _selectedEndTime = selectedDateTime;
             }
-          } else {
-            print('Selected end time is: $selectedDateTime');
-            _selectedEndTime = selectedDateTime;
-          }
-        });
+          });
+        }
       }
+    } catch (e) {
+      print('Error: $e');
     }
-  } catch (e) {
-    print('Error: $e');
   }
-}
-
-
 
   void _showDatePicker(BuildContext context, bool isStart) {
     if (Platform.isIOS) {
@@ -312,7 +316,7 @@ Future<void> _showAndroidDatePicker(BuildContext context, bool isStart) async {
   void _selectLocation() {
     FocusScope.of(context).requestFocus(FocusNode());
     Navigator.push(
-        // Unfocus the keyboard
+      // Unfocus the keyboard
       context,
       MaterialPageRoute(
         builder: (context) => ZoomableMapPage(
@@ -424,10 +428,10 @@ Future<void> _showAndroidDatePicker(BuildContext context, bool isStart) async {
                           errorText:
                               _validateDescription(_descriptionController.text),
                           counterText:
-                              '${_descriptionController.text.length}/300',
+                              '${_descriptionController.text.length}/200',
                         ),
                         textAlign: TextAlign.center,
-                        maxLength: 300,
+                        maxLength: 200,
                         maxLines: 3, // Allow up to 3 lines of text
                         minLines: 1,
                         onChanged: (value) {
