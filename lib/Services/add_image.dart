@@ -61,7 +61,13 @@ class _AddImageState extends State<AddImage> {
             width: 200,
             height: 200,
             fit: BoxFit.cover,
-          ),
+          ) else
+            Image.asset(
+              'assets/Roskilde_logo.png',
+              width: 200,
+              height: 200,
+              fit: BoxFit.cover,
+            ),
         ElevatedButton(
           onPressed: _pickImage,
           child: Text('Select Image', style: TextStyle(fontSize: 12, color: Colors.black)),
