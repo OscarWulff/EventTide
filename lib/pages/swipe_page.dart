@@ -6,6 +6,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'dart:math';
 import 'package:eventtide/Services/custom_cache_manager.dart';
 import 'map_page.dart';
+import 'package:intl/intl.dart';
 
 class SwipePage extends StatefulWidget {
   const SwipePage({Key? key}) : super(key: key);
@@ -159,6 +160,13 @@ class _SwipePageState extends State<SwipePage> {
                   : '';
               final eventId = events[index].id;
 
+              // Parse and format StartTime and EndTime
+              final DateFormat formatter = DateFormat('dd.MMM | kk:mm');
+              final DateTime startTime = DateTime.parse(event['StartTime']);
+              final String formattedStartTime = formatter.format(startTime);
+              final DateTime endTime = DateTime.parse(event['EndTime']);
+              final String formattedEndTime = formatter.format(endTime);
+
               return GestureDetector(
                 onHorizontalDragEnd: (DragEndDetails details) {
                   if (details.primaryVelocity != null &&
@@ -254,7 +262,7 @@ class _SwipePageState extends State<SwipePage> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    'Start Time: ${event['StartTime']}',
+                                    'Starts: $formattedStartTime',
                                     style: const TextStyle(
                                         fontSize: 20, color: Colors.white),
                                   ),
@@ -269,7 +277,7 @@ class _SwipePageState extends State<SwipePage> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    'End Time: ${event['EndTime']}',
+                                    'Ends: $formattedEndTime',
                                     style: const TextStyle(
                                         fontSize: 20, color: Colors.white),
                                   ),
