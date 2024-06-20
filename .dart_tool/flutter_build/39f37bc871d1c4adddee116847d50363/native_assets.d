@@ -1,1 +1,0 @@
- C:\\Users\\Victor\\Desktop\\progprojekt\\EventTide\\.dart_tool\\flutter_build\\39f37bc871d1c4adddee116847d50363\\native_assets.yaml: 
