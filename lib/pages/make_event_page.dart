@@ -88,7 +88,9 @@ class _MakeEventPageState extends State<MakeEventPage> {
     DateTime minimumDate = isStart
         ? DateTime(2024, 6, 29, 0, 0)
         : _selectedStartTime ?? DateTime(2024, 6, 29, 0, 0);
-    DateTime maximumDate = DateTime(2024, 7, 6, 23, 59);
+    DateTime maximumDate = isStart
+        ? DateTime(2024, 7, 6, 23, 59)
+        : (_selectedStartTime ?? DateTime(2024, 6, 29, 0, 0)).add(Duration(days: 1));
 
     if (!isStart && _selectedStartTime == null) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -169,7 +171,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
         context: context,
         initialDate: initialDate,
         firstDate: firstDate,
-        lastDate: lastDate,
+        lastDate: isStart ? lastDate : (_selectedStartTime ?? firstDate).add(Duration(days: 1)),
       );
 
       if (picked != null) {
