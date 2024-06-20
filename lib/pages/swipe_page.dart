@@ -297,7 +297,7 @@ class _SwipePageState extends State<SwipePage> {
                                 ],
                               ),
                               const SizedBox(height: 10),
-                              ElevatedButton(
+                              TextButton(
                                 onPressed: () {
                                   final location = event['Location'];
                                   if (location != null) {
@@ -308,14 +308,37 @@ class _SwipePageState extends State<SwipePage> {
                                     _showLocationOnMap(context, eventLocation);
                                   }
                                 },
-                                child: Text(
-                                  'Show Location',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.black),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Show Location',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: const Color.fromRGBO(222, 121, 46, 1),
+                                        fontWeight: FontWeight.bold,
+                                        shadows: [
+                                          Shadow(
+                                            offset: Offset(2.0, 2.0),
+                                            blurRadius: 3.0,
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.only(top: 0),
+                                      height: 2,
+                                      color: Color.fromRGBO(222, 121, 46, 1),
+                                      width: 150, // Set the desired width here
+                                    ),
+                                  ],
                                 ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Color.fromRGBO(222, 121, 46, 1),
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                                  elevation: MaterialStateProperty.all(0),
+                                  padding: MaterialStateProperty.all(EdgeInsets.all(0)),
                                 ),
                               ),
                             ],
@@ -374,3 +397,4 @@ class _SwipePageState extends State<SwipePage> {
     );
   }
 }
+
