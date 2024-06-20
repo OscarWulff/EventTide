@@ -22,6 +22,7 @@ class _ZoomableMapPageState extends State<ZoomableMapPage> {
       TransformationController();
   Offset? _tapPosition;
   final double _fixedScale = 8.0;
+  final double _viewScale = 4.0; // Define a different scale for view mode
   final String imagePath = 'assets/RF23_Map.png';
 
   @override
@@ -37,15 +38,19 @@ class _ZoomableMapPageState extends State<ZoomableMapPage> {
 
   void _setInitialPosition() {
     // Manually set the initial translation values (in pixels)
-    final double initialTranslateX =
-        -1100; // Change this value to set initial X position
-    final double initialTranslateY =
-        -750; // Change this value to set initial Y position
+    final double initialTranslateX = widget.editable
+        ? -1100
+        : -1100 / 2; // Adjust translation based on the scale
+    final double initialTranslateY = widget.editable
+        ? -750
+        : -750 / 2; // Adjust translation based on the scale
 
     setState(() {
       _transformationController.value = Matrix4.identity()
         ..translate(initialTranslateX, initialTranslateY)
-        ..scale(widget.enableZoom ? 10.0 : _fixedScale);
+        ..scale(widget.editable
+            ? _fixedScale
+            : _viewScale); // Use view scale when not editable
     });
   }
 
@@ -81,7 +86,7 @@ class _ZoomableMapPageState extends State<ZoomableMapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Select Location'),
+        title: Text(widget.editable ? 'Select Location' : 'Event Location'),
         actions: [
           if (widget.editable)
             IconButton(
@@ -105,14 +110,20 @@ class _ZoomableMapPageState extends State<ZoomableMapPage> {
                     Image.asset(imagePath),
                     if (_tapPosition != null)
                       Positioned(
-                        left:
-                            _tapPosition!.dx - 6, // Adjusted to center the icon
+                        left: _tapPosition!.dx -
+                            (widget.editable
+                                ? 6
+                                : 11), // Adjusted to center the icon based on editable
                         top: _tapPosition!.dy -
-                            23, // Adjusted to center the icon
+                            (widget.editable
+                                ? 23
+                                : 31), // Adjusted to center the icon based on editable
                         child: Icon(
                           Icons.location_pin,
                           color: Colors.red,
-                          size: 10, // Icon size 10 as requested
+                          size: widget.editable
+                              ? 10
+                              : 20, // Larger icon when not editable
                         ),
                       ),
                   ],
