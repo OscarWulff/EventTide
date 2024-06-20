@@ -188,18 +188,22 @@ class _SwipePageState extends State<SwipePage> {
                 child: Card(
                   child: Stack(
                     children: [
-                      if (imageUrl.isNotEmpty)
-                        Positioned.fill(
-                          child: CachedNetworkImage(
-                            cacheManager: CustomCacheManager.instance,
-                            imageUrl: imageUrl,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) =>
-                                Center(child: CircularProgressIndicator()),
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error),
-                          ),
-                        ),
+                      Positioned.fill(
+                        child: imageUrl.isNotEmpty
+                            ? CachedNetworkImage(
+                                cacheManager: CustomCacheManager.instance,
+                                imageUrl: imageUrl,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) =>
+                                    Center(child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                              )
+                            : Image.asset(
+                                'assets/RosRos.png',
+                                fit: BoxFit.cover,
+                              ),
+                      ),
                       if (_isTextVisible)
                         Positioned.fill(
                           child: Container(

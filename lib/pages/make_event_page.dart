@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io' show Platform;
@@ -39,9 +40,9 @@ class _MakeEventPageState extends State<MakeEventPage> {
       _descriptionController.text = widget.eventData!['EventDescription'];
       _maxPeopleController.text = widget.eventData!['MaxPeople'].toString();
       _campNameController.text = widget.eventData!['CampName'];
-      _selectedStartTime = DateTime.parse(widget.eventData!['StartTime']);
-      _selectedEndTime = DateTime.parse(widget.eventData!['EndTime']);
-      imageUrl = widget.eventData!['imageUrl'];
+      _selectedStartTime = DateTime.tryParse(widget.eventData!['StartTime']);
+      _selectedEndTime = DateTime.tryParse(widget.eventData!['EndTime']);
+      imageUrl = widget.eventData!['imageUrl'] ?? '';
       if (widget.eventData!['Location'] != null) {
         _selectedLocation = Offset(
           widget.eventData!['Location']['dx'],
@@ -75,113 +76,133 @@ class _MakeEventPageState extends State<MakeEventPage> {
   }
 
   void _showIOSDatePicker(BuildContext ctx, bool isStart) {
-    DateTime now = DateTime.now();
-    DateTime initialDateTime = isStart
-        ? (now.isBefore(DateTime(2024, 6, 29))
-            ? DateTime(2024, 6, 29, 0, 0)
-            : (now.isAfter(DateTime(2024, 7, 6))
-                ? DateTime(2024, 7, 6, 0, 0)
-                : DateTime(now.year, now.month, now.day, now.hour, now.minute)))
-        : (_selectedStartTime ?? DateTime(2024, 6, 29, 0, 0));
+  DateTime now = DateTime.now();
+  DateTime initialDateTime = isStart
+      ? (now.isBefore(DateTime(2024, 6, 29))
+          ? DateTime(2024, 6, 29, 0, 0)
+          : (now.isAfter(DateTime(2024, 7, 6))
+              ? DateTime(2024, 7, 6, 0, 0)
+              : DateTime(now.year, now.month, now.day, now.hour, now.minute)))
+      : (_selectedStartTime ?? DateTime(2024, 6, 29, 0, 0));
 
-    DateTime? minimumDate =
-        isStart ? DateTime(2024, 6, 29, 0, 0) : _selectedStartTime;
-    DateTime? maximumDate = DateTime(2024, 7, 6, 23, 59);
+  DateTime minimumDate = isStart ? DateTime(2024, 6, 29, 0, 0) : _selectedStartTime ?? DateTime(2024, 6, 29, 0, 0);
+  DateTime maximumDate = DateTime(2024, 7, 6, 23, 59);
 
-    showCupertinoModalPopup(
-      context: ctx,
-      builder: (_) => Container(
-        height: 250,
-        color: Color.fromARGB(255, 255, 255, 255),
-        child: Column(
-          children: [
-            Expanded(
-              child: CupertinoDatePicker(
-                use24hFormat: true,
-                initialDateTime: initialDateTime.isBefore(minimumDate!)
-                    ? minimumDate
-                    : initialDateTime,
-                mode: CupertinoDatePickerMode.dateAndTime,
-                minimumDate: minimumDate,
-                maximumDate: maximumDate,
-                onDateTimeChanged: (val) {
+  if (!isStart && _selectedStartTime == null) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(content: Text('Please select a start time first')),
+      );
+    });
+    return;
+  }
+
+  showCupertinoModalPopup(
+    context: ctx,
+    builder: (_) => Container(
+      height: 250,
+      color: Color.fromARGB(255, 255, 255, 255),
+      child: Column(
+        children: [
+          Expanded(
+            child: CupertinoDatePicker(
+              use24hFormat: true,
+              initialDateTime: initialDateTime.isBefore(minimumDate)
+                  ? minimumDate
+                  : initialDateTime,
+              mode: CupertinoDatePickerMode.dateAndTime,
+              minimumDate: minimumDate,
+              maximumDate: maximumDate,
+              onDateTimeChanged: (val) {
+                try {
                   setState(() {
                     if (isStart) {
                       _selectedStartTime = val;
-                      if (_selectedEndTime == null ||
-                          _selectedEndTime!.isBefore(val)) {
+                      if (_selectedEndTime != null && _selectedEndTime!.isBefore(val)) {
                         _selectedEndTime = val;
                       }
                     } else {
                       _selectedEndTime = val;
                     }
                   });
-                },
-              ),
+                } catch (e) {
+                  print('Error: $e');
+                }
+              },
             ),
-            CupertinoButton(
-              child: Text('OK'),
-              onPressed: () => Navigator.of(ctx).pop(),
-            ),
-          ],
-        ),
+          ),
+          CupertinoButton(
+            child: Text('OK'),
+            onPressed: () => Navigator.of(ctx).pop(),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
-  Future<void> _showAndroidDatePicker(
-      BuildContext context, bool isStart) async {
-    try {
-      final DateTime now = DateTime.now();
-      final DateTime firstDate = DateTime(2024, 6, 29);
-      final DateTime lastDate = DateTime(2024, 7, 6);
-      DateTime? initialDate = isStart
-          ? (now.isBefore(firstDate)
-              ? firstDate
-              : (now.isAfter(lastDate) ? lastDate : now))
-          : (_selectedStartTime ?? firstDate);
-
-      final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: initialDate,
-        firstDate: firstDate,
-        lastDate: lastDate,
-      );
-
-      if (picked != null) {
-        final TimeOfDay? time = await showTimePicker(
-          context: context,
-          initialTime: TimeOfDay(hour: 0, minute: 0),
-          builder: (BuildContext context, Widget? child) {
-            return MediaQuery(
-              data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-              child: child!,
-            );
-          },
-        );
-
-        if (time != null) {
-          final DateTime selectedDateTime = DateTime(
-              picked.year, picked.month, picked.day, time.hour, time.minute);
-          setState(() {
-            if (isStart) {
-              _selectedStartTime = selectedDateTime;
-              if (_selectedEndTime == null ||
-                  _selectedEndTime!.isBefore(selectedDateTime)) {
-                _selectedEndTime = selectedDateTime;
-              }
-            } else {
-              _selectedEndTime = selectedDateTime;
-            }
-          });
-        }
-      }
-    } catch (e) {
+Future<void> _showAndroidDatePicker(BuildContext context, bool isStart) async {
+  if (!isStart && _selectedStartTime == null) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please select a start time first')),
       );
-    }
+    });
+    return;
   }
+
+  try {
+    final DateTime now = DateTime.now();
+    final DateTime firstDate = DateTime(2024, 6, 29);
+    final DateTime lastDate = DateTime(2024, 7, 6);
+    DateTime? initialDate = isStart
+        ? (now.isBefore(firstDate)
+            ? firstDate
+            : (now.isAfter(lastDate) ? lastDate : now))
+        : (_selectedStartTime ?? firstDate);
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+    );
+
+    if (picked != null) {
+      final TimeOfDay? time = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(hour: 0, minute: 0),
+        builder: (BuildContext context, Widget? child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child!,
+          );
+        },
+      );
+
+      if (time != null) {
+        final DateTime selectedDateTime = DateTime(
+            picked.year, picked.month, picked.day, time.hour, time.minute);
+        setState(() {
+          if (isStart) {
+            print('Selected start time is: $selectedDateTime');
+            _selectedStartTime = selectedDateTime;
+            if (_selectedEndTime != null && _selectedEndTime!.isBefore(selectedDateTime)) {
+              _selectedEndTime = selectedDateTime;
+            }
+          } else {
+            print('Selected end time is: $selectedDateTime');
+            _selectedEndTime = selectedDateTime;
+          }
+        });
+      }
+    }
+  } catch (e) {
+    print('Error: $e');
+  }
+}
+
+
 
   void _showDatePicker(BuildContext context, bool isStart) {
     if (Platform.isIOS) {
@@ -233,41 +254,45 @@ class _MakeEventPageState extends State<MakeEventPage> {
       return;
     }
 
-    if (_eventId != null) {
-      // Update existing event
-      await FirebaseFirestore.instance
-          .collection('Events')
-          .doc(_eventId)
-          .update({
-        'EventTitle': title,
-        'EventDescription': description,
-        'MaxPeople': maxPeople,
-        'StartTime': startTime,
-        'EndTime': endTime,
-        'CampName': campName,
-        'Location': {
-          'dx': _selectedLocation!.dx,
-          'dy': _selectedLocation!.dy,
-        },
-        'SubmittedBy': submittedBy,
-        'imageUrl': imageUrl,
-      });
-    } else {
-      // Save new event
-      await FirebaseFirestore.instance.collection('Events').add({
-        'EventTitle': title,
-        'EventDescription': description,
-        'MaxPeople': maxPeople,
-        'StartTime': startTime,
-        'EndTime': endTime,
-        'CampName': campName,
-        'Location': {
-          'dx': _selectedLocation!.dx,
-          'dy': _selectedLocation!.dy,
-        },
-        'SubmittedBy': submittedBy,
-        'imageUrl': imageUrl,
-      });
+    try {
+      if (_eventId != null) {
+        // Update existing event
+        await FirebaseFirestore.instance
+            .collection('Events')
+            .doc(_eventId)
+            .update({
+          'EventTitle': title,
+          'EventDescription': description,
+          'MaxPeople': maxPeople,
+          'StartTime': startTime,
+          'EndTime': endTime,
+          'CampName': campName,
+          'Location': {
+            'dx': _selectedLocation!.dx,
+            'dy': _selectedLocation!.dy,
+          },
+          'SubmittedBy': submittedBy,
+          'imageUrl': imageUrl,
+        });
+      } else {
+        // Save new event
+        await FirebaseFirestore.instance.collection('Events').add({
+          'EventTitle': title,
+          'EventDescription': description,
+          'MaxPeople': maxPeople,
+          'StartTime': startTime,
+          'EndTime': endTime,
+          'CampName': campName,
+          'Location': {
+            'dx': _selectedLocation!.dx,
+            'dy': _selectedLocation!.dy,
+          },
+          'SubmittedBy': submittedBy,
+          'imageUrl': imageUrl,
+        });
+      }
+    } catch (e) {
+      print('Error saving event: $e');
     }
 
     _titleController.clear();
