@@ -180,19 +180,9 @@ class _SwipePageState extends State<SwipePage> {
                     swiperController.next();
                   }
                 },
-                onTapDown: (TapDownDetails details) {
+                onTap: () {
                   setState(() {
-                    _isTextVisible = false;
-                  });
-                },
-                onTapUp: (TapUpDetails details) {
-                  setState(() {
-                    _isTextVisible = true;
-                  });
-                },
-                onTapCancel: () {
-                  setState(() {
-                    _isTextVisible = true;
+                    _isTextVisible = !_isTextVisible;
                   });
                 },
                 child: Card(
