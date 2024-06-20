@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'dart:math';
 import 'package:eventtide/Services/custom_cache_manager.dart';
+import 'map_page.dart';
 
 class SwipePage extends StatefulWidget {
   const SwipePage({Key? key}) : super(key: key);
@@ -103,6 +104,20 @@ class _SwipePageState extends State<SwipePage> {
     for (String url in imageUrls) {
       await CustomCacheManager.instance.downloadFile(url);
     }
+  }
+
+  void _showLocationOnMap(BuildContext context, Offset location) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ZoomableMapPage(
+          onLocationSelected: (Offset _) {},
+          initialLocation: location,
+          enableZoom: true, // Enable zoom for the SwipePage
+          editable: false, // Make the location not editable
+        ),
+      ),
+    );
   }
 
   @override
@@ -260,6 +275,28 @@ class _SwipePageState extends State<SwipePage> {
                                   ),
                                 ),
                               ],
+                            ),
+                            const SizedBox(height: 10),
+                            ElevatedButton(
+                              onPressed: () {
+                                final location = event['Location'];
+                                if (location != null) {
+                                  final Offset eventLocation = Offset(
+                                    location['dx'],
+                                    location['dy'],
+                                  );
+                                  _showLocationOnMap(context, eventLocation);
+                                }
+                              },
+                              child: Text(
+                                'Show Location',
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.black),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Color.fromRGBO(222, 121, 46, 1),
+                              ),
                             ),
                           ],
                         ),

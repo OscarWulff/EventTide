@@ -292,6 +292,9 @@ class _MakeEventPageState extends State<MakeEventPage> {
               _locationController.text = 'X: ${location.dx}, Y: ${location.dy}';
             });
           },
+          initialLocation: _selectedLocation ?? Offset(0, 0),
+          enableZoom: false, // Disable zoom for the MakeEventPage
+          editable: true, // Make the location editable
         ),
       ),
     );

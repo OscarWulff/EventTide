@@ -2,8 +2,16 @@ import 'package:flutter/material.dart';
 
 class ZoomableMapPage extends StatefulWidget {
   final Function(Offset) onLocationSelected;
+  final Offset initialLocation;
+  final bool enableZoom;
+  final bool editable;
 
-  ZoomableMapPage({required this.onLocationSelected});
+  ZoomableMapPage({
+    required this.onLocationSelected,
+    required this.initialLocation,
+    this.enableZoom = false,
+    this.editable = false,
+  });
 
   @override
   _ZoomableMapPageState createState() => _ZoomableMapPageState();
@@ -22,6 +30,9 @@ class _ZoomableMapPageState extends State<ZoomableMapPage> {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       _setInitialPosition();
     });
+
+    // Set the initial position based on passed location
+    _tapPosition = widget.initialLocation;
   }
 
   void _setInitialPosition() {
@@ -34,11 +45,13 @@ class _ZoomableMapPageState extends State<ZoomableMapPage> {
     setState(() {
       _transformationController.value = Matrix4.identity()
         ..translate(initialTranslateX, initialTranslateY)
-        ..scale(_fixedScale);
+        ..scale(widget.enableZoom ? 10.0 : _fixedScale);
     });
   }
 
   void _onTapDown(TapDownDetails details) {
+    if (!widget.editable) return;
+
     final RenderBox renderBox = context.findRenderObject() as RenderBox;
     final Offset localPosition =
         renderBox.globalToLocal(details.globalPosition);
@@ -52,10 +65,10 @@ class _ZoomableMapPageState extends State<ZoomableMapPage> {
   }
 
   void _confirmLocation() {
-    if (_tapPosition != null) {
+    if (_tapPosition != null && widget.editable) {
       widget.onLocationSelected(_tapPosition!);
-      Navigator.pop(context);
     }
+    Navigator.pop(context);
   }
 
   @override
@@ -70,10 +83,11 @@ class _ZoomableMapPageState extends State<ZoomableMapPage> {
       appBar: AppBar(
         title: Text('Select Location'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.check),
-            onPressed: _confirmLocation,
-          ),
+          if (widget.editable)
+            IconButton(
+              icon: Icon(Icons.check),
+              onPressed: _confirmLocation,
+            ),
         ],
       ),
       body: Column(
@@ -84,8 +98,8 @@ class _ZoomableMapPageState extends State<ZoomableMapPage> {
               child: InteractiveViewer(
                 transformationController: _transformationController,
                 boundaryMargin: EdgeInsets.all(20.0),
-                minScale: _fixedScale,
-                maxScale: _fixedScale,
+                minScale: widget.enableZoom ? 1.0 : _fixedScale,
+                maxScale: widget.enableZoom ? 10.0 : _fixedScale,
                 child: Stack(
                   children: [
                     Image.asset(imagePath),
