@@ -32,9 +32,52 @@ class ProfilePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (user != null) ...[
-              Text('Name: ${user.displayName ?? 'Anonymous'}', style: TextStyle(fontSize: 18, color: Colors.black)),
-              const SizedBox(height: 8),
-              Text('Email: ${user.email ?? 'No email'}', style: TextStyle(fontSize: 18, color: Colors.black)),
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'Name: ',
+                            style: TextStyle(fontSize: 18, color: Colors.grey),
+                          ),
+                          Expanded(
+                            child: Text(
+                              user.displayName ?? 'Anonymous',
+                              style: TextStyle(fontSize: 18, color: Colors.black),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Text(
+                            'Email: ',
+                            style: TextStyle(fontSize: 18, color: Colors.grey),
+                          ),
+                          Expanded(
+                            child: Text(
+                              user.email ?? 'No email',
+                              style: TextStyle(fontSize: 18, color: Colors.black),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
               Center(
                 child: ElevatedButton(
@@ -96,7 +139,6 @@ class ProfilePage extends StatelessWidget {
                           return Center(child: Text('No events found', style: TextStyle(color: Colors.black)));
                         }
                         final events = snapshot.data!.docs;
-                        //FirebaseFirestore.instance.collection('Events').doc(event.id).collection('Join_registry').get();
                         return ListView.builder(
                           itemCount: events.length,
                           itemBuilder: (context, index) {
