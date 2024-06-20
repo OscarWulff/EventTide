@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'make_event_page.dart'; // Import the MakeEventPage
+import 'make_event_page.dart';
 import 'package:eventtide/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eventtide/Services/custom_cache_manager.dart';
+import 'package:intl/intl.dart';
 
 class EventDetailPage extends StatelessWidget {
   final String eventId;
-  final String mode; // Add this parameter to indicate the entry mode
+  final String mode;
 
   const EventDetailPage({super.key, required this.eventId, required this.mode});
 
@@ -64,6 +65,14 @@ class EventDetailPage extends StatelessWidget {
           }
           final event = snapshot.data!.data() as Map<String, dynamic>;
           final imageUrl = event['imageUrl'] ?? '';
+
+          // Parse and format StartTime and EndTime
+          final DateFormat formatter = DateFormat('dd.MMM | kk:mm');
+          final DateTime startTime = DateTime.parse(event['StartTime']);
+          final String formattedStartTime = formatter.format(startTime);
+          final DateTime endTime = DateTime.parse(event['EndTime']);
+          final String formattedEndTime = formatter.format(endTime);
+
           return Stack(
             fit: StackFit.expand,
             children: [
@@ -77,15 +86,14 @@ class EventDetailPage extends StatelessWidget {
                   errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
               Container(
-                color: Colors.black.withOpacity(
-                    0.5), // Optional: Add a dark overlay for better text visibility
+                color: Colors.black.withOpacity(0.5),
               ),
               SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20), // Padding from the top
+                    const SizedBox(height: 20),
                     Text(
                       event['EventTitle'],
                       style: const TextStyle(
@@ -143,7 +151,7 @@ class EventDetailPage extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Start Time: ${event['StartTime']}',
+                            'Starts: $formattedStartTime',
                             style: const TextStyle(
                                 fontSize: 20, color: Colors.white),
                           ),
@@ -157,7 +165,7 @@ class EventDetailPage extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'End Time: ${event['EndTime']}',
+                            'Ends: $formattedEndTime',
                             style: const TextStyle(
                                 fontSize: 20, color: Colors.white),
                           ),
@@ -184,9 +192,8 @@ class EventDetailPage extends StatelessWidget {
           final event = snapshot.data!.data() as Map<String, dynamic>;
           return BottomNavigationBar(
             backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
-            selectedItemColor: Colors.black, // Set selected item color to black
-            unselectedItemColor:
-                Colors.black, // Set unselected item color to black
+            selectedItemColor: Colors.black,
+            unselectedItemColor: Colors.black,
             items: [
               if (mode == 'edit') ...[
                 const BottomNavigationBarItem(
@@ -229,7 +236,7 @@ class EventDetailPage extends StatelessWidget {
                     builder: (context) => MakeEventPage(
                       eventData: {
                         'id': eventId,
-                        ...event, // Spread the rest of the event data
+                        ...event,
                       },
                     ),
                   ),
@@ -267,7 +274,7 @@ class EventDetailPage extends StatelessWidget {
                     builder: (context) => MakeEventPage(
                       eventData: {
                         'id': eventId,
-                        ...event, // Spread the rest of the event data
+                        ...event,
                       },
                     ),
                   ),
