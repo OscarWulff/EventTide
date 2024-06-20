@@ -180,12 +180,17 @@ class _SwipePageState extends State<SwipePage> {
                     swiperController.next();
                   }
                 },
-                onLongPress: () {
+                onTapDown: (TapDownDetails details) {
                   setState(() {
                     _isTextVisible = false;
                   });
                 },
-                onLongPressUp: () {
+                onTapUp: (TapUpDetails details) {
+                  setState(() {
+                    _isTextVisible = true;
+                  });
+                },
+                onTapCancel: () {
                   setState(() {
                     _isTextVisible = true;
                   });
