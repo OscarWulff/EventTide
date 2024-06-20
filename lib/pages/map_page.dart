@@ -52,7 +52,6 @@ class _ZoomableMapPageState extends State<ZoomableMapPage> {
           ? -750
           : -750 / 2; // Adjust translation based on the scale
     } else {
-      print('Initial location: $_tapPosition');
       // Centering around the pin
       initialTranslateX = screenCenterX - (_tapPosition!.dx * scale);
       initialTranslateY = screenCenterY - (_tapPosition!.dy * scale);
