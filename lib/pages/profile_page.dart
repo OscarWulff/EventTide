@@ -168,11 +168,13 @@ class ProfilePage extends StatelessWidget {
                                         const SizedBox(height: 8),
                                         StreamBuilder<QuerySnapshot>(
                                           stream: FirebaseFirestore.instance
+                                              .collection('Events')
+                                              .doc(event.id)
                                               .collection('Join_Registry')
-                                              .where('eventId', isEqualTo: event.id)
+                                              //.where('eventId', isEqualTo: event.id)
                                               .snapshots(),
-                                          builder: (context, joinSnapshot) {
-                                            if (joinSnapshot.connectionState == ConnectionState.waiting) {
+                                          builder: (context, joinSnapshot) { 
+                                              if (joinSnapshot.connectionState == ConnectionState.waiting) {
                                               return Text(
                                                 'Loading participants...',
                                                 style: TextStyle(color: Colors.black),
