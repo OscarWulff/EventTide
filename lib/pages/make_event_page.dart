@@ -410,6 +410,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             _selectedImageFile = image;
                           });
                         },
+                        initialImageUrl:
+                            imageUrl, // Pass initial image URL if editing
                       ),
                       SizedBox(height: 10), // Reduce spacing
                       TextField(
