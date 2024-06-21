@@ -3,12 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:io' show Platform;
+import 'dart:io' show Platform, File;
 import 'package:intl/intl.dart';
 import 'package:eventtide/Services/add_image.dart'; // Import the AddImage component
 import 'map_page.dart';
 import 'event_detail_page.dart'; // Import EventDetailPage
 import 'package:flutter/services.dart';
+import 'package:firebase_storage/firebase_storage.dart'; // Import Firebase Storage
 
 class MakeEventPage extends StatefulWidget {
   final Map<String, dynamic>? eventData; // Optional event data for editing mode
@@ -30,6 +31,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
   String imageUrl = '';
   Offset? _selectedLocation;
   String? _eventId;
+  File? _selectedImageFile; // Add a variable to hold the selected image file
 
   @override
   void initState() {
@@ -227,6 +229,24 @@ class _MakeEventPageState extends State<MakeEventPage> {
     return formatter.format(dateTime);
   }
 
+  Future<String> _uploadImage(File imageFile) async {
+    String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
+    Reference referenceRoot = FirebaseStorage.instance.ref();
+    Reference referenceDirImages = referenceRoot.child('images');
+    Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
+
+    try {
+      await referenceImageToUpload.putFile(imageFile);
+      String downloadUrl = await referenceImageToUpload.getDownloadURL();
+      return downloadUrl;
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to upload image')),
+      );
+      return '';
+    }
+  }
+
   Future<void> _saveEvent() async {
     final String title = _titleController.text;
     final String description = _descriptionController.text;
@@ -263,46 +283,66 @@ class _MakeEventPageState extends State<MakeEventPage> {
       return;
     }
 
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Text("Saving..."),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
     try {
+      if (_selectedImageFile != null) {
+        imageUrl = await _uploadImage(_selectedImageFile!);
+      }
+
+      Map<String, dynamic> eventData = {
+        'EventTitle': title,
+        'EventDescription': description,
+        'MaxPeople': maxPeople,
+        'StartTime': startTime,
+        'EndTime': endTime,
+        'CampName': campName,
+        'Location': {
+          'dx': _selectedLocation!.dx,
+          'dy': _selectedLocation!.dy,
+        },
+        'SubmittedBy': submittedBy,
+      };
+
+      if (imageUrl.isNotEmpty) {
+        eventData['imageUrl'] = imageUrl;
+      }
+
       if (_eventId != null) {
         // Update existing event
         await FirebaseFirestore.instance
             .collection('Events')
             .doc(_eventId)
-            .update({
-          'EventTitle': title,
-          'EventDescription': description,
-          'MaxPeople': maxPeople,
-          'StartTime': startTime,
-          'EndTime': endTime,
-          'CampName': campName,
-          'Location': {
-            'dx': _selectedLocation!.dx,
-            'dy': _selectedLocation!.dy,
-          },
-          'SubmittedBy': submittedBy,
-          'imageUrl': imageUrl,
-        });
+            .update(eventData);
       } else {
         // Save new event
-        await FirebaseFirestore.instance.collection('Events').add({
-          'EventTitle': title,
-          'EventDescription': description,
-          'MaxPeople': maxPeople,
-          'StartTime': startTime,
-          'EndTime': endTime,
-          'CampName': campName,
-          'Location': {
-            'dx': _selectedLocation!.dx,
-            'dy': _selectedLocation!.dy,
-          },
-          'SubmittedBy': submittedBy,
-          'imageUrl': imageUrl,
-        });
+        await FirebaseFirestore.instance.collection('Events').add(eventData);
       }
     } catch (e) {
       print('Error saving event: $e');
     }
+
+    // Hide loading dialog
+    Navigator.of(context).pop();
 
     _titleController.clear();
     _descriptionController.clear();
@@ -314,6 +354,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
       _selectedEndTime = null;
       _selectedLocation = null;
       imageUrl = '';
+      _selectedImageFile = null;
     });
     Navigator.pushNamed(context, '/main');
   }
@@ -364,9 +405,9 @@ class _MakeEventPageState extends State<MakeEventPage> {
                     children: [
                       const SizedBox(height: 20),
                       AddImage(
-                        onImageUploaded: (url) {
+                        onImageSelected: (File? image) {
                           setState(() {
-                            imageUrl = url;
+                            _selectedImageFile = image;
                           });
                         },
                       ),
