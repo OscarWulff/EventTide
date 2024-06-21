@@ -19,14 +19,7 @@ FLUTTER_DARWIN_EXPORT
  * See also: https://github.com/flutter/plugins/tree/master/packages/camera
  */
 @protocol FlutterTexture <NSObject>
-/**
- * Copy the contents of the texture into a `CVPixelBuffer`.
- *
- * The type of the pixel buffer is one of the following:
- * - `kCVPixelFormatType_32BGRA`
- * - `kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange`
- * - `kCVPixelFormatType_420YpCbCr8BiPlanarFullRange`
- */
+/** Copy the contents of the texture into a `CVPixelBuffer`. */
 - (CVPixelBufferRef _Nullable)copyPixelBuffer;
 
 /**
