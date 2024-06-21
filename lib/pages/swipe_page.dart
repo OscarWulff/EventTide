@@ -26,7 +26,7 @@ class _SwipePageState extends State<SwipePage> {
     _eventsFuture = _fetchEvents();
   }
 
-  Future<void> _joinEvent(BuildContext context, String eventId) async {
+  Future<void> _joinEventAndRefresh(BuildContext context, String eventId) async {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
@@ -42,9 +42,12 @@ class _SwipePageState extends State<SwipePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Successfully joined the event')),
         );
+        // Fetch events and wait for it to complete before proceeding
+        List<QueryDocumentSnapshot> updatedEvents = await _fetchEvents();
         setState(() {
-          _eventsFuture = _fetchEvents();
+          _eventsFuture = Future.value(updatedEvents);
         });
+        swiperController.previous();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to join the event')),
@@ -172,8 +175,7 @@ class _SwipePageState extends State<SwipePage> {
                 onHorizontalDragEnd: (DragEndDetails details) {
                   if (details.primaryVelocity != null &&
                       details.primaryVelocity! > 0) {
-                    _joinEvent(context, eventId);
-                    swiperController.previous();
+                    _joinEventAndRefresh(context, eventId);
                   }
                   if (details.primaryVelocity != null &&
                       details.primaryVelocity! < 0) {
@@ -373,9 +375,8 @@ class _SwipePageState extends State<SwipePage> {
                                 child: IconButton(
                                   icon: Icon(Icons.check,
                                       color: Colors.green, size: 50),
-                                  onPressed: () {
-                                    _joinEvent(context, eventId);
-                                    swiperController.previous();
+                                  onPressed: () async {
+                                    await _joinEventAndRefresh(context, eventId);
                                   },
                                 ),
                               ),
@@ -397,4 +398,3 @@ class _SwipePageState extends State<SwipePage> {
     );
   }
 }
-
