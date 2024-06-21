@@ -83,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
-      ),
+      ),  
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -103,32 +103,6 @@ class _LoginPageState extends State<LoginPage> {
                   print('Failed to log in with Google');
                 }
               },
-            ),
-            const SizedBox(height: 8),
-            Container(
-              height: 37,
-              decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(2.0),
-              border: Border(
-                bottom: BorderSide(color: Colors.grey.withOpacity(0.01)),
-              ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 0,
-                    blurRadius: 4,
-                    offset: Offset(0, 2), // Changes position of shadow to the bottom only
-                  ),
-                ],
-              ),
-              child: SignInButtonBuilder(
-                text: 'Login as Guest',
-                icon: Icons.person,
-                backgroundColor: Colors.white,
-                textColor: Colors.black,
-                onPressed: _signInAsGuest,
-              ),
             ),
           ],
         ),
