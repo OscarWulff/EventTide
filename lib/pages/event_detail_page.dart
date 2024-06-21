@@ -46,6 +46,32 @@ class EventDetailPage extends StatelessWidget {
     }
   }
 
+  Future<void> _deleteEventAndJoinRegistry(BuildContext context, String eventId) async {
+    try {
+      final joinRegistry = FirebaseFirestore.instance
+          .collection('Events')
+          .doc(eventId)
+          .collection('Join_Registry');
+
+      final querySnapshot = await joinRegistry.get();
+
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      await FirebaseFirestore.instance.collection('Events').doc(eventId).delete();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Event deleted successfully')),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete the event')),
+      );
+    }
+  }
+
   void _showLocationOnMap(BuildContext context, Offset location) {
     Navigator.push(
       context,
@@ -312,16 +338,7 @@ class EventDetailPage extends StatelessWidget {
                   ),
                 );
               } else if (mode == 'edit' && index == 1) {
-                FirebaseFirestore.instance
-                    .collection('Events')
-                    .doc(eventId)
-                    .delete()
-                    .then((_) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Event deleted successfully')),
-                  );
-                  Navigator.pop(context);
-                });
+                _deleteEventAndJoinRegistry(context, eventId);
               } else if (mode == 'view' && index == 1) {
                 _leaveEvent(context, eventId);
                 Navigator.pushNamed(context, '/main');
