@@ -26,7 +26,7 @@ class _SwipePageState extends State<SwipePage> {
     _eventsFuture = _fetchEvents();
   }
 
-  Future<void> _joinEventAndRefresh(BuildContext context, String eventId) async {
+  Future<void> _joinEvent(BuildContext context, String eventId) async {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
@@ -42,12 +42,9 @@ class _SwipePageState extends State<SwipePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Successfully joined the event')),
         );
-        // Fetch events and wait for it to complete before proceeding
-        List<QueryDocumentSnapshot> updatedEvents = await _fetchEvents();
         setState(() {
-          _eventsFuture = Future.value(updatedEvents);
+           _eventsFuture = _fetchEvents();
         });
-        swiperController.previous();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to join the event')),
@@ -96,9 +93,33 @@ class _SwipePageState extends State<SwipePage> {
       return [];
     }
 
-    // Filter events to exclude those already joined
-    List<QueryDocumentSnapshot> filteredEvents =
-        allEvents.where((event) => !joinedEventIds.contains(event.id)).toList();
+    // Filter events to exclude those already joined and those where capacity has been reached
+    List<QueryDocumentSnapshot> filteredEvents = [];
+
+    for (var event in allEvents) {
+      if (joinedEventIds.contains(event.id)) continue;
+
+      final eventData = event.data() as Map<String, dynamic>;
+      final maxPeople = eventData['MaxPeople'] as int? ?? 0;
+
+      // Fetch participant count
+      QuerySnapshot participantSnapshot;
+      try {
+        participantSnapshot = await FirebaseFirestore.instance
+            .collection('Events')
+            .doc(event.id)
+            .collection('Join_Registry')
+            .get();
+      } catch (e) {
+        continue;
+      }
+
+      final participantCount = participantSnapshot.docs.length;
+
+      if (participantCount < maxPeople) {
+        filteredEvents.add(event);
+      }
+    }
 
     filteredEvents.shuffle(Random());
 
@@ -175,7 +196,8 @@ class _SwipePageState extends State<SwipePage> {
                 onHorizontalDragEnd: (DragEndDetails details) {
                   if (details.primaryVelocity != null &&
                       details.primaryVelocity! > 0) {
-                    _joinEventAndRefresh(context, eventId);
+                    _joinEvent(context, eventId);
+                    swiperController.previous();
                   }
                   if (details.primaryVelocity != null &&
                       details.primaryVelocity! < 0) {
@@ -376,7 +398,8 @@ class _SwipePageState extends State<SwipePage> {
                                   icon: Icon(Icons.check,
                                       color: Colors.green, size: 50),
                                   onPressed: () async {
-                                    await _joinEventAndRefresh(context, eventId);
+                                    await _joinEvent(context, eventId);
+                                    swiperController.previous();
                                   },
                                 ),
                               ),

@@ -247,6 +247,46 @@ class _MakeEventPageState extends State<MakeEventPage> {
     }
   }
 
+  Future<int> _getUserEventCount() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return 0;
+
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('Events')
+        .where('SubmittedBy', isEqualTo: user.email)
+        .get();
+
+    return querySnapshot.docs.length;
+  }
+
+  Future<void> _joinEvent(BuildContext context, String eventId) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('Events')
+            .doc(eventId)
+            .collection('Join_Registry')
+            .add({
+          'email': user.email,
+          'eventId': eventId,
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Successfully joined the event')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to join the event')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No user is logged in')),
+      );
+    }
+  }
+
   Future<void> _saveEvent() async {
     final String title = _titleController.text;
     final String description = _descriptionController.text;
@@ -279,6 +319,16 @@ class _MakeEventPageState extends State<MakeEventPage> {
         SnackBar(
             content:
                 Text('Maximum number of people must be between 1 and 1000')),
+      );
+
+      return;
+    }
+
+    // Check the number of events created by the user
+    final eventCount = await _getUserEventCount();
+    if (eventCount >= 4) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('You can create a maximum of 4 events. Please delete an old event to create a new one.')),
       );
       return;
     }
@@ -333,9 +383,11 @@ class _MakeEventPageState extends State<MakeEventPage> {
             .collection('Events')
             .doc(_eventId)
             .update(eventData);
+        await _joinEvent(context, _eventId!); // Join the updated event
       } else {
         // Save new event
-        await FirebaseFirestore.instance.collection('Events').add(eventData);
+        DocumentReference newEventRef = await FirebaseFirestore.instance.collection('Events').add(eventData);
+        await _joinEvent(context, newEventRef.id); // Join the new event
       }
     } catch (e) {
       print('Error saving event: $e');
@@ -356,6 +408,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
       imageUrl = '';
       _selectedImageFile = null;
     });
+    
     Navigator.pushNamed(context, '/main');
   }
 
