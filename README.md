@@ -1,3 +1,3 @@
-# eventtide
+# EventTide
 
 A new Flutter project.
