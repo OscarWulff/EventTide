@@ -10,11 +10,11 @@
 		</data>
 		<key>flutter_assets/AssetManifest.bin</key>
 		<data>
-		98HSOqb8Vzgoucoto9SsbGvX3Oc=
+		1ogL1wyOuM+EcRbQZyibpP7I7zw=
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		4zwSBsj8ZvyRmGH5xcx8AQg49j0=
+		s3az2I0+sXX9FEweOE0kvzp8w6Y=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
@@ -24,13 +24,29 @@
 		<data>
 		R0q5pHsjIf0G/a2JksayqJeVTnQ=
 		</data>
+		<key>flutter_assets/assets/NoPhoto_new.png</key>
+		<data>
+		KrvpEBQd/FcnNkJbU3Q3q53t+CI=
+		</data>
 		<key>flutter_assets/assets/RF23_Map.png</key>
 		<data>
-		0xBS/BgNkzjx6XOiduVHt1YUals=
+		bCMAHNqTAa3Ycul95tcnmWmwxJg=
+		</data>
+		<key>flutter_assets/assets/RosRos.png</key>
+		<data>
+		0W8+2Fp+gFCiwQg5Kk7KBw9O3Ic=
 		</data>
 		<key>flutter_assets/assets/Roskilde_logo.png</key>
 		<data>
 		wKZS11/GlawfXNGyGTVebD13JEM=
+		</data>
+		<key>flutter_assets/assets/logo.png</key>
+		<data>
+		7ALihUGatpsmvrpMYKRdnINCtZU=
+		</data>
+		<key>flutter_assets/assets/sandlogo.png</key>
+		<data>
+		nMK4UGiUkmUcBYYw0nZ8caNCp2g=
 		</data>
 		<key>flutter_assets/fonts/MaterialIcons-Regular.otf</key>
 		<data>
@@ -42,7 +58,7 @@
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		kk+wbSGp8vnVvfIunP5KqOHkEgc=
+		eD2E43JfX0HLYe1eyVJgrPxvTUQ=
 		</data>
 		<key>flutter_assets/packages/font_awesome_flutter/lib/fonts/fa-brands-400.ttf</key>
 		<data>
@@ -111,14 +127,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			msclioueYyD5BDgnzuzWcx52VM06rsdpVtTKfVFKQ+E=
+			UfnO8LVO8+/PBed1SFEygtVeqKiy9cWwXmSKiXiBrig=
 			</data>
 		</dict>
 		<key>flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			yjElEhEJO+FzawAZAVmIKj8xfdpA2BOjy43OlP7g8ro=
+			k3wtrJAtukTuiMs1MumnV12L6jZvAxlttHlS/dTcfyU=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
@@ -135,11 +151,25 @@
 			QNx+FEzf0R+1cjG/RoqMWUsg6BOS6FwHfiZt35PhWMo=
 			</data>
 		</dict>
+		<key>flutter_assets/assets/NoPhoto_new.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			rflTNp6iHPU0rxeAQ6XA0Vwa9CWNFp4M/ReEQFmHNh4=
+			</data>
+		</dict>
 		<key>flutter_assets/assets/RF23_Map.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			1y+1MEkM78bfgyEQonCS6JPfxH0E+lKso15eqOSkQHA=
+			BZM/mXvhRm18bS2nnZE1pCO/o3NkDXusNphKqw+CQ5s=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/RosRos.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			pGoo35PZaZIYDOwZnUSq0LQR8Mir53Ba2lCdSbXSApA=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/Roskilde_logo.png</key>
@@ -147,6 +177,20 @@
 			<key>hash2</key>
 			<data>
 			gjM0Dp3FPjsOp00E43E3brPQns0uPTARe58tbuvHS4k=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/logo.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			4PCL2asp6LjkfWWC74H8JbBnxpDKrOOyUHMx2Oq0Zak=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/sandlogo.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			In47FuiGrhQi16LnTkIJFjEPio6/BjdetyyYFFZOCs4=
 			</data>
 		</dict>
 		<key>flutter_assets/fonts/MaterialIcons-Regular.otf</key>
@@ -167,7 +211,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			EYEkEMrI2okXAYBYCgpQZqtQvLfyDhdJLz0Mvl4+TWs=
+			DRwfu2gjRxYBmXe8qjgIGAbk5mQwaahXwhUHman8cF8=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/font_awesome_flutter/lib/fonts/fa-brands-400.ttf</key>
