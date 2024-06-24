@@ -55,9 +55,6 @@ Welcome to EventTide! We want to ensure that everyone has a safe and enjoyable e
 
 Thank you for being a part of our community!
 
-## Screenshots
-
-
 ## Contact
 
 For any inquiries or feedback, please reach out to us at:
