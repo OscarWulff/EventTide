@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'make_event_page.dart';
-import 'package:eventtide/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eventtide/Services/custom_cache_manager.dart';
 import 'package:intl/intl.dart';
@@ -46,7 +45,8 @@ class EventDetailPage extends StatelessWidget {
     }
   }
 
-  Future<void> _deleteEventAndJoinRegistry(BuildContext context, String eventId) async {
+  Future<void> _deleteEventAndJoinRegistry(
+      BuildContext context, String eventId) async {
     try {
       final joinRegistry = FirebaseFirestore.instance
           .collection('Events')
@@ -59,7 +59,10 @@ class EventDetailPage extends StatelessWidget {
         await doc.reference.delete();
       }
 
-      await FirebaseFirestore.instance.collection('Events').doc(eventId).delete();
+      await FirebaseFirestore.instance
+          .collection('Events')
+          .doc(eventId)
+          .delete();
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Event deleted successfully')),
@@ -273,8 +276,7 @@ class EventDetailPage extends StatelessWidget {
                         backgroundColor:
                             MaterialStateProperty.all(Colors.transparent),
                         elevation: MaterialStateProperty.all(0),
-                        padding:
-                            MaterialStateProperty.all(EdgeInsets.all(0)),
+                        padding: MaterialStateProperty.all(EdgeInsets.all(0)),
                       ),
                     ),
                   ],

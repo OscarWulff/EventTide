@@ -29,7 +29,7 @@ class _ZoomableMapPageState extends State<ZoomableMapPage> {
   void initState() {
     super.initState();
     _tapPosition = widget.initialLocation;
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _setInitialPosition();
     });
   }

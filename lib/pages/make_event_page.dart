@@ -7,7 +7,6 @@ import 'dart:io' show Platform, File;
 import 'package:intl/intl.dart';
 import 'package:eventtide/Services/add_image.dart'; // Import the AddImage component
 import 'map_page.dart';
-import 'event_detail_page.dart'; // Import EventDetailPage
 import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart'; // Import Firebase Storage
 
@@ -328,7 +327,9 @@ class _MakeEventPageState extends State<MakeEventPage> {
     final eventCount = await _getUserEventCount();
     if (eventCount >= 4) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('You can create a maximum of 4 events. Please delete an old event to create a new one.')),
+        SnackBar(
+            content: Text(
+                'You can create a maximum of 4 events. Please delete an old event to create a new one.')),
       );
       return;
     }
@@ -386,7 +387,9 @@ class _MakeEventPageState extends State<MakeEventPage> {
         await _joinEvent(context, _eventId!); // Join the updated event
       } else {
         // Save new event
-        DocumentReference newEventRef = await FirebaseFirestore.instance.collection('Events').add(eventData);
+        DocumentReference newEventRef = await FirebaseFirestore.instance
+            .collection('Events')
+            .add(eventData);
         await _joinEvent(context, newEventRef.id); // Join the new event
       }
     } catch (e) {
@@ -408,7 +411,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
       imageUrl = '';
       _selectedImageFile = null;
     });
-    
+
     Navigator.pushNamed(context, '/main');
   }
 
