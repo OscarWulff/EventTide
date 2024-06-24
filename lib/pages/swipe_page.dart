@@ -198,10 +198,16 @@ class _SwipePageState extends State<SwipePage> {
                       details.primaryVelocity! > 0) {
                     _joinEvent(context, eventId);
                     swiperController.previous();
+                    setState(() {
+                      _isTextVisible = true;
+                    });
                   }
                   if (details.primaryVelocity != null &&
                       details.primaryVelocity! < 0) {
                     swiperController.next();
+                    setState(() {
+                      _isTextVisible = true;
+                    });
                   }
                 },
                 onTap: () {
@@ -386,6 +392,9 @@ class _SwipePageState extends State<SwipePage> {
                                       color: Colors.red, size: 50),
                                   onPressed: () {
                                     swiperController.next();
+                                    setState(() {
+                                      _isTextVisible = true;
+                                    });
                                   },
                                 ),
                               ),
@@ -400,6 +409,9 @@ class _SwipePageState extends State<SwipePage> {
                                   onPressed: () async {
                                     await _joinEvent(context, eventId);
                                     swiperController.previous();
+                                    setState(() {
+                                      _isTextVisible = true;
+                                    });
                                   },
                                 ),
                               ),
