@@ -8,7 +8,6 @@ Welcome to EventTide, a Flutter-based application designed to enhance your exper
 - [Installation](#installation)
 - [Usage](#usage)
 - [Community Guidelines](#community-guidelines)
-- [Screenshots](#screenshots)
 - [Contact](#contact)
 
 ## Features
