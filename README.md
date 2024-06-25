@@ -57,7 +57,6 @@ Welcome to EventTide, a Flutter-based application designed to enhance your exper
 
 ### Usage Information
 - **Event Details**: Information about events you create or participate in.
-- **Interaction Data**: Data on how you interact with the app, such as browsing history and event interactions.
 
 ### Device Information
 - **Device Identifiers**: Information about the device you use to access our app, including IP address, device type, and operating system.
