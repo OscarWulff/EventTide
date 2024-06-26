@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart'; // Import Firebase Storage
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_button/sign_in_button.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class MakeEventPage extends StatefulWidget {
   final Map<String, dynamic>? eventData; // Optional event data for editing mode
@@ -305,7 +306,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
 
     if (user == null || user.isAnonymous) {
       // Show Google sign-in dialog if user is not logged in or is anonymous
-      _showGoogleSignInDialog(context);
+      _showSignInDialog(context);
+      
       return;
     }
 
@@ -447,14 +449,37 @@ class _MakeEventPageState extends State<MakeEventPage> {
     }
   }
 
-  void _showGoogleSignInDialog(BuildContext context) {
+  Future<User?> _signInWithApple() async {
+    try {
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final oAuthProvider = OAuthProvider("apple.com");
+      final credential = oAuthProvider.credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      final userCredential = await _auth.signInWithCredential(credential);
+      return userCredential.user;
+    } catch (e) {
+      print('Error signing in with Apple: $e');
+      return null;
+    }
+  }
+
+  void _showSignInDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Sign in required'),
           content: Text(
-              'You need to be signed in with a Google account to create an event.'),
+              'You need to be signed in with a Google or Apple account to create an event.'),
           actions: <Widget>[
             TextButton(
               child: Text('Cancel'),
@@ -472,6 +497,19 @@ class _MakeEventPageState extends State<MakeEventPage> {
                   _saveEvent(); // Retry saving the event after successful login
                 } else {
                   print('Failed to log in with Google');
+                }
+              },
+            ),
+            TextButton(
+              child: Text('Sign in with Apple'),
+              onPressed: () async {
+                Navigator.of(context).pop(); // Close the dialog
+                User? user = await _signInWithApple();
+                if (user != null) {
+                  print('Logged in successfully with Apple: ${user.displayName}');
+                  _saveEvent(); // Retry saving the event after successful login
+                } else {
+                  print('Failed to log in with Apple');
                 }
               },
             ),
