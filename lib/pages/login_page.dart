@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:eventtide/main.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -22,16 +23,41 @@ class _LoginPageState extends State<LoginPage> {
         return null; // The user canceled the sign-in
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
       return userCredential.user;
     } catch (e) {
       print('Error signing in with Google: $e');
+      return null;
+    }
+  }
+
+  Future<User?> _signInWithApple() async {
+    try {
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final oAuthProvider = OAuthProvider("apple.com");
+      final credential = oAuthProvider.credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      final userCredential = await _auth.signInWithCredential(credential);
+      return userCredential.user;
+    } catch (e) {
+      print('Error signing in with Apple: $e');
       return null;
     }
   }
@@ -66,17 +92,24 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text('Welcome to EventTide! We want to ensure that everyone has a safe and enjoyable experience. Please adhere to the following guidelines:'),
+                Text(
+                    'Welcome to EventTide! We want to ensure that everyone has a safe and enjoyable experience. Please adhere to the following guidelines:'),
                 SizedBox(height: 10),
-                Text('1. Respect others: Be courteous and respectful in all interactions.', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                    '1. Respect others: Be courteous and respectful in all interactions.',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 SizedBox(height: 5),
-                Text('2. No inappropriate content: Do not post or share content that is offensive, violent, or sexually explicit.'),
+                Text(
+                    '2. No inappropriate content: Do not post or share content that is offensive, violent, or sexually explicit.'),
                 SizedBox(height: 5),
-                Text('3. Follow the law: Ensure all your activities comply with local laws and regulations.'),
+                Text(
+                    '3. Follow the law: Ensure all your activities comply with local laws and regulations.'),
                 SizedBox(height: 5),
-                Text('4. Protect your privacy: Do not share personal information such as your address, phone number, or financial information.'),
+                Text(
+                    '4. Protect your privacy: Do not share personal information such as your address, phone number, or financial information.'),
                 SizedBox(height: 5),
-                Text('5. Event Deletion: We reserve the right to delete any event that violates our community guidelines without prior notice.'),
+                Text(
+                    '5. Event Deletion: We reserve the right to delete any event that violates our community guidelines without prior notice.'),
                 SizedBox(height: 20),
                 Text('Thank you for being a part of our community!'),
               ],
@@ -138,10 +171,30 @@ class _LoginPageState extends State<LoginPage> {
                     print('Logged in successfully: ${user.displayName}');
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const MainNavigationWrapper()),
+                      MaterialPageRoute(
+                          builder: (context) => const MainNavigationWrapper()),
                     );
                   } else {
                     print('Failed to log in with Google');
+                  }
+                });
+              },
+            ),
+            SignInButton(
+              Buttons.apple,
+              onPressed: () {
+                _showCommunityGuidelines(context, () async {
+                  User? user = await _signInWithApple();
+                  if (user != null) {
+                    print(
+                        'Logged in successfully with Apple: ${user.displayName}');
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MainNavigationWrapper()),
+                    );
+                  } else {
+                    print('Failed to log in with Apple');
                   }
                 });
               },
