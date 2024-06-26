@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'login_page.dart';
-import 'event_detail_page.dart'; // Import the event detail page
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_button/sign_in_button.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'login_page.dart';
+import 'event_detail_page.dart'; // Import the event detail page
 import 'package:eventtide/main.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -30,6 +31,31 @@ class ProfilePage extends StatelessWidget {
       return userCredential.user;
     } catch (e) {
       print('Error signing in with Google: $e');
+      return null;
+    }
+  }
+
+  Future<User?> _signInWithApple(BuildContext context) async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+
+    try {
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final oAuthProvider = OAuthProvider("apple.com");
+      final credential = oAuthProvider.credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      return userCredential.user;
+    } catch (e) {
+      print('Error signing in with Apple: $e');
       return null;
     }
   }
@@ -64,7 +90,7 @@ class ProfilePage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'You are signed in as a guest. Please sign in with Google to view your events.',
+                          'You are signed in as a guest. Please sign in with Google or Apple to create and view your own events.',
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 18, color: Colors.black),
                         ),
@@ -73,6 +99,18 @@ class ProfilePage extends StatelessWidget {
                           Buttons.google,
                           onPressed: () async {
                             User? newUser = await _signInWithGoogle(context);
+                            if (newUser != null) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => const MainNavigationWrapper()),
+                              );
+                            }
+                          },
+                        ),
+                        SignInButton(
+                          Buttons.apple,
+                          onPressed: () async {
+                            User? newUser = await _signInWithApple(context);
                             if (newUser != null) {
                               Navigator.pushReplacement(
                                 context,
