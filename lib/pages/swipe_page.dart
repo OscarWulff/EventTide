@@ -36,7 +36,7 @@ class _SwipePageState extends State<SwipePage> {
             .doc(eventId)
             .collection('Join_Registry')
             .add({
-          'email': user.email,
+          'email': user.uid,
           'eventId': eventId,
         });
         ScaffoldMessenger.of(context).showSnackBar(
@@ -79,7 +79,7 @@ class _SwipePageState extends State<SwipePage> {
     try {
       joinSnapshot = await FirebaseFirestore.instance
           .collectionGroup('Join_Registry')
-          .where('email', isEqualTo: user.email)
+          .where('email', isEqualTo: user.uid)
           .get();
     } catch (e) {
       return [];

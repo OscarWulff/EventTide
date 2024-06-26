@@ -22,15 +22,13 @@ class _LoginPageState extends State<LoginPage> {
         return null; // The user canceled the sign-in
       }
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
       return userCredential.user;
     } catch (e) {
       print('Error signing in with Google: $e');
@@ -40,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _signInAsGuest() async {
     try {
-      print("Signed in with temporary account.");
+      await _auth.signInAnonymously();
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const MainNavigationWrapper()),
@@ -68,25 +66,17 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                    'Welcome to EventTide! We want to ensure that everyone has a safe and enjoyable experience. Please adhere to the following guidelines:'),
+                Text('Welcome to EventTide! We want to ensure that everyone has a safe and enjoyable experience. Please adhere to the following guidelines:'),
                 SizedBox(height: 10),
-                Text(
-                  '1. Respect others: Be courteous and respectful in all interactions.',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                Text('1. Respect others: Be courteous and respectful in all interactions.', style: TextStyle(fontWeight: FontWeight.bold)),
                 SizedBox(height: 5),
-                Text(
-                    '2. No inappropriate content: Do not post or share content that is offensive, violent, or sexually explicit.'),
+                Text('2. No inappropriate content: Do not post or share content that is offensive, violent, or sexually explicit.'),
                 SizedBox(height: 5),
-                Text(
-                    '3. Follow the law: Ensure all your activities comply with local laws and regulations.'),
+                Text('3. Follow the law: Ensure all your activities comply with local laws and regulations.'),
                 SizedBox(height: 5),
-                Text(
-                    '4. Protect your privacy: Do not share personal information such as your address, phone number, or financial information.'),
+                Text('4. Protect your privacy: Do not share personal information such as your address, phone number, or financial information.'),
                 SizedBox(height: 5),
-                Text(
-                    '5. Event Deletion: We reserve the right to delete any event that violates our community guidelines without prior notice.'),
+                Text('5. Event Deletion: We reserve the right to delete any event that violates our community guidelines without prior notice.'),
                 SizedBox(height: 20),
                 Text('Thank you for being a part of our community!'),
               ],
@@ -126,12 +116,8 @@ class _LoginPageState extends State<LoginPage> {
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Transform.translate(
-                  offset: Offset(
-                      0, 3), // Adjust the second value to move the image down
-                  child: Image.asset(
-                    'assets/sandlogo.png',
-                    height: 55,
-                  ),
+                  offset: Offset(0, 3),
+                  child: Image.asset('assets/sandlogo.png', height: 55),
                 ),
               ),
             ),
@@ -142,10 +128,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image.asset(
-              'assets/logo.png',
-              height: 250,
-            ),
+            Image.asset('assets/logo.png', height: 250),
             SignInButton(
               Buttons.google,
               onPressed: () {
@@ -155,12 +138,20 @@ class _LoginPageState extends State<LoginPage> {
                     print('Logged in successfully: ${user.displayName}');
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const MainNavigationWrapper()),
+                      MaterialPageRoute(builder: (context) => const MainNavigationWrapper()),
                     );
                   } else {
                     print('Failed to log in with Google');
                   }
+                });
+              },
+            ),
+            SignInButton(
+              Buttons.email,
+              text: "Continue as Guest",
+              onPressed: () {
+                _showCommunityGuidelines(context, () async {
+                  await _signInAsGuest();
                 });
               },
             ),

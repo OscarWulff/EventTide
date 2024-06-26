@@ -5,7 +5,6 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Add this import for Firebase Auth
 import 'package:eventtide/pages/event_detail_page.dart';
 
-/////////// BACK_END ////////////
 class Event {
   final String id;
   final String startTime;
@@ -13,10 +12,8 @@ class Event {
   final String title;
   final String description;
   final String campName;
-  
 
-  Event(this.id, this.startTime, this.endTime, this.title, this.description,
-      this.campName); 
+  Event(this.id, this.startTime, this.endTime, this.title, this.description, this.campName);
 }
 
 class CalendarPage extends StatefulWidget {
@@ -47,7 +44,7 @@ class _CalendarPageState extends State<CalendarPage> {
       // Fetch joined events
       QuerySnapshot joinSnapshot = await FirebaseFirestore.instance
           .collectionGroup('Join_Registry')
-          .where('email', isEqualTo: user.email)
+          .where('email', isEqualTo: user.uid)
           .get();
 
       List<String> joinedEventIds = joinSnapshot.docs.map((doc) => doc['eventId'] as String).toList();
@@ -94,20 +91,23 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   void initState() {
     super.initState();
-    fetchEvents().then((events) {
-      setState(() {
-        _appointments = events.map((event) {
-          return Appointment(
-            startTime: DateTime.parse(event.startTime),
-            endTime: DateTime.parse(event.endTime),
-            subject: event.title,
-            
-            notes: event.id, //For Navigation 
-            color: const Color.fromRGBO(222, 121, 46, 1),
-          );
-        }).toList();
+    if (FirebaseAuth.instance.currentUser != null) {
+      fetchEvents().then((events) {
+        setState(() {
+          _appointments = events.map((event) {
+            return Appointment(
+              startTime: DateTime.parse(event.startTime),
+              endTime: DateTime.parse(event.endTime),
+              subject: event.title,
+              notes: event.id, // For Navigation
+              color: const Color.fromRGBO(222, 121, 46, 1),
+            );
+          }).toList();
+        });
+      }).catchError((error) {
+        print('Error: $error');
       });
-    });
+    }
   }
 
   void _onAppointmentTap(CalendarTapDetails details) {
@@ -124,8 +124,6 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-
-/////////// FRONT_END ////////////
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,7 +135,8 @@ class _CalendarPageState extends State<CalendarPage> {
             scheduleViewSettings: const ScheduleViewSettings(
               monthHeaderSettings: MonthHeaderSettings(
                 backgroundColor: Color.fromRGBO(0, 0, 0, 0.7),
-                height: 70),
+                height: 70,
+              ),
             ),
             scheduleViewMonthHeaderBuilder: (BuildContext context, ScheduleViewMonthHeaderDetails details) {
               String formattedDate = DateFormat.yMMMM().format(details.date);
@@ -186,5 +185,3 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 }
-
-

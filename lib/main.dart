@@ -6,10 +6,8 @@ import 'pages/login_page.dart';
 import 'pages/swipe_page.dart';
 import 'pages/calendar_page.dart';
 import 'pages/make_event_page.dart';
-import 'pages/profile_page.dart'; // Import the profile page
+import 'pages/profile_page.dart';
 import 'package:eventtide/Services/firebase_options.dart';
-
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,31 +30,39 @@ class EventTideApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: AuthCheck(), // Use AuthCheck as the home widget
+      debugShowCheckedModeBanner: false, // Add this line to remove the debug banner
+      home: const AuthWrapper(), // Default to AuthWrapper
       routes: {
         '/login': (context) => const LoginPage(),
         '/main': (context) => const MainNavigationWrapper(),
         '/swipe': (context) => const SwipePage(),
         '/calendar': (context) => const CalendarPage(),
-        '/profile': (context) => const ProfilePage(), // Add the profile page route
+        '/profile': (context) => const ProfilePage(),
       },
     );
   }
 }
 
-class AuthCheck extends StatelessWidget {
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // Show a loading indicator while checking authentication status
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasData) {
+          final user = snapshot.data!;
+          if (user.isAnonymous) {
+            return const LoginPage(); // Redirect anonymous users to login
+          } else {
+            return const MainNavigationWrapper();
+          }
+        } else {
+          return const LoginPage();
         }
-        if (snapshot.hasData) {
-          return const MainNavigationWrapper(); // If logged in, navigate to the main screen
-        }
-        return const LoginPage(); // If not logged in, navigate to the login screen
       },
     );
   }
@@ -92,49 +98,49 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(
-              centerTitle: true,
-              backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
-              leading: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                  backgroundColor: Colors.black, // Background color for the icon
-                  child: IconButton(
-                    icon: const Icon(Icons.person),
-                    color: Colors.white, // Icon color
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/profile');
-                    },
+        centerTitle: true,
+        backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleAvatar(
+            backgroundColor: Colors.black,
+            child: IconButton(
+              icon: const Icon(Icons.person),
+              color: Colors.white,
+              onPressed: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+            ),
+          ),
+        ),
+        title: Text(
+          _titles[_selectedIndex],
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.normal,
+          ),
+        ),
+        flexibleSpace: Stack(
+          children: [
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Transform.translate(
+                  offset: Offset(0, 3),
+                  child: Image.asset(
+                    'assets/sandlogo.png',
+                    height: 55,
                   ),
                 ),
-              ),
-              title: Text(
-                _titles[_selectedIndex],
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-              flexibleSpace: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Transform.translate(
-                        offset: Offset(0, 3), // Adjust the second value to move the image down
-                        child: Image.asset(
-                          'assets/sandlogo.png',
-                          height: 55,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
-
+          ],
+        ),
+      ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
@@ -157,6 +163,15 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
         unselectedItemColor: Colors.black,
         onTap: _onItemTapped,
       ),
+      floatingActionButton: user == null || user.isAnonymous
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/login');
+              },
+              child: Icon(Icons.login),
+              backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
+            )
+          : null,
     );
   }
 }

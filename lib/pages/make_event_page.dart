@@ -9,6 +9,8 @@ import 'package:eventtide/Services/add_image.dart'; // Import the AddImage compo
 import 'map_page.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart'; // Import Firebase Storage
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 
 class MakeEventPage extends StatefulWidget {
   final Map<String, dynamic>? eventData; // Optional event data for editing mode
@@ -31,6 +33,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
   Offset? _selectedLocation;
   String? _eventId;
   File? _selectedImageFile; // Add a variable to hold the selected image file
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   @override
   void initState() {
@@ -252,7 +256,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
 
     final querySnapshot = await FirebaseFirestore.instance
         .collection('Events')
-        .where('SubmittedBy', isEqualTo: user.email)
+        .where('SubmittedBy', isEqualTo: user.uid)
         .get();
 
     return querySnapshot.docs.length;
@@ -268,7 +272,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
             .doc(eventId)
             .collection('Join_Registry')
             .add({
-          'email': user.email,
+          'email': user.uid,
           'eventId': eventId,
         });
         ScaffoldMessenger.of(context).showSnackBar(
@@ -298,9 +302,14 @@ class _MakeEventPageState extends State<MakeEventPage> {
 
     // Get the current user
     final user = FirebaseAuth.instance.currentUser;
-    final String submittedBy = user != null
-        ? user.email ?? 'Unknown'
-        : 'Unknown'; // Use the user's email or 'Unknown' if not available
+
+    if (user == null || user.isAnonymous) {
+      // Show Google sign-in dialog if user is not logged in or is anonymous
+      _showGoogleSignInDialog(context);
+      return;
+    }
+
+    final String submittedBy = user.uid ?? 'Unknown';
 
     if (title.isEmpty ||
         description.isEmpty ||
@@ -413,6 +422,63 @@ class _MakeEventPageState extends State<MakeEventPage> {
     });
 
     Navigator.pushNamed(context, '/main');
+  }
+
+  Future<User?> _signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        return null; // The user canceled the sign-in
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+      return userCredential.user;
+    } catch (e) {
+      print('Error signing in with Google: $e');
+      return null;
+    }
+  }
+
+  void _showGoogleSignInDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Sign in required'),
+          content: Text(
+              'You need to be signed in with a Google account to create an event.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Sign in with Google'),
+              onPressed: () async {
+                Navigator.of(context).pop(); // Close the dialog
+                User? user = await _signInWithGoogle();
+                if (user != null) {
+                  print('Logged in successfully: ${user.displayName}');
+                  _saveEvent(); // Retry saving the event after successful login
+                } else {
+                  print('Failed to log in with Google');
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _selectLocation() {

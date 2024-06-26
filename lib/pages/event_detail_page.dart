@@ -24,7 +24,7 @@ class EventDetailPage extends StatelessWidget {
             .collection('Join_Registry');
 
         final querySnapshot =
-            await joinRegistry.where('email', isEqualTo: user.email).get();
+            await joinRegistry.where('email', isEqualTo: user.uid).get();
 
         for (var doc in querySnapshot.docs) {
           await doc.reference.delete();
