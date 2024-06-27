@@ -9,6 +9,7 @@ import 'package:eventtide/Services/add_image.dart'; // Import the AddImage compo
 import 'package:firebase_storage/firebase_storage.dart'; // Import Firebase Storage
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'map_page.dart'; // Import ZoomableMapPage
 
 class MakeEventPage extends StatefulWidget {
   final Map<String, dynamic>? eventData; // Optional event data for editing mode
@@ -499,7 +500,8 @@ class _MakeEventPageState extends State<MakeEventPage> {
                 Navigator.of(context).pop(); // Close the dialog
                 User? user = await _signInWithApple();
                 if (user != null) {
-                  print('Logged in successfully with Apple: ${user.displayName}');
+                  print(
+                      'Logged in successfully with Apple: ${user.displayName}');
                   _saveEvent(); // Retry saving the event after successful login
                 } else {
                   print('Failed to log in with Apple');
@@ -509,6 +511,17 @@ class _MakeEventPageState extends State<MakeEventPage> {
           ],
         );
       },
+    );
+  }
+
+  void _openMap() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ZoomableMapPage(
+          enableZoom: true,
+        ),
+      ),
     );
   }
 
@@ -624,36 +637,11 @@ class _MakeEventPageState extends State<MakeEventPage> {
                         },
                       ),
                       SizedBox(height: 10),
-                        TextField(
-                          controller: _maxPeopleController,
-                          style: TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                            hintText: 'Maximum number of people',
-                            hintStyle: TextStyle(color: Colors.grey),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                              borderSide: BorderSide(
-                                  color: Color.fromRGBO(222, 121, 46, 1)),
-                            ),
-                            counterText: '${_maxPeopleController.text}/1000',
-                          ),
-                          keyboardType: TextInputType.number, // Only numbers as input
-                          textAlign: TextAlign.center,
-                          maxLength: 1000,
-                          onChanged: (value) {
-                            setState(() {});
-                          },
-                        ),
-                      SizedBox(height: 10), // Reduce spacing
                       TextField(
-                        controller: _locationController,
+                        controller: _maxPeopleController,
                         style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
-                          hintText: 'Location',
+                          hintText: 'Maximum number of people',
                           hintStyle: TextStyle(color: Colors.grey),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
@@ -664,14 +652,74 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             borderSide: BorderSide(
                                 color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
-                          errorText: _validateLocation(_locationController.text),
-                          counterText: '${_locationController.text.length}/20',
+                          counterText: '${_maxPeopleController.text}/1000',
                         ),
+                        keyboardType:
+                            TextInputType.number, // Only numbers as input
                         textAlign: TextAlign.center,
-                        maxLength: 20,
+                        maxLength: 1000,
                         onChanged: (value) {
                           setState(() {});
                         },
+                      ),
+                      SizedBox(height: 10), // Reduce spacing
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _locationController,
+                              style: TextStyle(color: Colors.black),
+                              decoration: InputDecoration(
+                                hintText: 'Location Ex. P40',
+                                hintStyle: TextStyle(color: Colors.grey),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  borderSide: BorderSide(color: Colors.black),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  borderSide: BorderSide(
+                                      color: Color.fromRGBO(222, 121, 46, 1)),
+                                ),
+                                errorText:
+                                    _validateLocation(_locationController.text),
+                                counterText:
+                                    '${_locationController.text.length}/20',
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLength: 20,
+                              onChanged: (value) {
+                                setState(() {});
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                              width:
+                                  5.0), // Add some space between the text field and the column
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 0.0), // Move the column up
+                            child: Column(
+                              children: [
+                                Text(
+                                  'See Map',
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 12),
+                                  textAlign: TextAlign.center,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: 14.0), // Move the icon up
+                                  child: IconButton(
+                                    icon: Icon(Icons.map,
+                                        size: 36.0), // Make the icon larger
+                                    onPressed: _openMap,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 20),
                       Center(

@@ -75,15 +75,12 @@ class EventDetailPage extends StatelessWidget {
     }
   }
 
-  void _showLocationOnMap(BuildContext context, Offset location) {
+  void _showLocationOnMap(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ZoomableMapPage(
-          onLocationSelected: (Offset _) {},
-          initialLocation: location,
           enableZoom: true, // Enable zoom for the EventDetailPage
-          editable: false, // Make the location not editable
         ),
       ),
     );
@@ -233,51 +230,51 @@ class EventDetailPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    TextButton(
-                      onPressed: () {
-                        final location = event['Location'];
-                        if (location != null) {
-                          final Offset eventLocation = Offset(
-                            location['dx'],
-                            location['dy'],
-                          );
-                          _showLocationOnMap(context, eventLocation);
-                        }
-                      },
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Show Location',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: const Color.fromRGBO(222, 121, 46, 1),
-                              fontWeight: FontWeight.bold,
-                              shadows: [
-                                Shadow(
-                                  offset: Offset(2.0, 2.0),
-                                  blurRadius: 3.0,
-                                  color: Color.fromARGB(255, 0, 0, 0),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Icon(Icons.map, color: Colors.white),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Location: ${event['Location']}',
+                            style: const TextStyle(
+                                fontSize: 20, color: Colors.white),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            _showLocationOnMap(context);
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Show Map',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: const Color.fromRGBO(222, 121, 46, 1),
+                                  fontWeight: FontWeight.bold,
+                                  shadows: [
+                                    Shadow(
+                                      offset: Offset(2.0, 2.0),
+                                      blurRadius: 3.0,
+                                      color: Color.fromARGB(255, 0, 0, 0),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(top: 2),
+                                height: 2,
+                                color: Color.fromRGBO(222, 121, 46, 1),
+                                width: 100, // Set the desired width here
+                              ),
+                            ],
                           ),
-                          Container(
-                            margin: EdgeInsets.only(top: 2.0),
-                            height: 2,
-                            color: Color.fromRGBO(222, 121, 46, 1),
-                            width: 150, // Set the desired width here
-                          ),
-                        ],
-                      ),
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.transparent),
-                        elevation: MaterialStateProperty.all(0),
-                        padding: MaterialStateProperty.all(EdgeInsets.all(0)),
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
