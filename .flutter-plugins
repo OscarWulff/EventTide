@@ -27,4 +27,6 @@ path_provider_android=/Users/nillings/.pub-cache/hosted/pub.dev/path_provider_an
 path_provider_foundation=/Users/nillings/.pub-cache/hosted/pub.dev/path_provider_foundation-2.4.0/
 path_provider_linux=/Users/nillings/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1/
 path_provider_windows=/Users/nillings/.pub-cache/hosted/pub.dev/path_provider_windows-2.2.1/
+sign_in_with_apple=/Users/nillings/.pub-cache/hosted/pub.dev/sign_in_with_apple-6.1.1/
+sign_in_with_apple_web=/Users/nillings/.pub-cache/hosted/pub.dev/sign_in_with_apple_web-2.1.0/
 sqflite=/Users/nillings/.pub-cache/hosted/pub.dev/sqflite-2.3.3+1/
