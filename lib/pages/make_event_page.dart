@@ -6,11 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io' show Platform, File;
 import 'package:intl/intl.dart';
 import 'package:eventtide/Services/add_image.dart'; // Import the AddImage component
-import 'map_page.dart';
-import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart'; // Import Firebase Storage
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_button/sign_in_button.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class MakeEventPage extends StatefulWidget {
@@ -31,7 +28,6 @@ class _MakeEventPageState extends State<MakeEventPage> {
   DateTime? _selectedStartTime;
   DateTime? _selectedEndTime;
   String imageUrl = '';
-  Offset? _selectedLocation;
   String? _eventId;
   File? _selectedImageFile; // Add a variable to hold the selected image file
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -46,17 +42,10 @@ class _MakeEventPageState extends State<MakeEventPage> {
       _descriptionController.text = widget.eventData!['EventDescription'];
       _maxPeopleController.text = widget.eventData!['MaxPeople'].toString();
       _campNameController.text = widget.eventData!['CampName'];
+      _locationController.text = widget.eventData!['Location'];
       _selectedStartTime = DateTime.tryParse(widget.eventData!['StartTime']);
       _selectedEndTime = DateTime.tryParse(widget.eventData!['EndTime']);
       imageUrl = widget.eventData!['imageUrl'] ?? '';
-      if (widget.eventData!['Location'] != null) {
-        _selectedLocation = Offset(
-          widget.eventData!['Location']['dx'],
-          widget.eventData!['Location']['dy'],
-        );
-        _locationController.text =
-            'X: ${_selectedLocation!.dx}, Y: ${_selectedLocation!.dy}';
-      }
     }
   }
 
@@ -77,6 +66,13 @@ class _MakeEventPageState extends State<MakeEventPage> {
   String? _validateDescription(String value) {
     if (value.length > 200) {
       return 'Description cannot exceed 200 characters';
+    }
+    return null;
+  }
+
+  String? _validateLocation(String value) {
+    if (value.length > 20) {
+      return 'Location cannot exceed 20 characters';
     }
     return null;
   }
@@ -296,6 +292,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
     final String description = _descriptionController.text;
     final int? maxPeople = int.tryParse(_maxPeopleController.text);
     final String campName = _campNameController.text;
+    final String location = _locationController.text;
     final String startTime =
         _selectedStartTime != null ? _selectedStartTime!.toIso8601String() : '';
     final String endTime =
@@ -307,7 +304,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
     if (user == null || user.isAnonymous) {
       // Show Google sign-in dialog if user is not logged in or is anonymous
       _showSignInDialog(context);
-      
+
       return;
     }
 
@@ -316,9 +313,9 @@ class _MakeEventPageState extends State<MakeEventPage> {
     if (title.isEmpty ||
         description.isEmpty ||
         campName.isEmpty ||
+        location.isEmpty ||
         _selectedStartTime == null ||
-        _selectedEndTime == null ||
-        _selectedLocation == null) {
+        _selectedEndTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please fill all fields')),
       );
@@ -378,10 +375,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
         'StartTime': startTime,
         'EndTime': endTime,
         'CampName': campName,
-        'Location': {
-          'dx': _selectedLocation!.dx,
-          'dy': _selectedLocation!.dy,
-        },
+        'Location': location,
         'SubmittedBy': submittedBy,
       };
 
@@ -418,7 +412,6 @@ class _MakeEventPageState extends State<MakeEventPage> {
     setState(() {
       _selectedStartTime = null;
       _selectedEndTime = null;
-      _selectedLocation = null;
       imageUrl = '';
       _selectedImageFile = null;
     });
@@ -516,27 +509,6 @@ class _MakeEventPageState extends State<MakeEventPage> {
           ],
         );
       },
-    );
-  }
-
-  void _selectLocation() {
-    FocusScope.of(context).requestFocus(FocusNode());
-    Navigator.push(
-      // Unfocus the keyboard
-      context,
-      MaterialPageRoute(
-        builder: (context) => ZoomableMapPage(
-          onLocationSelected: (Offset location) {
-            setState(() {
-              _selectedLocation = location;
-              _locationController.text = 'X: ${location.dx}, Y: ${location.dy}';
-            });
-          },
-          initialLocation: _selectedLocation ?? Offset(0, 0),
-          enableZoom: false, // Disable zoom for the MakeEventPage
-          editable: true, // Make the location editable
-        ),
-      ),
     );
   }
 
@@ -651,33 +623,37 @@ class _MakeEventPageState extends State<MakeEventPage> {
                           setState(() {});
                         },
                       ),
-                      SizedBox(height: 10), // Reduce spacing
-                      TextField(
-                        controller: _maxPeopleController,
-                        style: TextStyle(color: Colors.black),
-                        decoration: InputDecoration(
-                          hintText: 'Maximum number of people',
-                          hintStyle: TextStyle(color: Colors.grey),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.black),
+                      SizedBox(height: 10),
+                        TextField(
+                          controller: _maxPeopleController,
+                          style: TextStyle(color: Colors.black),
+                          decoration: InputDecoration(
+                            hintText: 'Maximum number of people',
+                            hintStyle: TextStyle(color: Colors.grey),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                              borderSide: BorderSide(
+                                  color: Color.fromRGBO(222, 121, 46, 1)),
+                            ),
+                            counterText: '${_maxPeopleController.text}/1000',
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(
-                                color: Color.fromRGBO(222, 121, 46, 1)),
-                          ),
+                          keyboardType: TextInputType.number, // Only numbers as input
+                          textAlign: TextAlign.center,
+                          maxLength: 1000,
+                          onChanged: (value) {
+                            setState(() {});
+                          },
                         ),
-                        keyboardType:
-                            TextInputType.number, // Only numbers as input
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 30), // Reduce spacing
+                      SizedBox(height: 10), // Reduce spacing
                       TextField(
                         controller: _locationController,
                         style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
-                          hintText: 'Location (Tap map to select)',
+                          hintText: 'Location',
                           hintStyle: TextStyle(color: Colors.grey),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
@@ -688,13 +664,14 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             borderSide: BorderSide(
                                 color: Color.fromRGBO(222, 121, 46, 1)),
                           ),
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.map, color: Colors.black),
-                            onPressed: _selectLocation,
-                          ),
+                          errorText: _validateLocation(_locationController.text),
+                          counterText: '${_locationController.text.length}/20',
                         ),
-                        readOnly: true, // Make the field read-only
                         textAlign: TextAlign.center,
+                        maxLength: 20,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
                       ),
                       SizedBox(height: 20),
                       Center(
