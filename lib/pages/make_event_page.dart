@@ -579,7 +579,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                         style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
                           hintText: 'Title of Event',
-                          hintStyle: TextStyle(color: Colors.black),
+                          hintStyle: TextStyle(color: Colors.grey),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(color: Colors.black),
@@ -604,7 +604,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                         style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
                           hintText: 'Camp Name',
-                          hintStyle: TextStyle(color: Colors.black),
+                          hintStyle: TextStyle(color: Colors.grey),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(color: Colors.black),
@@ -630,7 +630,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                         style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
                           hintText: 'Describe your event',
-                          hintStyle: TextStyle(color: Colors.black),
+                          hintStyle: TextStyle(color: Colors.grey),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(color: Colors.black),
@@ -657,7 +657,7 @@ class _MakeEventPageState extends State<MakeEventPage> {
                         style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
                           hintText: 'Maximum number of people',
-                          hintStyle: TextStyle(color: Colors.black),
+                          hintStyle: TextStyle(color: Colors.grey),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(color: Colors.black),
@@ -672,13 +672,13 @@ class _MakeEventPageState extends State<MakeEventPage> {
                             TextInputType.number, // Only numbers as input
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(height: 10), // Reduce spacing
+                      SizedBox(height: 30), // Reduce spacing
                       TextField(
                         controller: _locationController,
                         style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
                           hintText: 'Location (Tap map to select)',
-                          hintStyle: TextStyle(color: Colors.black),
+                          hintStyle: TextStyle(color: Colors.grey),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(color: Colors.black),
