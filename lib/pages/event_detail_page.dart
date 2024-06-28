@@ -7,11 +7,28 @@ import 'package:eventtide/Services/custom_cache_manager.dart';
 import 'package:intl/intl.dart';
 import 'map_page.dart';
 
-class EventDetailPage extends StatelessWidget {
+class EventDetailPage extends StatefulWidget {
   final String eventId;
   final String mode;
 
   const EventDetailPage({super.key, required this.eventId, required this.mode});
+
+  @override
+  _EventDetailPageState createState() => _EventDetailPageState();
+}
+
+class _EventDetailPageState extends State<EventDetailPage> {
+  bool _isTextVisible = true;
+  late Future<DocumentSnapshot> _eventFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _eventFuture = FirebaseFirestore.instance
+        .collection('Events')
+        .doc(widget.eventId)
+        .get();
+  }
 
   Future<void> _leaveEvent(BuildContext context, String eventId) async {
     final user = FirebaseAuth.instance.currentUser;
@@ -89,7 +106,7 @@ class EventDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: mode == 'edit'
+      appBar: widget.mode == 'edit'
           ? AppBar(
               title: const Text('Edit Event'),
               centerTitle: true,
@@ -107,8 +124,7 @@ class EventDetailPage extends StatelessWidget {
               backgroundColor: const Color.fromRGBO(222, 121, 46, 1),
             ),
       body: FutureBuilder<DocumentSnapshot>(
-        future:
-            FirebaseFirestore.instance.collection('Events').doc(eventId).get(),
+        future: _eventFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -126,166 +142,175 @@ class EventDetailPage extends StatelessWidget {
           final DateTime endTime = DateTime.parse(event['EndTime']);
           final String formattedEndTime = formatter.format(endTime);
 
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              if (imageUrl.isNotEmpty)
-                CachedNetworkImage(
-                  cacheManager: CustomCacheManager.instance,
-                  imageUrl: imageUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) =>
-                      Center(child: CircularProgressIndicator()),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
-                )
-              else
-                Image.asset(
-                  'assets/RosRos.png',
-                  fit: BoxFit.cover,
-                ),
-              Container(
-                color: Colors.black.withOpacity(0.5),
-              ),
-              SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    Text(
-                      event['EventTitle'],
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _isTextVisible = !_isTextVisible;
+              });
+            },
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (imageUrl.isNotEmpty)
+                  CachedNetworkImage(
+                    cacheManager: CustomCacheManager.instance,
+                    imageUrl: imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        Center(child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                  )
+                else
+                  Image.asset(
+                    'assets/RosRos.png',
+                    fit: BoxFit.cover,
+                  ),
+                if (_isTextVisible)
+                  Container(
+                    color: Colors.black.withOpacity(0.5),
+                  ),
+                if (_isTextVisible)
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.location_on, color: Colors.white),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Camp: ${event['CampName']}',
-                            style: const TextStyle(
-                                fontSize: 20, color: Colors.white),
+                        const SizedBox(height: 20),
+                        Text(
+                          event['EventTitle'],
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(Icons.description, color: Colors.white),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Description: ${event['EventDescription']}',
-                            style: const TextStyle(
-                                fontSize: 20, color: Colors.white),
-                          ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Icon(Icons.location_on, color: Colors.white),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Camp: ${event['CampName']}',
+                                style: const TextStyle(
+                                    fontSize: 20, color: Colors.white),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(Icons.people, color: Colors.white),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Capacity: ${event['MaxPeople']} people',
-                            style: const TextStyle(
-                                fontSize: 20, color: Colors.white),
-                          ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Icon(Icons.description, color: Colors.white),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Description: ${event['EventDescription']}',
+                                style: const TextStyle(
+                                    fontSize: 20, color: Colors.white),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(Icons.access_time, color: Colors.white),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Starts: $formattedStartTime',
-                            style: const TextStyle(
-                                fontSize: 20, color: Colors.white),
-                          ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Icon(Icons.people, color: Colors.white),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Capacity: ${event['MaxPeople']} people',
+                                style: const TextStyle(
+                                    fontSize: 20, color: Colors.white),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(Icons.access_time_filled, color: Colors.white),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Ends: $formattedEndTime',
-                            style: const TextStyle(
-                                fontSize: 20, color: Colors.white),
-                          ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Icon(Icons.access_time, color: Colors.white),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Starts: $formattedStartTime',
+                                style: const TextStyle(
+                                    fontSize: 20, color: Colors.white),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(Icons.map, color: Colors.white),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Location: ${event['Location']}',
-                            style: const TextStyle(
-                                fontSize: 20, color: Colors.white),
-                          ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Icon(Icons.access_time_filled, color: Colors.white),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Ends: $formattedEndTime',
+                                style: const TextStyle(
+                                    fontSize: 20, color: Colors.white),
+                              ),
+                            ),
+                          ],
                         ),
-                        TextButton(
-                          onPressed: () {
-                            _showLocationOnMap(context);
-                          },
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Show Map',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: const Color.fromRGBO(222, 121, 46, 1),
-                                  fontWeight: FontWeight.bold,
-                                  shadows: [
-                                    Shadow(
-                                      offset: Offset(2.0, 2.0),
-                                      blurRadius: 3.0,
-                                      color: Color.fromARGB(255, 0, 0, 0),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Icon(Icons.map, color: Colors.white),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Location: ${event['Location']}',
+                                style: const TextStyle(
+                                    fontSize: 20, color: Colors.white),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                _showLocationOnMap(context);
+                              },
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Show Map',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color:
+                                          const Color.fromRGBO(222, 121, 46, 1),
+                                      fontWeight: FontWeight.bold,
+                                      shadows: [
+                                        Shadow(
+                                          offset: Offset(2.0, 2.0),
+                                          blurRadius: 3.0,
+                                          color: Color.fromARGB(255, 0, 0, 0),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(top: 2),
+                                    height: 2,
+                                    color: Color.fromRGBO(222, 121, 46, 1),
+                                    width: 100, // Set the desired width here
+                                  ),
+                                ],
                               ),
-                              Container(
-                                margin: EdgeInsets.only(top: 2),
-                                height: 2,
-                                color: Color.fromRGBO(222, 121, 46, 1),
-                                width: 100, // Set the desired width here
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+              ],
+            ),
           );
         },
       ),
       bottomNavigationBar: FutureBuilder<DocumentSnapshot>(
-        future:
-            FirebaseFirestore.instance.collection('Events').doc(eventId).get(),
+        future: _eventFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -299,7 +324,7 @@ class EventDetailPage extends StatelessWidget {
             selectedItemColor: Colors.black,
             unselectedItemColor: Colors.black,
             items: [
-              if (mode == 'edit') ...[
+              if (widget.mode == 'edit') ...[
                 const BottomNavigationBarItem(
                   icon: Icon(Icons.edit),
                   label: 'Edit',
@@ -308,7 +333,7 @@ class EventDetailPage extends StatelessWidget {
                   icon: Icon(Icons.delete),
                   label: 'Delete',
                 ),
-              ] else if (mode == 'view') ...[
+              ] else if (widget.mode == 'view') ...[
                 const BottomNavigationBarItem(
                   icon: Icon(Icons.more_horiz, color: Colors.transparent),
                   label: '',
@@ -324,22 +349,22 @@ class EventDetailPage extends StatelessWidget {
               ],
             ],
             onTap: (index) {
-              if (mode == 'edit' && index == 0) {
+              if (widget.mode == 'edit' && index == 0) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => MakeEventPage(
                       eventData: {
-                        'id': eventId,
+                        'id': widget.eventId,
                         ...event,
                       },
                     ),
                   ),
                 );
-              } else if (mode == 'edit' && index == 1) {
-                _deleteEventAndJoinRegistry(context, eventId);
-              } else if (mode == 'view' && index == 1) {
-                _leaveEvent(context, eventId);
+              } else if (widget.mode == 'edit' && index == 1) {
+                _deleteEventAndJoinRegistry(context, widget.eventId);
+              } else if (widget.mode == 'view' && index == 1) {
+                _leaveEvent(context, widget.eventId);
                 Navigator.pushNamed(context, '/main');
               }
             },

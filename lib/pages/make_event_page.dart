@@ -390,7 +390,6 @@ class _MakeEventPageState extends State<MakeEventPage> {
             .collection('Events')
             .doc(_eventId)
             .update(eventData);
-        await _joinEvent(context, _eventId!); // Join the updated event
       } else {
         // Save new event
         DocumentReference newEventRef = await FirebaseFirestore.instance
